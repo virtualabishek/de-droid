@@ -1,0 +1,299 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========= USER MANAGEMENT =========
+
+model User {
+  id String @id @default(uuid())
+  username String @unique
+  email   String @unique
+  password String 
+  firstName String
+  middleName String
+  lastName String
+  isActive Boolean @default(true)
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+  lastLoginAt DateTime?
+  // Relation
+  tokens Token[]
+  passwordResets PaasswordReset[]
+  devices Device[]
+  debloatSessions DebloatSession[]
+  errorLogs ErrorLog[]
+  @@index([email])
+  @@index([username])
+}
+
+
+model Token {
+  id String @id @default(uuid())
+  token String @unique
+  type TokenType
+  expiresAt DateTime
+  isRevoked Boolean @default(false)
+  createdAt DateTime @default(now())
+  // Relation
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([token])
+  @@index([userId])
+}
+
+
+model PaasswordReset {
+  id String @id @default(uuid())
+  token String @unique
+  expiresAt DateTime
+  isUsed Boolean @default(false)
+  createdAt DateTime @default(now())
+  // Relations
+  userId      String
+  user        User     @relation(fields:  [userId], references:  [id], onDelete: Cascade)
+  @@index([token])
+  @@index([userId])
+}
+
+
+// ==================== DEVICE MANAGEMENT ====================
+
+model Device {
+  id              String       @id @default(uuid())
+  deviceName      String       // e.g., "Samsung Galaxy S21"
+  manufacturer    String       // e.g., "Samsung"
+  model           String       // e. g., "SM-G991B"
+  androidVersion  String       // e.g., "13"
+  sdkVersion      Int          // e.g., 33
+  serialNumber    String? 
+  isConnected     Boolean      @default(false)
+  lastConnectedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  // Relations
+  userId          String
+  user            User         @relation(fields:  [userId], references:  [id], onDelete: Cascade)
+  packages        DevicePackage[]
+  debloatSessions DebloatSession[]
+  errorLogs       ErrorLog[]
+
+  @@unique([userId, serialNumber])
+  @@index([userId])
+}
+
+
+// ==================== PACKAGE MANAGEMENT ====================
+
+
+  model Package {
+  id              String          @id @default(uuid())
+  packageName     String          @unique  // e.g., "com.facebook.katana"
+  appName         String          // e.g., "Facebook"
+  description     String?
+  category        PackageCategory
+  priority        PackagePriority
+  isSystemApp     Boolean         @default(false)
+  isSafeToRemove  Boolean         @default(true)
+  warningMessage  String?         // Warning if risky to remove
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  devicePackages  DevicePackage[]
+
+  @@index([packageName])
+  @@index([priority])
+  @@index([category])
+}
+
+
+
+
+model DevicePackage {
+  id              String        @id @default(uuid())
+  isInstalled     Boolean       @default(true)
+  isDisabled      Boolean       @default(false)
+  isSelected      Boolean       @default(false)  // Selected for removal
+  installedAt     DateTime? 
+  removedAt       DateTime? 
+  disabledAt      DateTime?
+  
+  // Relations
+  deviceId        String
+  device          Device        @relation(fields:  [deviceId], references: [id], onDelete: Cascade)
+  packageId       String
+  package         Package       @relation(fields:  [packageId], references: [id], onDelete: Cascade)
+  @@unique([deviceId, packageId])
+  @@index([deviceId])
+  @@index([packageId])
+}
+
+
+
+// ==================== DEBLOAT SESSION ====================
+
+model DebloatSession {
+  id              String              @id @default(uuid())
+  status          DebloatStatus       @default(PENDING)
+  totalPackages   Int                 @default(0)
+  removedCount    Int                 @default(0)
+  failedCount     Int                 @default(0)
+  skippedCount    Int                 @default(0)
+  startedAt       DateTime? 
+  completedAt     DateTime? 
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  // Relations
+  userId          String
+  user            User                @relation(fields:  [userId], references:  [id], onDelete: Cascade)
+  deviceId        String
+  device          Device              @relation(fields: [deviceId], references:  [id], onDelete: Cascade)
+  actions         DebloatAction[]
+  errorLogs       ErrorLog[]
+  @@index([userId])
+  @@index([deviceId])
+  @@index([status])
+}
+
+
+
+model DebloatAction {
+  id              String            @id @default(uuid())
+  packageName     String
+  actionType      ActionType
+  status          ActionStatus      @default(PENDING)
+  errorMessage    String? 
+  executedAt      DateTime? 
+  createdAt       DateTime          @default(now())
+  // Relations
+  sessionId       String
+  session         DebloatSession    @relation(fields:  [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+
+
+
+// ==================== ERROR LOGGING ====================
+
+model ErrorLog {
+  id              String        @id @default(uuid())
+  errorCode       String? 
+  errorType       ErrorType
+  message         String
+  stackTrace      String? 
+  context         Json?         // Additional context data
+  isResolved      Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+
+  // Relations
+  userId          String? 
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  deviceId        String? 
+  device          Device?        @relation(fields:  [deviceId], references: [id], onDelete: SetNull)
+  sessionId       String?
+  session         DebloatSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([errorType])
+  @@index([userId])
+  @@index([deviceId])
+  @@index([createdAt])
+}
+
+// ==================== APP CONFIGURATION ====================
+
+model AppConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}
+
+
+enum DebloatStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+
+enum TokenType {
+  ACCESS 
+  REFRESH
+  EMAIL_VERIFICATION
+}
+
+
+enum PackageCategory {
+  BLOATWARE
+  SOCIAL_MEDIA
+  GOOGLE_APPS
+  SAMSUNG_APPS
+  XIAOMI_APPS
+  SYSTEM_UI
+  CARRIER
+  PRODUCTIVITY
+  ENTERTAINMENT
+  SECURITY
+  OTHER
+}
+
+enum PackagePriority {
+  ESSENTIAL      // Critical system packages - DO NOT REMOVE
+  IMPORTANT      // Important for device functionality
+  OPTIONAL       // Can be removed but may affect some features
+  DEBLOATABLE    // Safe to remove, recommended for debloating
+  BLOATWARE      // Recommended to remove
+}
+
+
+
+
+enum ErrorType {
+  ADB_CONNECTION
+  ADB_COMMAND
+  DEVICE_NOT_FOUND
+  PACKAGE_NOT_FOUND
+  PERMISSION_DENIED
+  AUTHENTICATION
+  VALIDATION
+  DATABASE
+  NETWORK
+  UNKNOWN
+}
+
+
+
+enum ActionType {
+  UNINSTALL
+  DISABLE
+  ENABLE
+  REINSTALL
+}
+
+enum ActionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  SKIPPED
+}
