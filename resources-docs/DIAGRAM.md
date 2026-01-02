@@ -80,7 +80,7 @@ flowchart LR
 
 ## Flow Chart
 
-```
+```mermaid
 %%{init: {'theme':'base', 'themeVariables': {
   'primaryColor':'#60a5fa',
   'primaryTextColor':'#1f2937',
