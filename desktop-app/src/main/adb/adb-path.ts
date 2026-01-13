@@ -1,4 +1,4 @@
-import app from "electron"
+import { app } from "electron"
 import path from "path"
 import fs from 'fs';
 import { execSync } from "child_process";
@@ -8,12 +8,12 @@ export function getAdbPath(): string {
     const platform = process.platform;
     const isDev =! app.isPackaged;
     const basePath = isDev ?  path.join(__dirname, '..', '..', '..', 'resources', 'adb') : path.join(process.resourcesPath, 'adb');
-    let adbPath = string;
+    let adbPath: string;
     switch(platform) {
         case 'win32':
             adbPath =   path.join(basePath, 'win', 'adb.exe');
             break;
-        case 'mac':
+        case 'darwin':
             adbPath = path.join(basePath, 'mac', 'adb');
             break;
         case 'linux':
@@ -24,7 +24,7 @@ export function getAdbPath(): string {
     if(fs.existsSync(adbPath)) {
         if(platform !== 'win32') {
             try {
-                fs.chmodSync(addPath, '755');
+                fs.chmodSync(adbPath, '755');
             } catch(e) {
                 console.warn("Could not set ADB executable permission.", e)
             }
