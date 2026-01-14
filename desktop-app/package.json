@@ -5,11 +5,20 @@
   "description": "De Droid is a desktop application for removin bloatware. Your privacy matters.",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "dev": "concurrently \"pnpm run dev:main\" \"pnpm run dev:preload\" \"pnpm run dev:renderer\" \"pnpm run dev:electron\"",
+    "dev:main": "tsc -p tsconfig.main.json --watch",
+    "dev:preload": "tsc -p tsconfig.preload.json --watch",
+    "dev:renderer": "vite",
+    "dev:electron": "sleep 3 && NODE_ENV=development electron .",
+    "build": "pnpm run build:main && pnpm run build:preload && pnpm run build:renderer",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:preload": "tsc -p tsconfig.preload.json",
+    "build:renderer": "vite build",
+    "start": "electron .",
+    "package": "pnpm run build && electron-builder",
+    "package:win": "pnpm run build && electron-builder --win",
+    "package:mac": "pnpm run build && electron-builder --mac",
+    "package:linux": "pnpm run build && electron-builder --linux"
   },
   "keywords": [],
   "author": {
@@ -34,13 +43,16 @@
     "@electron-forge/plugin-vite": "^7.10.2",
     "@electron/fuses": "^1.8.0",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "concurrently": "^8.2.2",
     "electron": "39.2.7",
     "eslint": "^8.57.1",
     "eslint-plugin-import": "^2.32.0",
-    "typescript": "~4.5.5",
-    "vite": "^5.4.21"
+    "typescript": "^5.3.3",
+    "vite": "^5.4.21",
+    "wait-on": "^7.2.0"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1"

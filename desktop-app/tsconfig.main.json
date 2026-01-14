@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "CommonJS",
+    "moduleResolution": "node"
+  },
+  "include": ["src/main/**/*", "src/@types/**/*"],
+  "exclude": ["node_modules", "dist", "src/renderer", "src/preload"]
+}
