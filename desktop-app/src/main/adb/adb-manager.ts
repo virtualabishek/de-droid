@@ -114,16 +114,19 @@ export class AdbManager {
     if (options.disabled) args.push("-d");
 
     const result = await this.execute(args);
+    console.log("[ADB Manager] getPackages result:", JSON.stringify(result));
     if (!result.success) return [];
 
     const packages: PackageInfo[] = [];
     const lines = result.output.split("\n");
+    console.log("[ADB Manager] Number of lines:", lines.length);
+    console.log("[ADB Manager] First 3 lines:", lines.slice(0, 3));
 
     for (const line of lines) {
-      const match = line.match(/^package: (.+)$/);
+      const match = line.trim().match(/^package:(.+)$/);
       if (match) {
         packages.push({
-          packageName: match[1],
+          packageName: match[1].trim(),
           isSystemApp: options.systemOnly ?? false,
           isDisabled: options.disabled ?? false,
         });

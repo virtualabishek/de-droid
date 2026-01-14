@@ -24,6 +24,9 @@ console.log(
   'Just testing if it works or not...',
 );
 
+// Store the selected device ID
+let selectedDeviceId: string | null = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
   if (window.electronAPI) {
     console.log("electronAPI is available!");
@@ -43,7 +46,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const getDevicesBtn = document.getElementById("get-devices");
   const startServerBtn = document.getElementById("start-server");
   const stopServerBtn = document.getElementById("stop-server");
+  const packageListBtn = document.getElementById("list-packages");
   const output = document.getElementById("output");
+  
 
   if (getDevicesBtn) {
     getDevicesBtn.addEventListener("click", async () => {
@@ -60,7 +65,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (devices.length === 0) {
             output.innerHTML = `<pre style="color: orange;">No devices found\n\nMake sure:\n1. Device is connected via USB\n2. USB debugging is enabled\n3. Device is authorized</pre>`;
           } else {
-            output.innerHTML = `<pre style="color: green;">Found ${devices.length} device(s):\n\n${JSON.stringify(devices, null, 2)}</pre>`;
+            // Store the first device ID for testing
+            selectedDeviceId = devices[0].id;
+            output.innerHTML = `<pre style="color: green;">Found ${devices.length} device(s):\n\n${JSON.stringify(devices, null, 2)}\n\nSelected device: ${selectedDeviceId}</pre>`;
           }
         }
       } catch (error) {
@@ -117,4 +124,36 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+  if(packageListBtn) {
+    packageListBtn.addEventListener("click", async () => {
+      console.log("[Renderer] List Packages button clicked");
+      if (output) {
+        output.innerHTML = `<pre>Loading packages...</pre>`;
+      }
+      try {
+        if (!selectedDeviceId) {
+          if (output) {
+            output.innerHTML = `<pre style="color: orange;">No device selected. Click "Get Devices" first.</pre>`;
+          }
+          return;
+        }
+        console.log("[Renderer] Calling electronAPI.adb.getPackages() for device:", selectedDeviceId);
+        const packages = await window.electronAPI.adb.getPackages(selectedDeviceId);
+        console.log("[Renderer] Received packages:", packages);
+        
+        if (output) {
+          if (packages.length === 0) {
+            output.innerHTML = `<pre style="color: orange;">No packages found on device ${selectedDeviceId}</pre>`;
+          } else {
+            output.innerHTML = `<pre style="color: green;">Found ${packages.length} package(s) on device ${selectedDeviceId}:\n\n${JSON.stringify(packages, null, 2)}</pre>`;
+          }
+        }
+      } catch (error) {
+        console.error("[Renderer] Error getting packages:", error);
+        if (output) {
+          output.innerHTML = `<pre style="color: red;">Error: ${error}</pre>`;
+        }
+      }
+    });
+  } 
 });

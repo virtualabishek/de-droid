@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, shell, ipcMain } from "electron";
 import path from "path";
 import { getAdbManager } from "./adb/adb-manager";
 
@@ -76,6 +76,65 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+// Register IPC handlers for ADB operations
+function registerIpcHandlers() {
+  const adb = getAdbManager();
+
+  ipcMain.handle("adb:isAvailable", async () => {
+    try {
+      const result = await adb.startServer();
+      return result.success;
+    } catch {
+      return false;
+    }
+  });
+
+  ipcMain.handle("adb:startServer", async () => {
+    return adb.startServer();
+  });
+
+  ipcMain.handle("adb:stopServer", async () => {
+    return adb.stopServer();
+  });
+
+  ipcMain.handle("adb:getDevices", async () => {
+    return adb.getDevices();
+  });
+
+  ipcMain.handle("adb:getPackages", async (_event, deviceId: string, options?: any) => {
+    return adb.getPackages(deviceId, options);
+  });
+
+  ipcMain.handle("adb:disablePackages", async (_event, deviceId: string, packageName: string) => {
+    return adb.disablePackage(deviceId, packageName);
+  });
+
+  ipcMain.handle("adb:enablePackages", async (_event, deviceId: string, packageName: string) => {
+    return adb.enablePackage(deviceId, packageName);
+  });
+
+  ipcMain.handle("adb:unistallPackage", async (_event, deviceId: string, packageName: string, keepData?: boolean) => {
+    return adb.uninstallPackage(deviceId, packageName, keepData);
+  });
+
+  ipcMain.handle("adb:reinstallPackages", async (_event, deviceId: string, packageName: string) => {
+    return adb.reinstallPackage(deviceId, packageName);
+  });
+
+  ipcMain.handle("adb:getDeviceInfo", async (_event, deviceId: string) => {
+    return adb.getDeviceInfo(deviceId);
+  });
+
+  ipcMain.handle("adb:isRooted", async (_event, deviceId: string) => {
+    return adb.isRooted(deviceId);
+  });
+
+  console.log("[Main] IPC handlers registered");
+}
+
+// Register handlers before app is ready
+registerIpcHandlers();
 
 app.on("before-quit", async () => {
   try {
