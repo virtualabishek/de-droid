@@ -5,6 +5,10 @@ import { getAdbManager } from "./adb/adb-manager";
 let mainWindow: BrowserWindow | null = null;
 const isDev = !app.isPackaged;
 
+// Disable VAAPI to avoid GPU errors on Linux
+app.commandLine.appendSwitch("enable-features", "VaapiVideoDecoder");
+app.commandLine.appendSwitch("disable-features", "VaapiVideoDecoder");
+
 async function createWindow(): Promise<void> {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -54,7 +58,7 @@ async function createWindow(): Promise<void> {
     mainWindow.webContents.openDevTools();
   } else {
     await mainWindow.loadFile(
-      path.join(__dirname, "..", "..", "dist", "renderer", "index.html")
+      path.join(__dirname, "..", "..", "dist", "renderer", "index.html"),
     );
   }
 
@@ -102,25 +106,45 @@ function registerIpcHandlers() {
     return adb.getDevices();
   });
 
-  ipcMain.handle("adb:getPackages", async (_event, deviceId: string, options?: any) => {
-    return adb.getPackages(deviceId, options);
-  });
+  ipcMain.handle(
+    "adb:getPackages",
+    async (_event, deviceId: string, options?: any) => {
+      return adb.getPackages(deviceId, options);
+    },
+  );
 
-  ipcMain.handle("adb:disablePackages", async (_event, deviceId: string, packageName: string) => {
-    return adb.disablePackage(deviceId, packageName);
-  });
+  ipcMain.handle(
+    "adb:disablePackages",
+    async (_event, deviceId: string, packageName: string) => {
+      return adb.disablePackage(deviceId, packageName);
+    },
+  );
 
-  ipcMain.handle("adb:enablePackages", async (_event, deviceId: string, packageName: string) => {
-    return adb.enablePackage(deviceId, packageName);
-  });
+  ipcMain.handle(
+    "adb:enablePackages",
+    async (_event, deviceId: string, packageName: string) => {
+      return adb.enablePackage(deviceId, packageName);
+    },
+  );
 
-  ipcMain.handle("adb:unistallPackage", async (_event, deviceId: string, packageName: string, keepData?: boolean) => {
-    return adb.uninstallPackage(deviceId, packageName, keepData);
-  });
+  ipcMain.handle(
+    "adb:unistallPackage",
+    async (
+      _event,
+      deviceId: string,
+      packageName: string,
+      keepData?: boolean,
+    ) => {
+      return adb.uninstallPackage(deviceId, packageName, keepData);
+    },
+  );
 
-  ipcMain.handle("adb:reinstallPackages", async (_event, deviceId: string, packageName: string) => {
-    return adb.reinstallPackage(deviceId, packageName);
-  });
+  ipcMain.handle(
+    "adb:reinstallPackages",
+    async (_event, deviceId: string, packageName: string) => {
+      return adb.reinstallPackage(deviceId, packageName);
+    },
+  );
 
   ipcMain.handle("adb:getDeviceInfo", async (_event, deviceId: string) => {
     return adb.getDeviceInfo(deviceId);
@@ -145,4 +169,3 @@ app.on("before-quit", async () => {
     console.error("Failed to stop ADB server", error);
   }
 });
-
