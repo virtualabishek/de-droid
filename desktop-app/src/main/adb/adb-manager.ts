@@ -7,16 +7,24 @@ export class AdbManager {
   private adbServer: ChildProcess | null = null;
   constructor() {
     this.adbPath = getAdbPath();
+    console.log("[ADB Manager] Initialized with path:", this.adbPath);
   }
 
   private executeSync(args: string[]): AdbCommandResult {
+    const command = `"${this.adbPath}" ${args.join(" ")}`;
+    console.log("[ADB Manager] Executing command:", command);
     try {
-      const output = execSync(`"${this.adbPath}" ${args.join(" ")}`, {
+      const output = execSync(command, {
         encoding: "utf-8",
         timeout: 30000,
       });
+      console.log(
+        "[ADB Manager] Command success. Output length:",
+        output.length
+      );
       return { success: true, output: output.trim() };
     } catch (error: any) {
+      console.error("[ADB Manager] Command failed:", error.message);
       return {
         success: false,
         output: "",
@@ -26,6 +34,11 @@ export class AdbManager {
   }
 
   private execute(args: string[]): Promise<AdbCommandResult> {
+    console.log(
+      "[ADB Manager] Spawning command:",
+      this.adbPath,
+      args.join(" ")
+    );
     return new Promise((resolve) => {
       const proc = spawn(this.adbPath, args);
       let stdout = "";
@@ -62,7 +75,7 @@ export class AdbManager {
     const result = await this.execute(["devices", "-l"]);
     if (!result.success) return [];
     const devices: AdbDevice[] = [];
-    const lines = result.output.split("\n".slice(1));
+    const lines = result.output.split("\n").slice(1);
     for (const line of lines) {
       if (!line.trim()) continue;
       const parts = line.trim().split(/\s+/);
@@ -72,13 +85,13 @@ export class AdbManager {
         status: parts[1] as AdbDevice["status"],
       };
 
-      for (const part of lines.slice(2)) {
+      for (const part of parts.slice(2)) {
         if (part.startsWith("model:")) {
           device.model = part.split(":")[1];
         } else if (part.startsWith("product:")) {
-          device.product = part.split(": ")[1];
+          device.product = part.split(":")[1];
         } else if (part.startsWith("transport_id:")) {
-          device.transportId = part.split(": ")[1];
+          device.transportId = part.split(":")[1];
         }
       }
       devices.push(device);
@@ -101,16 +114,19 @@ export class AdbManager {
     if (options.disabled) args.push("-d");
 
     const result = await this.execute(args);
+    console.log("[ADB Manager] getPackages result:", JSON.stringify(result));
     if (!result.success) return [];
 
     const packages: PackageInfo[] = [];
     const lines = result.output.split("\n");
+    console.log("[ADB Manager] Number of lines:", lines.length);
+    console.log("[ADB Manager] First 3 lines:", lines.slice(0, 3));
 
     for (const line of lines) {
-      const match = line.match(/^package: (.+)$/);
+      const match = line.trim().match(/^package:(.+)$/);
       if (match) {
         packages.push({
-          packageName: match[1],
+          packageName: match[1].trim(),
           isSystemApp: options.systemOnly ?? false,
           isDisabled: options.disabled ?? false,
         });
@@ -172,8 +188,8 @@ export class AdbManager {
   async getDeviceInfo(deviceId: string): Promise<Record<string, string>> {
     const props = [
       "ro.product.model",
-      "ro. product.brand",
-      "ro. build.version.release",
+      "ro.product.brand",
+      "ro.build.version.release",
       "ro.product.device",
     ];
     const info: Record<string, string> = {};
@@ -208,7 +224,6 @@ export class AdbManager {
     return result.success && result.output.includes("root");
   }
 }
-
 
 let adbManagerInstance: AdbManager | null = null;
 

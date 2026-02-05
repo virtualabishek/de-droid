@@ -2,12 +2,106 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>De Droid - Device Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
 
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin-bottom: 20px;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      button:active {
+        background: #003d82;
+      }
+
+      #output {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        overflow-x: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #333;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    </style>
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <div class="container">
+      <h1>🤖 De Droid - ADB Device Manager</h1>
+      <p class="subtitle">Test ADB connectivity and device management</p>
+      
+      <div class="button-group">
+        <button id="start-server">Start ADB Server</button>
+        <button id="get-devices">Get Connected Devices</button>
+        <button id="stop-server">Stop ADB Server</button>
+        
+        <button id="list-packages">List Packages</button>
+      </div>
+
+      <h2 style="font-size: 16px; margin-top: 20px; margin-bottom: 10px;">Output:</h2>
+      <div id="output">
+        <pre>Waiting for input...</pre>
+      </div>
+    </div>
+
     <script type="module" src="/src/renderer.ts"></script>
   </body>
 </html>
