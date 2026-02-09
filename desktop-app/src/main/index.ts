@@ -5,10 +5,6 @@ import { getAdbManager } from "./adb/adb-manager";
 let mainWindow: BrowserWindow | null = null;
 const isDev = !app.isPackaged;
 
-// Disable VAAPI to avoid GPU errors on Linux
-app.commandLine.appendSwitch("enable-features", "VaapiVideoDecoder");
-app.commandLine.appendSwitch("disable-features", "VaapiVideoDecoder");
-
 async function createWindow(): Promise<void> {
   mainWindow = new BrowserWindow({
     width: 1200,
