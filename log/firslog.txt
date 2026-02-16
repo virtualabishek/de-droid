@@ -1,0 +1,2 @@
+1. Created desktop app in electron
+2. Implemeneted ADB operation for the specific part
