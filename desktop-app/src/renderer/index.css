@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============ THEME VARIABLES ============ */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Dark theme (default) */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: rgba(255, 255, 255, 0.87);
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border-color: #374151;
+  --accent-color: #3b82f6;
+
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Light theme */
+.light-theme {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: #e2e8f0;
+  --accent-color: #2563eb;
+
+  color-scheme: light;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* Apply theme colors to common elements */
+.light-theme .bg-gray-900 {
+  background-color: var(--bg-primary) !important;
+}
+.light-theme .bg-gray-800 {
+  background-color: var(--bg-secondary) !important;
+}
+.light-theme .bg-gray-700 {
+  background-color: var(--bg-tertiary) !important;
+}
+.light-theme .text-white {
+  color: var(--text-primary) !important;
+}
+.light-theme .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+.light-theme .text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+.light-theme .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+.light-theme .border-gray-700 {
+  border-color: var(--border-color) !important;
+}
+.light-theme .border-gray-600 {
+  border-color: var(--border-color) !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ============ CUSTOM SCROLLBAR ============ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+/* ============ TOAST ANIMATIONS ============ */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+.animate-slide-out {
+  animation: slide-out 0.3s ease-in forwards;
+}
+
+/* ============ PACKAGE LIST ITEM STATES ============ */
+.package-enabled {
+  @apply border-l-4 border-green-500;
+}
+
+.package-disabled {
+  @apply border-l-4 border-yellow-500;
+}
+
+.package-uninstalled {
+  @apply border-l-4 border-red-500;
+}
+
+/* ============ REMOVAL TYPE BADGES ============ */
+.badge-recommended {
+  @apply bg-green-500/20 text-green-400 border border-green-500/30;
+}
+
+.badge-advanced {
+  @apply bg-yellow-500/20 text-yellow-400 border border-yellow-500/30;
+}
+
+.badge-expert {
+  @apply bg-orange-500/20 text-orange-400 border border-orange-500/30;
+}
+
+.badge-unsafe {
+  @apply bg-red-500/20 text-red-400 border border-red-500/30;
+}
+
+/* ============ THEME TOGGLE BUTTON ============ */
+.theme-toggle {
+  @apply relative w-14 h-7 rounded-full transition-colors duration-300;
+}
+
+.theme-toggle-dark {
+  @apply bg-gray-700;
+}
+
+.theme-toggle-light {
+  @apply bg-yellow-400;
+}
+
+.theme-toggle-knob {
+  @apply absolute top-0.5 w-6 h-6 rounded-full transition-all duration-300 flex items-center justify-center;
+}
+
+.theme-toggle-knob-dark {
+  @apply left-0.5 bg-gray-900;
+}
+
+.theme-toggle-knob-light {
+  @apply left-7 bg-white;
+}
