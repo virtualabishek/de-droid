@@ -1,6 +1,10 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
 import path from "path";
-import { getAdbManager } from "./adb/adb-manager";
+import { fileURLToPath } from "url";
+import { getAdbManager } from "./adb/adb-manager.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
 const isDev = !app.isPackaged;
@@ -33,7 +37,7 @@ async function createWindow(): Promise<void> {
   });
 
   if (isDev) {
-    const ports = [5173, 5174];
+    const ports = [3001, 5173, 5174];
     let loaded = false;
 
     for (const port of ports) {

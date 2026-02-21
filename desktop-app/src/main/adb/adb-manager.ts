@@ -1,6 +1,6 @@
 import { execSync, ChildProcess, spawn } from "child_process";
-import { getAdbPath } from "./adb-path";
-import { AdbCommandResult, AdbDevice, PackageInfo } from "src/@types/adb.types";
+import { getAdbPath } from "./adb-path.js";
+import { AdbCommandResult, AdbDevice, PackageInfo } from "../../@types/adb.types.js";
 
 export class AdbManager {
   private adbPath: string;
