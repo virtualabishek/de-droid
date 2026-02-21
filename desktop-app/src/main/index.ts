@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getAdbManager } from "./adb/adb-manager.js";
+import { registerAuthIpcHandlers } from "./ipc/auth.ipc.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +85,8 @@ app.on("activate", () => {
 // Register IPC handlers for ADB operations
 function registerIpcHandlers() {
   const adb = getAdbManager();
+
+  registerAuthIpcHandlers();
 
   ipcMain.handle("adb:isAvailable", async () => {
     try {

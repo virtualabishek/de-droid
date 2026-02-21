@@ -79,7 +79,13 @@ export const useAuthStore = create<AuthState>()(
             name,
           );
 
-          if (result.success && result.requiresVerification) {
+          if (result.success && result.user && !result.requiresVerification) {
+            set({
+              user: result.user,
+              isAuthenticated: true,
+              pendingVerificationEmail: null,
+            });
+          } else if (result.success && result.requiresVerification) {
             set({ pendingVerificationEmail: email });
           }
 

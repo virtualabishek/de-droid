@@ -149,7 +149,7 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
         throw new Error('Electron API unavailable. Run via Electron (npm start).');
       }
       const result = await api.getCategories();
-      set({ categories: result.categories });
+      set({ categories: result });
     } catch (error) {
       console.error('Failed to fetch categories:', error);
     }
@@ -162,7 +162,7 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
         throw new Error('Electron API unavailable. Run via Electron (npm start).');
       }
       const result = await api.getAlternatives();
-      set({ alternatives: result.alternatives });
+      set({ alternatives: result });
     } catch (error) {
       console.error('Failed to fetch alternatives:', error);
     }
@@ -175,7 +175,7 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
         throw new Error('Electron API unavailable. Run via Electron (npm start).');
       }
       const result = await api.getAlternativesForPackage(packageId);
-      return result.alternatives;
+      return result;
     } catch (error) {
       console.error('Failed to fetch alternatives for package:', error);
       return [];

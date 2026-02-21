@@ -43,9 +43,13 @@ export default function Register() {
       const result = await register(email, password, name || undefined);
 
       if (result.success) {
-        setRegisteredEmail(email);
-        setShowVerification(true);
-        setMessage(result.message);
+        if (result.requiresVerification) {
+          setRegisteredEmail(email);
+          setShowVerification(true);
+          setMessage(result.message);
+        } else {
+          navigate("/");
+        }
       } else {
         setError(result.message);
       }

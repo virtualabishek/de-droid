@@ -6,6 +6,7 @@
   "type": "module",
   "main": "dist/main/index.js",
   "scripts": {
+    "postinstall": "pnpm exec electron-rebuild -f -w better-sqlite3",
     "dev": "concurrently \"pnpm run dev:main\" \"pnpm run dev:preload\" \"pnpm run dev:renderer\" \"pnpm run dev:electron\"",
     "dev:main": "tsc -p tsconfig.main.json --watch",
     "dev:preload": "tsc -p tsconfig.preload.json --watch",
@@ -29,8 +30,10 @@
   "license": "MIT",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "better-sqlite3",
       "electron",
-      "electron-winstaller"
+      "electron-winstaller",
+      "esbuild"
     ]
   },
   "devDependencies": {

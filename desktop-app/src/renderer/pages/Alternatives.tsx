@@ -280,7 +280,7 @@ export default function Alternatives() {
               >
                 {/* App header */}
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-2xl font-bold text-white">
+                  <div className="w-14 h-14 rounded-xl bg-linear-to-br from-primary-500 to-primary-700 flex items-center justify-center text-2xl font-bold text-white">
                     {app.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
