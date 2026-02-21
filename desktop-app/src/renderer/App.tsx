@@ -1,4 +1,7 @@
-
+/**
+ * De-Droid App - Local Implementation with Authentication
+ * All data stored locally in SQLite
+ */
 import { useEffect } from "react";
 import {
   BrowserRouter as Router,
@@ -15,6 +18,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useAuthStore } from "./store/authStore";
 
+// Protected Route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
 
