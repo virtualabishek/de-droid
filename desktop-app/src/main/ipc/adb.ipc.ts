@@ -23,6 +23,120 @@ function getDeviceInfo(deviceId: string): { model: string; brand: string } {
   );
 }
 
+function extractMatch(text: string, pattern: RegExp): string | undefined {
+  const match = text.match(pattern);
+  return match?.[1]?.trim();
+}
+
+function extractNumber(text: string, pattern: RegExp): number | undefined {
+  const value = extractMatch(text, pattern);
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+function parsePackageDetailsFromDumpsys(dumpsysOutput: string) {
+  const versionName = extractMatch(dumpsysOutput, /^\s*versionName=([^\n\r]+)/m);
+  const versionCode = extractNumber(
+    dumpsysOutput,
+    /^\s*versionCode=(\d+)/m,
+  );
+  const minSdk = extractNumber(dumpsysOutput, /\bminSdk=(\d+)\b/m);
+  const targetSdk = extractNumber(dumpsysOutput, /\btargetSdk=(\d+)\b/m);
+  const firstInstallTime = extractMatch(
+    dumpsysOutput,
+    /^\s*firstInstallTime=([^\n\r]+)/m,
+  );
+  const lastUpdateTime = extractMatch(
+    dumpsysOutput,
+    /^\s*lastUpdateTime=([^\n\r]+)/m,
+  );
+  const dataDir = extractMatch(dumpsysOutput, /^\s*dataDir=([^\n\r]+)/m);
+  const codePath = extractMatch(dumpsysOutput, /^\s*codePath=([^\n\r]+)/m);
+  const resourcePath = extractMatch(
+    dumpsysOutput,
+    /^\s*resourcePath=([^\n\r]+)/m,
+  );
+  const apkPath = codePath || resourcePath;
+
+  const installDate = firstInstallTime ? new Date(firstInstallTime) : null;
+  const updateDate = lastUpdateTime ? new Date(lastUpdateTime) : null;
+  const installTime =
+    installDate && !Number.isNaN(installDate.getTime())
+      ? installDate.toISOString()
+      : firstInstallTime;
+  const updateTime =
+    updateDate && !Number.isNaN(updateDate.getTime())
+      ? updateDate.toISOString()
+      : lastUpdateTime;
+
+  const isSystem =
+    !!apkPath &&
+    (apkPath.startsWith("/system/") ||
+      apkPath.startsWith("/product/") ||
+      apkPath.startsWith("/vendor/"));
+  const isUpdatedSystemApp =
+    !!apkPath && apkPath.includes("/data/app/") && /\bSYSTEM\b/.test(dumpsysOutput);
+
+  return {
+    version_name: versionName,
+    version_code: versionCode,
+    target_sdk: targetSdk,
+    min_sdk: minSdk,
+    install_time: installTime,
+    update_time: updateTime,
+    data_dir: dataDir,
+    apk_path: apkPath,
+    is_system: isSystem,
+    is_updated_system_app: isUpdatedSystemApp,
+  };
+}
+
+function isSpecialPermission(permissionName: string): boolean {
+  const specialPrefixes = [
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.PACKAGE_USAGE_STATS",
+    "android.permission.REQUEST_INSTALL_PACKAGES",
+    "android.permission.MANAGE_EXTERNAL_STORAGE",
+    "android.permission.BIND_ACCESSIBILITY_SERVICE",
+    "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE",
+    "android.permission.SCHEDULE_EXACT_ALARM",
+  ];
+
+  return specialPrefixes.some((name) => permissionName.startsWith(name));
+}
+
+function mapPermissionsForDetails(permissionResult: Permissions.PermissionResult) {
+  const mapped = permissionResult.permissions.map((permission) => ({
+    name: permission.name,
+    granted: permission.granted,
+    category: permission.category,
+    description: permission.description,
+    is_dangerous: permission.isDangerous,
+    type: permission.type,
+  }));
+
+  const dangerousPermissions = mapped.filter((permission) => permission.is_dangerous);
+  const specialPermissions = mapped.filter(
+    (permission) => !permission.is_dangerous && isSpecialPermission(permission.name),
+  );
+  const normalPermissions = mapped.filter(
+    (permission) =>
+      !permission.is_dangerous && !isSpecialPermission(permission.name),
+  );
+
+  return {
+    dangerous_permissions: dangerousPermissions,
+    special_permissions: specialPermissions,
+    normal_permissions: normalPermissions,
+    total_count: mapped.length,
+    dangerous_count: dangerousPermissions.length,
+    granted_dangerous: dangerousPermissions.filter((permission) => permission.granted)
+      .length,
+  };
+}
+
 export function registerAdbHandlers() {
   // ============ DEVICE HANDLERS (LOCAL ADB) ============
 
@@ -753,19 +867,34 @@ export function registerAdbHandlers() {
 
   ipcMain.handle(
     "adb:get-package-details",
-    async (_, deviceId: string, packageName: string) => {
+    async (_, deviceId: string, packageName: string, userId = 0) => {
       try {
         const result = await LocalAdb.executeAdbCommand(
           `-s ${deviceId} shell dumpsys package ${packageName}`,
         );
 
+        if (!result.success) {
+          throw new Error(result.error || "Failed to load package details");
+        }
+
+        const permissionResult = await Permissions.getPackagePermissions(
+          deviceId,
+          packageName,
+          userId,
+        );
+
         // Get additional info from local data
         const localInfo = packageDataService.getPackageInfo(packageName);
 
+        const metadata = parsePackageDetailsFromDumpsys(result.output);
+        const permissions = mapPermissionsForDetails(permissionResult);
+
         return {
-          package_name: packageName,
+          package: packageName,
+          ...metadata,
+          permissions,
+          debloat_info: localInfo,
           dumpsys_output: result.output,
-          local_info: localInfo,
         };
       } catch (error) {
         console.error("Failed to get package details:", error);

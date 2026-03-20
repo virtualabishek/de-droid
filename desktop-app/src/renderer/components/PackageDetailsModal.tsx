@@ -243,9 +243,10 @@ export function PackageDetailsModal({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-4 bg-gray-700/50 rounded-lg">
                       <h3 className="text-xs font-medium text-gray-400 mb-1">Version</h3>
-                      <p className="text-white font-mono">
-                        {details.version_name || 'Unknown'} ({details.version_code || '?'})
-                      </p>
+                      <p className="text-white font-mono">{details.version_name || 'Unknown'}</p>
+                      {details.version_code && (
+                        <p className="text-xs text-gray-400 mt-1">Code: {details.version_code}</p>
+                      )}
                     </div>
                     <div className="p-4 bg-gray-700/50 rounded-lg">
                       <h3 className="text-xs font-medium text-gray-400 mb-1">SDK Target</h3>
@@ -274,57 +275,24 @@ export function PackageDetailsModal({
                           : 'Unknown'}
                       </p>
                     </div>
+                    <div className="p-4 bg-gray-700/50 rounded-lg">
+                      <h3 className="text-xs font-medium text-gray-400 mb-1">Last Updated</h3>
+                      <p className="text-white text-sm">
+                        {details.update_time
+                          ? new Date(details.update_time).toLocaleDateString()
+                          : 'Unknown'}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-gray-700/50 rounded-lg col-span-2">
+                      <h3 className="text-xs font-medium text-gray-400 mb-1">Permission Risk</h3>
+                      <p className="text-white text-sm">
+                        Dangerous granted: {details.permissions?.granted_dangerous || 0} / {details.permissions?.dangerous_count || 0}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Total permissions: {details.permissions?.total_count || 0}
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Paths */}
-                  {details.apk_path && (
-                    <div className="p-4 bg-gray-700/50 rounded-lg">
-                      <h3 className="text-xs font-medium text-gray-400 mb-1">APK Path</h3>
-                      <p className="text-white font-mono text-xs break-all">{details.apk_path}</p>
-                    </div>
-                  )}
-
-                  {/* Dependencies */}
-                  {details.debloat_info?.dependencies && details.debloat_info.dependencies.length > 0 && (
-                    <div className="p-4 bg-gray-700/50 rounded-lg">
-                      <h3 className="text-xs font-medium text-gray-400 mb-2">Dependencies</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {details.debloat_info.dependencies.map((dep) => (
-                          <span key={dep} className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs font-mono">
-                            {dep}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Needed By */}
-                  {details.debloat_info?.neededBy && details.debloat_info.neededBy.length > 0 && (
-                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                      <h3 className="text-xs font-medium text-yellow-400 mb-2">⚠️ Needed By</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {details.debloat_info.neededBy.map((pkg) => (
-                          <span key={pkg} className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-mono">
-                            {pkg}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Alternatives */}
-                  {details.debloat_info?.alternatives && details.debloat_info.alternatives.length > 0 && (
-                    <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                      <h3 className="text-xs font-medium text-green-400 mb-2">✨ Open Source Alternatives</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {details.debloat_info.alternatives.map((alt) => (
-                          <span key={alt} className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">
-                            {alt}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
