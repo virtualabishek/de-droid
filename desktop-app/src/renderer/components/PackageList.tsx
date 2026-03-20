@@ -1,4 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import Fuse from "fuse.js";
 import { useDeviceStore } from "../store/deviceStore";
 import { PackageDetailsModal } from "./PackageDetailsModal";
 
@@ -22,32 +24,82 @@ interface AlternativeApp {
   icon: string;
 }
 
-// Common system package prefixes that indicate system/pre-installed apps
-const SYSTEM_PACKAGE_PREFIXES = [
-  "com.android.",
-  "com.google.",
-  "com.samsung.",
-  "com.huawei.",
-  "com.xiaomi.",
-  "com.miui.",
-  "com.oppo.",
-  "com.vivo.",
-  "com.oneplus.",
-  "com.qualcomm.",
-  "com.mediatek.",
-  "com.sec.",
-  "android.",
-  "org.chromium.",
-];
+interface Package {
+  name: string;
+  state: "enabled" | "disabled" | "uninstalled";
+  selected?: boolean;
+  description?: string;
+  removal?: string;
+  category?: string;
+  list?: string;
+  labels?: string[];
+  dependencies?: string[];
+  neededBy?: string[];
+  alternatives?: string[];
+}
+
+// Vendor detection for grouping
+const VENDOR_PREFIXES: Record<string, string> = {
+  "com.google.": "Google",
+  "com.android.": "Android System",
+  "com.samsung.": "Samsung",
+  "com.sec.": "Samsung",
+  "com.huawei.": "Huawei",
+  "com.xiaomi.": "Xiaomi",
+  "com.miui.": "Xiaomi/MIUI",
+  "com.oppo.": "Oppo",
+  "com.coloros.": "Oppo/ColorOS",
+  "com.vivo.": "Vivo",
+  "com.oneplus.": "OnePlus",
+  "com.qualcomm.": "Qualcomm",
+  "com.mediatek.": "MediaTek",
+  "com.facebook.": "Facebook/Meta",
+  "com.microsoft.": "Microsoft",
+  "com.amazon.": "Amazon",
+  "org.chromium.": "Chromium",
+  "android.": "Android Core",
+};
+
+function getVendor(packageName: string): string {
+  const lowerName = packageName.toLowerCase();
+  for (const [prefix, vendor] of Object.entries(VENDOR_PREFIXES)) {
+    if (lowerName.startsWith(prefix)) return vendor;
+  }
+  return "Other";
+}
 
 function isSystemPackage(packageName: string): boolean {
   const lowerPackageName = packageName.toLowerCase();
-  return SYSTEM_PACKAGE_PREFIXES.some((prefix) =>
+  return Object.keys(VENDOR_PREFIXES).some((prefix) =>
     lowerPackageName.startsWith(prefix),
   );
 }
 
-type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal";
+type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal" | "vendor";
+type ViewMode = "list" | "compact" | "grid";
+type GroupBy = "none" | "category" | "vendor" | "state" | "removal";
+
+interface FilterPreset {
+  id: string;
+  name: string;
+  icon: string;
+  filters: {
+    state?: string;
+    category?: string;
+    packageType?: string;
+    removal?: string;
+  };
+}
+
+const FILTER_PRESETS: FilterPreset[] = [
+  { id: "all", name: "All Packages", icon: "📦", filters: {} },
+  { id: "bloatware", name: "Bloatware", icon: "🗑️", filters: { category: "BLOATWARE" } },
+  { id: "safe-remove", name: "Safe to Remove", icon: "✅", filters: { removal: "RECOMMENDED", state: "enabled" } },
+  { id: "disabled", name: "Disabled", icon: "⏸️", filters: { state: "disabled" } },
+  { id: "uninstalled", name: "Removed", icon: "❌", filters: { state: "uninstalled" } },
+  { id: "essential", name: "Essential", icon: "⚠️", filters: { category: "ESSENTIAL" } },
+  { id: "user-apps", name: "User Apps", icon: "👤", filters: { packageType: "user" } },
+];
 
 export function PackageList({
   onAction,
@@ -62,54 +114,103 @@ export function PackageList({
     clearSelection,
     fetchAlternativesForPackage,
     fetchCategories,
-    categories,
   } = useDeviceStore();
 
+  // Search state
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterState, setFilterState] = useState<
-    "all" | "enabled" | "disabled" | "uninstalled"
-  >("all");
-  const [filterCategory, setFilterCategory] = useState<
-    "all" | "BLOATWARE" | "OPTIONAL" | "ESSENTIAL"
-  >("all");
-  const [packageTypeFilter, setPackageTypeFilter] = useState<
-    "all" | "system" | "user"
-  >("all");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Filter state
+  const [filterState, setFilterState] = useState<"all" | "enabled" | "disabled" | "uninstalled">("all");
+  const [filterCategory, setFilterCategory] = useState<"all" | "BLOATWARE" | "OPTIONAL" | "ESSENTIAL">("all");
+  const [packageTypeFilter, setPackageTypeFilter] = useState<"all" | "system" | "user">("all");
+  const [filterRemoval, setFilterRemoval] = useState<"all" | "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">("all");
+  const [activePreset, setActivePreset] = useState<string>("all");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // View state
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [groupBy, setGroupBy] = useState<GroupBy>("none");
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(50);
+
+  // Modal state
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<{
     action: "uninstall" | "restore" | "disable" | "enable";
     packages: string[];
   } | null>(null);
-  const [selectedPackageAlternatives, setSelectedPackageAlternatives] =
-    useState<AlternativeApp[]>([]);
+  const [selectedPackageAlternatives, setSelectedPackageAlternatives] = useState<AlternativeApp[]>([]);
   const [showAlternativesModal, setShowAlternativesModal] = useState(false);
-  const [selectedPackageForAlternatives, setSelectedPackageForAlternatives] =
-    useState<string | null>(null);
+  const [selectedPackageForAlternatives, setSelectedPackageForAlternatives] = useState<string | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedPackageForDetails, setSelectedPackageForDetails] = useState<
-    string | null
-  >(null);
+  const [selectedPackageForDetails, setSelectedPackageForDetails] = useState<string | null>(null);
 
-  // Get selected device for details modal
+  // Virtualization
+  const parentRef = useRef<HTMLDivElement>(null);
+
   const { selectedDevice } = useDeviceStore();
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("recentPackageSearches");
+    if (saved) {
+      setRecentSearches(JSON.parse(saved).slice(0, 5));
+    }
+  }, []);
 
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const filteredAndSortedPackages = useMemo(() => {
-    // First filter
-    const filtered = packages.filter((pkg) => {
-      const matchesSearch =
-        pkg.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pkg.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesState = filterState === "all" || pkg.state === filterState;
-      const matchesCategory =
-        filterCategory === "all" ||
-        pkg.category?.toUpperCase() === filterCategory;
+  // Fuzzy search setup
+  const fuse = useMemo(() => {
+    return new Fuse(packages, {
+      keys: [
+        { name: "name", weight: 0.7 },
+        { name: "description", weight: 0.3 },
+        { name: "labels", weight: 0.2 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+      ignoreLocation: true,
+    });
+  }, [packages]);
 
-      // Package type filtering (system vs user-installed)
+  // Search suggestions based on package names and labels
+  const searchSuggestions = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return [];
+    
+    const results = fuse.search(searchQuery).slice(0, 5);
+    return results.map((r) => ({
+      name: r.item.name,
+      description: r.item.description,
+      score: r.score || 0,
+    }));
+  }, [fuse, searchQuery]);
+
+  // Filtered and sorted packages
+  const filteredAndSortedPackages = useMemo(() => {
+    let filtered: Package[];
+
+    // Use fuzzy search if query exists
+    if (searchQuery.trim()) {
+      const results = fuse.search(searchQuery);
+      filtered = results.map((r) => r.item);
+    } else {
+      filtered = [...packages];
+    }
+
+    // Apply filters
+    filtered = filtered.filter((pkg) => {
+      const matchesState = filterState === "all" || pkg.state === filterState;
+      const matchesCategory = filterCategory === "all" || pkg.category?.toUpperCase() === filterCategory;
+      const matchesRemoval = filterRemoval === "all" || pkg.removal === filterRemoval;
+
       let matchesPackageType = true;
       if (packageTypeFilter === "system") {
         matchesPackageType = isSystemPackage(pkg.name);
@@ -117,13 +218,11 @@ export function PackageList({
         matchesPackageType = !isSystemPackage(pkg.name);
       }
 
-      return (
-        matchesSearch && matchesState && matchesCategory && matchesPackageType
-      );
+      return matchesState && matchesCategory && matchesPackageType && matchesRemoval;
     });
 
-    // Then sort
-    return filtered.sort((a, b) => {
+    // Sort
+    filtered.sort((a, b) => {
       switch (sortBy) {
         case "name-asc":
           return a.name.localeCompare(b.name);
@@ -133,147 +232,199 @@ export function PackageList({
           const stateOrder = { enabled: 0, disabled: 1, uninstalled: 2 };
           return (stateOrder[a.state] || 0) - (stateOrder[b.state] || 0);
         case "category":
-          const catOrder = {
-            ESSENTIAL: 0,
-            OPTIONAL: 1,
-            BLOATWARE: 2,
-            undefined: 3,
-          };
-          return (
-            (catOrder[a.category?.toUpperCase() as keyof typeof catOrder] ??
-              3) -
-            (catOrder[b.category?.toUpperCase() as keyof typeof catOrder] ?? 3)
-          );
+          const catOrder = { ESSENTIAL: 0, OPTIONAL: 1, BLOATWARE: 2, undefined: 3 };
+          return (catOrder[a.category?.toUpperCase() as keyof typeof catOrder] ?? 3) -
+                 (catOrder[b.category?.toUpperCase() as keyof typeof catOrder] ?? 3);
         case "removal":
-          const removalOrder = {
-            RECOMMENDED: 0,
-            ADVANCED: 1,
-            EXPERT: 2,
-            UNSAFE: 3,
-            undefined: 4,
-          };
-          return (
-            (removalOrder[a.removal as keyof typeof removalOrder] ?? 4) -
-            (removalOrder[b.removal as keyof typeof removalOrder] ?? 4)
-          );
+          const removalOrder = { RECOMMENDED: 0, ADVANCED: 1, EXPERT: 2, UNSAFE: 3, undefined: 4 };
+          return (removalOrder[a.removal as keyof typeof removalOrder] ?? 4) -
+                 (removalOrder[b.removal as keyof typeof removalOrder] ?? 4);
+        case "vendor":
+          return getVendor(a.name).localeCompare(getVendor(b.name));
         default:
           return 0;
       }
     });
-  }, [
-    packages,
-    searchQuery,
-    filterState,
-    filterCategory,
-    packageTypeFilter,
-    sortBy,
-  ]);
 
-  // For backwards compatibility, rename filtered variable
-  const filteredPackages = filteredAndSortedPackages;
+    return filtered;
+  }, [packages, searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, sortBy, fuse]);
 
-  // Calculate counts for tabs
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filteredAndSortedPackages.length / itemsPerPage)),
+    [filteredAndSortedPackages.length, itemsPerPage],
+  );
+
+  const paginatedPackages = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedPackages.slice(start, start + itemsPerPage);
+  }, [filteredAndSortedPackages, currentPage, itemsPerPage]);
+
+  const visiblePageNumbers = useMemo(() => {
+    const pages: number[] = [];
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, currentPage + 2);
+    for (let page = start; page <= end; page++) {
+      pages.push(page);
+    }
+    return pages;
+  }, [currentPage, totalPages]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, sortBy, groupBy, itemsPerPage]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  // Grouped packages
+  const groupedPackages = useMemo(() => {
+    if (groupBy === "none") {
+      return [{ group: "all", packages: paginatedPackages }];
+    }
+
+    const groups = new Map<string, Package[]>();
+
+    paginatedPackages.forEach((pkg) => {
+      let groupKey: string;
+      switch (groupBy) {
+        case "category":
+          groupKey = pkg.category?.toUpperCase() || "Unknown";
+          break;
+        case "vendor":
+          groupKey = getVendor(pkg.name);
+          break;
+        case "state":
+          groupKey = pkg.state.charAt(0).toUpperCase() + pkg.state.slice(1);
+          break;
+        case "removal":
+          groupKey = pkg.removal || "Unknown";
+          break;
+        default:
+          groupKey = "all";
+      }
+
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, []);
+      }
+      groups.get(groupKey)!.push(pkg);
+    });
+
+    return Array.from(groups.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([group, pkgs]) => ({ group, packages: pkgs }));
+  }, [paginatedPackages, groupBy]);
+
+  // Flatten grouped packages for virtualization
+  const flattenedItems = useMemo(() => {
+    const items: Array<{ type: "header" | "package"; group?: string; package?: Package }> = [];
+    
+    groupedPackages.forEach(({ group, packages: pkgs }) => {
+      if (groupBy !== "none") {
+        items.push({ type: "header", group });
+      }
+      if (!collapsedGroups.has(group)) {
+        pkgs.forEach((pkg) => items.push({ type: "package", package: pkg, group }));
+      }
+    });
+
+    return items;
+  }, [groupedPackages, groupBy, collapsedGroups]);
+
+  // Virtualizer
+  const rowVirtualizer = useVirtualizer({
+    count: flattenedItems.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: (index) => {
+      const item = flattenedItems[index];
+      if (item.type === "header") return 48;
+      if (viewMode === "compact") return 48;
+      if (viewMode === "grid") return 120;
+      return 72;
+    },
+    overscan: 10,
+  });
+
+  // Package counts
   const packageCounts = useMemo(() => {
-    const systemCount = packages.filter((pkg) =>
-      isSystemPackage(pkg.name),
-    ).length;
+    const systemCount = packages.filter((pkg) => isSystemPackage(pkg.name)).length;
     const userCount = packages.length - systemCount;
-    const enabledCount = packages.filter(
-      (pkg) => pkg.state === "enabled",
-    ).length;
-    const disabledCount = packages.filter(
-      (pkg) => pkg.state === "disabled",
-    ).length;
-    const uninstalledCount = packages.filter(
-      (pkg) => pkg.state === "uninstalled",
-    ).length;
-    return {
-      system: systemCount,
-      user: userCount,
-      all: packages.length,
-      enabled: enabledCount,
-      disabled: disabledCount,
-      uninstalled: uninstalledCount,
-    };
+    const enabledCount = packages.filter((pkg) => pkg.state === "enabled").length;
+    const disabledCount = packages.filter((pkg) => pkg.state === "disabled").length;
+    const uninstalledCount = packages.filter((pkg) => pkg.state === "uninstalled").length;
+    const bloatwareCount = packages.filter((pkg) => pkg.category?.toUpperCase() === "BLOATWARE").length;
+    const recommendedCount = packages.filter((pkg) => pkg.removal === "RECOMMENDED" && pkg.state === "enabled").length;
+
+    return { system: systemCount, user: userCount, all: packages.length, enabled: enabledCount, disabled: disabledCount, uninstalled: uninstalledCount, bloatware: bloatwareCount, recommended: recommendedCount };
   }, [packages]);
 
   const selectedPackages = packages.filter((pkg) => pkg.selected);
   const selectedCount = selectedPackages.length;
+  const hasEssentialPackages = selectedPackages.some((pkg) => pkg.category?.toUpperCase() === "ESSENTIAL");
 
-  // Check if any selected package is essential
-  const hasEssentialPackages = selectedPackages.some(
-    (pkg) => pkg.category?.toUpperCase() === "ESSENTIAL",
-  );
+  // Active filters count
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filterState !== "all") count++;
+    if (filterCategory !== "all") count++;
+    if (packageTypeFilter !== "all") count++;
+    if (filterRemoval !== "all") count++;
+    if (searchQuery) count++;
+    return count;
+  }, [filterState, filterCategory, packageTypeFilter, filterRemoval, searchQuery]);
 
-  const getStateColor = (state: string) => {
-    switch (state) {
-      case "enabled":
-        return "text-green-400";
-      case "disabled":
-        return "text-yellow-400";
-      case "uninstalled":
-        return "text-red-400";
-      default:
-        return "text-gray-400";
-    }
+  // Handlers
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setActivePreset("all");
   };
 
-  const getCategoryColor = (category?: string) => {
-    switch (category?.toUpperCase()) {
-      case "BLOATWARE":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
-      case "OPTIONAL":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "ESSENTIAL":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim() && !recentSearches.includes(searchQuery.trim())) {
+      const newRecent = [searchQuery.trim(), ...recentSearches].slice(0, 5);
+      setRecentSearches(newRecent);
+      localStorage.setItem("recentPackageSearches", JSON.stringify(newRecent));
     }
+    setShowSearchSuggestions(false);
   };
 
-  const getRemovalColor = (removal?: string) => {
-    switch (removal) {
-      case "RECOMMENDED":
-        return "text-green-400";
-      case "ADVANCED":
-        return "text-yellow-400";
-      case "EXPERT":
-        return "text-orange-400";
-      case "UNSAFE":
-        return "text-red-400";
-      default:
-        return "text-gray-400";
-    }
+  const applyPreset = (preset: FilterPreset) => {
+    setActivePreset(preset.id);
+    setFilterState((preset.filters.state as typeof filterState) || "all");
+    setFilterCategory((preset.filters.category as typeof filterCategory) || "all");
+    setPackageTypeFilter((preset.filters.packageType as typeof packageTypeFilter) || "all");
+    setFilterRemoval((preset.filters.removal as typeof filterRemoval) || "all");
+    setSearchQuery("");
   };
 
-  const getStateBorderClass = (state: string) => {
-    switch (state) {
-      case "enabled":
-        return "package-enabled";
-      case "disabled":
-        return "package-disabled";
-      case "uninstalled":
-        return "package-uninstalled";
-      default:
-        return "";
-    }
+  const clearAllFilters = () => {
+    setFilterState("all");
+    setFilterCategory("all");
+    setPackageTypeFilter("all");
+    setFilterRemoval("all");
+    setSearchQuery("");
+    setActivePreset("all");
   };
 
-  const handleActionClick = (
-    action: "uninstall" | "restore" | "disable" | "enable",
-  ) => {
+  const toggleGroupCollapse = (group: string) => {
+    const newCollapsed = new Set(collapsedGroups);
+    if (newCollapsed.has(group)) {
+      newCollapsed.delete(group);
+    } else {
+      newCollapsed.add(group);
+    }
+    setCollapsedGroups(newCollapsed);
+  };
+
+  const handleActionClick = (action: "uninstall" | "restore" | "disable" | "enable") => {
     const packageNames = selectedPackages.map((p) => p.name);
-
-    // Check for essential packages when uninstalling or disabling
-    if (
-      (action === "uninstall" || action === "disable") &&
-      hasEssentialPackages
-    ) {
+    if ((action === "uninstall" || action === "disable") && hasEssentialPackages) {
       setPendingAction({ action, packages: packageNames });
       setShowWarningDialog(true);
       return;
     }
-
     onAction(action, packageNames);
   };
 
@@ -285,11 +436,6 @@ export function PackageList({
     setPendingAction(null);
   };
 
-  const cancelWarningAction = () => {
-    setShowWarningDialog(false);
-    setPendingAction(null);
-  };
-
   const handleShowAlternatives = async (packageName: string) => {
     setSelectedPackageForAlternatives(packageName);
     const alternatives = await fetchAlternativesForPackage(packageName);
@@ -297,394 +443,757 @@ export function PackageList({
     setShowAlternativesModal(true);
   };
 
-  const closeAlternativesModal = () => {
-    setShowAlternativesModal(false);
-    setSelectedPackageForAlternatives(null);
-    setSelectedPackageAlternatives([]);
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + F to focus search
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      // Ctrl/Cmd + A to select all (when not in input)
+      if ((e.ctrlKey || e.metaKey) && e.key === "a" && document.activeElement?.tagName !== "INPUT") {
+        e.preventDefault();
+        selectAllPackages();
+      }
+      // Escape to clear selection
+      if (e.key === "Escape") {
+        clearSelection();
+        setShowSearchSuggestions(false);
+      }
+      // Number keys 1-7 for presets
+      if (e.key >= "1" && e.key <= "7" && !e.ctrlKey && !e.metaKey && document.activeElement?.tagName !== "INPUT") {
+        const presetIndex = parseInt(e.key) - 1;
+        if (FILTER_PRESETS[presetIndex]) {
+          applyPreset(FILTER_PRESETS[presetIndex]);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectAllPackages, clearSelection]);
+
+  // Color helpers
+  const getStateColor = (state: string) => {
+    switch (state) {
+      case "enabled": return "text-green-400";
+      case "disabled": return "text-yellow-400";
+      case "uninstalled": return "text-red-400";
+      default: return "text-gray-400";
+    }
   };
 
-  return (
-    <div className="bg-gray-800 rounded-lg border border-gray-700 flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-700">
-        {/* Package Type Tabs */}
-        <div className="flex gap-1 mb-4 bg-gray-700/50 rounded-lg p-1">
-          <button
-            onClick={() => setPackageTypeFilter("all")}
-            className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              packageTypeFilter === "all"
-                ? "bg-primary-600 text-white"
-                : "text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            All ({packageCounts.all})
-          </button>
-          <button
-            onClick={() => setPackageTypeFilter("system")}
-            className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              packageTypeFilter === "system"
-                ? "bg-primary-600 text-white"
-                : "text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            System ({packageCounts.system})
-          </button>
-          <button
-            onClick={() => setPackageTypeFilter("user")}
-            className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              packageTypeFilter === "user"
-                ? "bg-green-600 text-white"
-                : "text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            User Apps ({packageCounts.user})
-          </button>
-        </div>
+  const getStateBgColor = (state: string) => {
+    switch (state) {
+      case "enabled": return "bg-green-500/20 border-green-500/30";
+      case "disabled": return "bg-yellow-500/20 border-yellow-500/30";
+      case "uninstalled": return "bg-red-500/20 border-red-500/30";
+      default: return "bg-gray-500/20 border-gray-500/30";
+    }
+  };
 
-        {/* State summary chips */}
-        <div className="flex gap-2 mb-4">
-          <span className="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">
-            {packageCounts.enabled} Enabled
-          </span>
-          <span className="px-2 py-1 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-            {packageCounts.disabled} Disabled
-          </span>
-          <span className="px-2 py-1 text-xs rounded bg-red-500/20 text-red-400 border border-red-500/30">
-            {packageCounts.uninstalled} Uninstalled
-          </span>
-        </div>
+  const getCategoryColor = (category?: string) => {
+    switch (category?.toUpperCase()) {
+      case "BLOATWARE": return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "OPTIONAL": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "ESSENTIAL": return "bg-green-500/20 text-green-400 border-green-500/30";
+      default: return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+    }
+  };
 
-        {/* Search Bar */}
-        <div className="mb-4">
-          <div className="relative">
+  const getRemovalColor = (removal?: string) => {
+    switch (removal) {
+      case "RECOMMENDED": return "text-green-400 bg-green-500/10";
+      case "ADVANCED": return "text-yellow-400 bg-yellow-500/10";
+      case "EXPERT": return "text-orange-400 bg-orange-500/10";
+      case "UNSAFE": return "text-red-400 bg-red-500/10";
+      default: return "text-gray-400";
+    }
+  };
+
+  const getStateBorderClass = (state: string) => {
+    switch (state) {
+      case "enabled": return "border-l-4 border-l-green-500";
+      case "disabled": return "border-l-4 border-l-yellow-500";
+      case "uninstalled": return "border-l-4 border-l-red-500";
+      default: return "";
+    }
+  };
+
+  // Render package item based on view mode
+  const renderPackageItem = (pkg: Package, style: React.CSSProperties) => {
+    const isCompact = viewMode === "compact";
+    const isGrid = viewMode === "grid";
+
+    if (isGrid) {
+      return (
+        <div
+          style={style}
+          className={`p-3 m-1 rounded-xl cursor-pointer transition-all duration-200 border ${
+            pkg.selected
+              ? "bg-primary-600/30 border-primary-500/50 shadow-lg shadow-primary-500/20"
+              : "bg-gray-700/50 border-gray-600/50 hover:bg-gray-700 hover:border-gray-500"
+          }`}
+          onClick={() => togglePackageSelection(pkg.name)}
+        >
+          <div className="flex items-start justify-between mb-2">
             <input
-              type="text"
-              placeholder="Search packages or descriptions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-400 text-lg focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+              type="checkbox"
+              checked={pkg.selected || false}
+              onChange={() => togglePackageSelection(pkg.name)}
+              className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-primary-600"
+              onClick={(e) => e.stopPropagation()}
             />
-            <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xl"
-              >
-                ×
-              </button>
+            <span className={`text-xs font-medium uppercase px-2 py-0.5 rounded ${getStateBgColor(pkg.state)}`}>
+              {pkg.state}
+            </span>
+          </div>
+          <p className="font-mono text-xs truncate mb-1" title={pkg.name}>{pkg.name}</p>
+          {pkg.description && (
+            <p className="text-xs text-gray-400 line-clamp-2">{pkg.description}</p>
+          )}
+          <div className="flex flex-wrap gap-1 mt-2">
+            {pkg.category && (
+              <span className={`text-xs px-1.5 py-0.5 rounded ${getCategoryColor(pkg.category)}`}>
+                {pkg.category}
+              </span>
+            )}
+            {pkg.removal && (
+              <span className={`text-xs px-1.5 py-0.5 rounded ${getRemovalColor(pkg.removal)}`}>
+                {pkg.removal}
+              </span>
             )}
           </div>
         </div>
+      );
+    }
 
-        {/* Filter Dropdowns - Larger and Clearer */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="relative">
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
-              State
-            </label>
-            <select
-              value={filterState}
-              onChange={(e) =>
-                setFilterState(e.target.value as typeof filterState)
-              }
-              className="w-full bg-gray-700 border-2 border-gray-600 rounded-xl px-4 py-3 text-white text-base font-medium appearance-none cursor-pointer hover:border-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+    return (
+      <div
+        style={style}
+        className={`flex items-center gap-3 ${isCompact ? "py-2 px-3" : "p-3"} mx-1 rounded-lg cursor-pointer transition-all duration-200 ${
+          pkg.selected
+            ? "bg-primary-600/20 border border-primary-500/30"
+            : "bg-gray-700/30 hover:bg-gray-700/60 border border-transparent"
+        } ${getStateBorderClass(pkg.state)}`}
+        onClick={() => togglePackageSelection(pkg.name)}
+      >
+        <input
+          type="checkbox"
+          checked={pkg.selected || false}
+          onChange={() => togglePackageSelection(pkg.name)}
+          className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-primary-600 flex-shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        />
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <p className={`font-mono ${isCompact ? "text-xs" : "text-sm"} truncate`}>{pkg.name}</p>
+            {pkg.category && (
+              <span className={`text-xs px-2 py-0.5 rounded border ${getCategoryColor(pkg.category)} flex-shrink-0`}>
+                {pkg.category}
+              </span>
+            )}
+          </div>
+          {!isCompact && pkg.description && (
+            <p className="text-xs text-gray-400 mt-1 truncate">{pkg.description}</p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {onOpenPermissions && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onOpenPermissions(pkg.name); }}
+              className="p-1.5 text-gray-400 hover:text-primary-400 hover:bg-gray-600 rounded transition-colors"
+              title="Manage permissions"
             >
-              <option value="all">📦 All States</option>
-              <option value="enabled">✅ Enabled</option>
-              <option value="disabled">⏸️ Disabled</option>
-              <option value="uninstalled">🗑️ Uninstalled</option>
-            </select>
-            <svg
-              className="absolute right-4 bottom-3.5 w-5 h-5 text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </button>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); setSelectedPackageForDetails(pkg.name); setShowDetailsModal(true); }}
+            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-600 rounded transition-colors"
+            title="View details"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
+          </button>
+          {pkg.alternatives && pkg.alternatives.length > 0 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleShowAlternatives(pkg.name); }}
+              className="px-2 py-1 text-xs bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded transition-colors"
+              title="View alternatives"
+            >
+              Alt
+            </button>
+          )}
+          {pkg.removal && (
+            <span className={`text-xs font-medium px-2 py-0.5 rounded ${getRemovalColor(pkg.removal)}`}>
+              {pkg.removal}
+            </span>
+          )}
+          <span className={`text-xs font-medium uppercase ${getStateColor(pkg.state)} ${isCompact ? "" : "w-20 text-right"}`}>
+            {pkg.state}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-gray-800 rounded-xl border border-gray-700 flex flex-col h-full overflow-hidden">
+      {/* Header with Search and Presets */}
+      <div className="p-4 border-b border-gray-700 space-y-4">
+        {/* Search Bar */}
+        <div className="relative">
+          <div className="relative">
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search packages... (Ctrl+F)"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              onFocus={() => setShowSearchSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+              className="w-full bg-gray-700/50 border-2 border-gray-600 rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 text-base focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+            />
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(""); setActivePreset("all"); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-600 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
 
-          <div className="relative">
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
-              Category
-            </label>
-            <select
-              value={filterCategory}
-              onChange={(e) =>
-                setFilterCategory(e.target.value as typeof filterCategory)
-              }
-              className="w-full bg-gray-700 border-2 border-gray-600 rounded-xl px-4 py-3 text-white text-base font-medium appearance-none cursor-pointer hover:border-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+          {/* Search Suggestions Dropdown */}
+          {showSearchSuggestions && (searchSuggestions.length > 0 || recentSearches.length > 0) && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-600 rounded-xl shadow-xl z-50 overflow-hidden">
+              {recentSearches.length > 0 && !searchQuery && (
+                <div className="p-2 border-b border-gray-700">
+                  <p className="text-xs text-gray-500 px-2 mb-1">Recent Searches</p>
+                  {recentSearches.map((search, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { handleSearch(search); setShowSearchSuggestions(false); }}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 rounded-lg flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {search}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchSuggestions.length > 0 && (
+                <div className="p-2">
+                  <p className="text-xs text-gray-500 px-2 mb-1">Suggestions</p>
+                  {searchSuggestions.map((suggestion, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { handleSearch(suggestion.name); handleSearchSubmit(); }}
+                      className="w-full text-left px-3 py-2 hover:bg-gray-700 rounded-lg"
+                    >
+                      <p className="font-mono text-sm text-white truncate">{suggestion.name}</p>
+                      {suggestion.description && (
+                        <p className="text-xs text-gray-400 truncate">{suggestion.description}</p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Filter Presets */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+          {FILTER_PRESETS.map((preset, index) => (
+            <button
+              key={preset.id}
+              onClick={() => applyPreset(preset)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                activePreset === preset.id
+                  ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30"
+                  : "bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white"
+              }`}
+              title={`Press ${index + 1} to activate`}
             >
-              <option value="all">🏷️ All Categories</option>
-              <option value="BLOATWARE">🗑️ Bloatware</option>
-              <option value="OPTIONAL">⚡ Optional</option>
-              <option value="ESSENTIAL">⭐ Essential</option>
-            </select>
-            <svg
-              className="absolute right-4 bottom-3.5 w-5 h-5 text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <span>{preset.icon}</span>
+              <span>{preset.name}</span>
+              {preset.id === "bloatware" && <span className="bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded text-xs">{packageCounts.bloatware}</span>}
+              {preset.id === "safe-remove" && <span className="bg-green-500/30 text-green-300 px-1.5 py-0.5 rounded text-xs">{packageCounts.recommended}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* Active Filters & View Controls */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Active filter chips */}
+            {activeFiltersCount > 0 && (
+              <>
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                    Search: "{searchQuery}"
+                    <button onClick={() => setSearchQuery("")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                {filterState !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                    State: {filterState}
+                    <button onClick={() => setFilterState("all")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                {filterCategory !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                    Category: {filterCategory}
+                    <button onClick={() => setFilterCategory("all")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                {filterRemoval !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm">
+                    Removal: {filterRemoval}
+                    <button onClick={() => setFilterRemoval("all")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                {packageTypeFilter !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
+                    Type: {packageTypeFilter}
+                    <button onClick={() => setPackageTypeFilter("all")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                <button
+                  onClick={clearAllFilters}
+                  className="text-xs text-gray-400 hover:text-white underline"
+                >
+                  Clear all
+                </button>
+              </>
+            )}
           </div>
 
-          <div className="relative">
-            <label className="block text-xs font-medium text-gray-400 mb-1.5">
-              Sort By
-            </label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="w-full bg-gray-700 border-2 border-gray-600 rounded-xl px-4 py-3 text-white text-base font-medium appearance-none cursor-pointer hover:border-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors"
+          <div className="flex items-center gap-2">
+            {/* Advanced Filters Toggle */}
+            <button
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              className={`p-2 rounded-lg transition-colors ${showAdvancedFilters ? "bg-primary-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"}`}
+              title="Advanced filters"
             >
-              <option value="name-asc">🔤 Name A-Z</option>
-              <option value="name-desc">🔤 Name Z-A</option>
-              <option value="state">📊 By State</option>
-              <option value="category">🏷️ By Category</option>
-              <option value="removal">⚠️ By Removal Type</option>
-            </select>
-            <svg
-              className="absolute right-4 bottom-3.5 w-5 h-5 text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+            </button>
+
+            {/* View Mode Toggle */}
+            <div className="flex bg-gray-700 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded ${viewMode === "list" ? "bg-gray-600 text-white" : "text-gray-400 hover:text-white"}`}
+                title="List view"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("compact")}
+                className={`p-2 rounded ${viewMode === "compact" ? "bg-gray-600 text-white" : "text-gray-400 hover:text-white"}`}
+                title="Compact view"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded ${viewMode === "grid" ? "bg-gray-600 text-white" : "text-gray-400 hover:text-white"}`}
+                title="Grid view"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Advanced Filters Panel */}
+        {showAdvancedFilters && (
+          <div className="grid grid-cols-4 gap-3 p-4 bg-gray-700/30 rounded-xl border border-gray-600/50">
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">State</label>
+              <select
+                value={filterState}
+                onChange={(e) => { setFilterState(e.target.value as typeof filterState); setActivePreset("all"); }}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All States</option>
+                <option value="enabled">Enabled</option>
+                <option value="disabled">Disabled</option>
+                <option value="uninstalled">Uninstalled</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Category</label>
+              <select
+                value={filterCategory}
+                onChange={(e) => { setFilterCategory(e.target.value as typeof filterCategory); setActivePreset("all"); }}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All Categories</option>
+                <option value="BLOATWARE">Bloatware</option>
+                <option value="OPTIONAL">Optional</option>
+                <option value="ESSENTIAL">Essential</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Package Type</label>
+              <select
+                value={packageTypeFilter}
+                onChange={(e) => { setPackageTypeFilter(e.target.value as typeof packageTypeFilter); setActivePreset("all"); }}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All Types</option>
+                <option value="system">System</option>
+                <option value="user">User Apps</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Removal Safety</label>
+              <select
+                value={filterRemoval}
+                onChange={(e) => { setFilterRemoval(e.target.value as typeof filterRemoval); setActivePreset("all"); }}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All</option>
+                <option value="RECOMMENDED">Recommended</option>
+                <option value="ADVANCED">Advanced</option>
+                <option value="EXPERT">Expert</option>
+                <option value="UNSAFE">Unsafe</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Sort By</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+                <option value="state">By State</option>
+                <option value="category">By Category</option>
+                <option value="removal">By Removal Type</option>
+                <option value="vendor">By Vendor</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Group By</label>
+              <select
+                value={groupBy}
+                onChange={(e) => setGroupBy(e.target.value as GroupBy)}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="none">No Grouping</option>
+                <option value="category">Category</option>
+                <option value="vendor">Vendor</option>
+                <option value="state">State</option>
+                <option value="removal">Removal Type</option>
+              </select>
+            </div>
+          </div>
+        )}
+
+        {/* Selection Actions Bar */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={() => selectAllPackages()}
-              className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium"
+              className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
             >
               Select All
             </button>
             <button
               onClick={() => selectAllByCategory("BLOATWARE")}
-              className="px-4 py-2 text-sm bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg transition-colors font-medium"
+              className="px-3 py-1.5 text-sm bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg transition-colors"
             >
               Select Bloatware
             </button>
             <button
               onClick={() => clearSelection()}
-              className="px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium"
+              className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
             >
               Clear
             </button>
           </div>
-          <span className="text-sm text-gray-400">
-            {selectedCount} selected / {filteredPackages.length} packages
-          </span>
-        </div>
-      </div>
-
-      {/* Package list */}
-      <div className="flex-1 overflow-auto p-4">
-        {filteredPackages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-            <svg
-              className="w-12 h-12 mb-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-              />
-            </svg>
-            <p>No packages found</p>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-gray-400">
+              <span className="text-white font-medium">{selectedCount}</span> selected
+            </span>
+            <span className="text-gray-600">|</span>
+            <span className="text-gray-400">
+              <span className="text-white font-medium">{filteredAndSortedPackages.length}</span> / {packages.length} packages
+            </span>
+            <span className="text-gray-600">|</span>
+            <span className="text-gray-400">
+              Page <span className="text-white font-medium">{currentPage}</span> of {totalPages}
+            </span>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {filteredPackages.map((pkg) => (
-              <div
-                key={pkg.name}
-                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                  pkg.selected
-                    ? "bg-primary-600/20"
-                    : "bg-gray-700/50 hover:bg-gray-700"
-                } ${getStateBorderClass(pkg.state)}`}
+        </div>
+
+        {filteredAndSortedPackages.length > 0 && (
+          <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-700/60">
+            <div className="text-sm text-gray-400">
+              Showing <span className="text-white font-medium">{(currentPage - 1) * itemsPerPage + 1}</span>
+              -
+              <span className="text-white font-medium">{Math.min(currentPage * itemsPerPage, filteredAndSortedPackages.length)}</span> of {filteredAndSortedPackages.length}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-gray-400" htmlFor="items-per-page">Per page</label>
+              <select
+                id="items-per-page"
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(parseInt(e.target.value, 10))}
+                className="bg-gray-700 border border-gray-600 rounded-lg px-2 py-1 text-sm text-white"
               >
-                <input
-                  type="checkbox"
-                  checked={pkg.selected || false}
-                  onChange={() => togglePackageSelection(pkg.name)}
-                  className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-primary-600"
-                />
-                <div
-                  className="flex-1 min-w-0"
-                  onClick={() => togglePackageSelection(pkg.name)}
-                >
-                  <div className="flex items-center gap-2">
-                    <p className="font-mono text-sm truncate">{pkg.name}</p>
-                    {pkg.category && (
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded border ${getCategoryColor(
-                          pkg.category,
-                        )}`}
-                      >
-                        {pkg.category}
-                      </span>
-                    )}
-                  </div>
-                  {pkg.description && (
-                    <p className="text-xs text-gray-400 mt-1 truncate">
-                      {pkg.description}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* Permissions button */}
-                  {onOpenPermissions && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenPermissions(pkg.name);
-                      }}
-                      className="p-1.5 text-gray-400 hover:text-primary-400 hover:bg-gray-600 rounded transition-colors"
-                      title="Manage permissions"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
-                    </button>
-                  )}
-                  {/* Details button */}
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                Prev
+              </button>
+
+              {visiblePageNumbers[0] && visiblePageNumbers[0] > 1 && (
+                <>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPackageForDetails(pkg.name);
-                      setShowDetailsModal(true);
-                    }}
-                    className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-600 rounded transition-colors"
-                    title="View package details & permissions"
+                    onClick={() => setCurrentPage(1)}
+                    className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    1
                   </button>
-                  {pkg.alternatives && pkg.alternatives.length > 0 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShowAlternatives(pkg.name);
-                      }}
-                      className="px-2 py-1 text-xs bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded transition-colors"
-                      title="View alternative apps"
-                    >
-                      Alternatives
-                    </button>
-                  )}
-                  {pkg.removal && (
-                    <span
-                      className={`text-xs font-medium ${getRemovalColor(pkg.removal)}`}
-                    >
-                      {pkg.removal}
-                    </span>
-                  )}
-                  <span
-                    className={`text-xs font-medium uppercase ${getStateColor(pkg.state)}`}
+                  {visiblePageNumbers[0] > 2 && <span className="text-gray-500 px-1">...</span>}
+                </>
+              )}
+
+              {visiblePageNumbers.map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                    currentPage === page
+                      ? "bg-primary-600 text-white"
+                      : "bg-gray-700 hover:bg-gray-600 text-gray-200"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              {visiblePageNumbers[visiblePageNumbers.length - 1] && visiblePageNumbers[visiblePageNumbers.length - 1] < totalPages && (
+                <>
+                  {visiblePageNumbers[visiblePageNumbers.length - 1] < totalPages - 1 && <span className="text-gray-500 px-1">...</span>}
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                   >
-                    {pkg.state}
-                  </span>
-                </div>
-              </div>
-            ))}
+                    {totalPages}
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Actions */}
+      {/* Package List (Virtualized) */}
+      <div ref={parentRef} className="flex-1 overflow-auto p-2">
+        {flattenedItems.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+            <svg className="w-16 h-16 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p className="text-lg font-medium">No packages found</p>
+            <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
+            {activeFiltersCount > 0 && (
+              <button
+                onClick={clearAllFilters}
+                className="mt-4 px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg text-white text-sm transition-colors"
+              >
+                Clear all filters
+              </button>
+            )}
+          </div>
+        ) : viewMode === "grid" ? (
+          // Grid view - not virtualized for simplicity
+          <div className="grid grid-cols-3 gap-2">
+            {paginatedPackages.map((pkg) => (
+              <div key={pkg.name}>
+                {renderPackageItem(pkg, {})}
+              </div>
+            ))}
+          </div>
+        ) : (
+          // List/Compact view - virtualized
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const item = flattenedItems[virtualRow.index];
+              
+              if (item.type === "header") {
+                const groupPackages = groupedPackages.find(g => g.group === item.group)?.packages || [];
+                const isCollapsed = collapsedGroups.has(item.group!);
+                
+                return (
+                  <div
+                    key={`header-${item.group}`}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <button
+                      onClick={() => toggleGroupCollapse(item.group!)}
+                      className="w-full flex items-center justify-between px-4 py-3 bg-gray-700/50 hover:bg-gray-700 rounded-lg border border-gray-600/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <svg
+                          className={`w-4 h-4 text-gray-400 transition-transform ${isCollapsed ? "" : "rotate-90"}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <span className="font-medium text-white">{item.group}</span>
+                        <span className="text-sm text-gray-400">({groupPackages.length} packages)</span>
+                      </div>
+                      {!isCollapsed && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            groupPackages.forEach(pkg => {
+                              if (!pkg.selected) togglePackageSelection(pkg.name);
+                            });
+                          }}
+                          className="text-xs px-2 py-1 bg-gray-600 hover:bg-gray-500 rounded text-gray-300"
+                        >
+                          Select group
+                        </button>
+                      )}
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={item.package!.name}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                    padding: "2px 0",
+                  }}
+                >
+                  {renderPackageItem(item.package!, { height: "100%" })}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Action Bar */}
       {selectedCount > 0 && (
-        <div className="p-4 border-t border-gray-700 bg-gray-800/50">
+        <div className="p-4 border-t border-gray-700 bg-gray-800/80 backdrop-blur">
           {hasEssentialPackages && (
-            <div className="mb-3 p-2 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
-              ⚠️ Warning: Some selected packages are marked as ESSENTIAL.
-              Removing them may break your device.
+            <div className="mb-3 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm flex items-center gap-2">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>Warning: Some selected packages are marked as <strong>ESSENTIAL</strong>. Removing them may break your device.</span>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => handleActionClick("uninstall")}
               disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
               Uninstall
             </button>
             <button
               onClick={() => handleActionClick("restore")}
               disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
               Restore
             </button>
             <button
               onClick={() => handleActionClick("disable")}
               disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               Disable
             </button>
             <button
               onClick={() => handleActionClick("enable")}
               disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors font-medium"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               Enable
             </button>
           </div>
@@ -693,49 +1202,32 @@ export function PackageList({
 
       {/* Warning Dialog */}
       {showWarningDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-md mx-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-md mx-4 shadow-2xl">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 bg-red-500/20 rounded-full flex items-center justify-center">
+                <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-red-400">
-                  Warning: Essential Packages
-                </h3>
-                <p className="text-sm text-gray-400">
-                  This action may break your device
-                </p>
+                <h3 className="text-xl font-bold text-red-400">Warning: Essential Packages</h3>
+                <p className="text-sm text-gray-400">This action may break your device</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6">
-              You are about to {pendingAction?.action} essential system
-              packages. This may cause your device to malfunction, lose
-              functionality, or become unusable. Are you absolutely sure you
-              want to continue?
+              You are about to <strong>{pendingAction?.action}</strong> essential system packages. This may cause your device to malfunction, lose functionality, or become unusable. Are you absolutely sure you want to continue?
             </p>
             <div className="flex gap-3">
               <button
-                onClick={cancelWarningAction}
-                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                onClick={() => { setShowWarningDialog(false); setPendingAction(null); }}
+                className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmWarningAction}
-                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors font-medium"
+                className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-500 rounded-xl transition-colors font-medium"
               >
                 I understand, proceed
               </button>
@@ -746,49 +1238,39 @@ export function PackageList({
 
       {/* Alternatives Modal */}
       {showAlternativesModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 max-w-lg mx-4 max-h-[80vh] overflow-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 max-w-lg mx-4 max-h-[80vh] overflow-auto shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Alternative Apps</h3>
+              <h3 className="text-xl font-bold">Alternative Apps</h3>
               <button
-                onClick={closeAlternativesModal}
-                className="text-gray-400 hover:text-white"
+                onClick={() => { setShowAlternativesModal(false); setSelectedPackageForAlternatives(null); }}
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
               >
-                ×
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
             <p className="text-sm text-gray-400 mb-4">
-              Open-source alternatives for{" "}
-              <span className="font-mono text-white">
-                {selectedPackageForAlternatives}
-              </span>
+              Open-source alternatives for <span className="font-mono text-white bg-gray-700 px-2 py-1 rounded">{selectedPackageForAlternatives}</span>
             </p>
             {selectedPackageAlternatives.length === 0 ? (
-              <p className="text-gray-400">
-                No alternatives found for this package.
-              </p>
+              <p className="text-gray-400 text-center py-8">No alternatives found for this package.</p>
             ) : (
               <div className="space-y-3">
                 {selectedPackageAlternatives.map((alt) => (
-                  <div
-                    key={alt.id}
-                    className="bg-gray-700/50 border border-gray-600 rounded-lg p-4"
-                  >
+                  <div key={alt.id} className="bg-gray-700/50 border border-gray-600 rounded-xl p-4 hover:border-gray-500 transition-colors">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-white">{alt.name}</h4>
-                      <span className="text-xs bg-blue-600/30 text-blue-300 px-2 py-1 rounded">
-                        {alt.source}
-                      </span>
+                      <h4 className="font-semibold text-white">{alt.name}</h4>
+                      <span className="text-xs bg-blue-600/30 text-blue-300 px-2 py-1 rounded-full">{alt.source}</span>
                     </div>
-                    <p className="text-sm text-gray-400 mb-3">
-                      {alt.description}
-                    </p>
+                    <p className="text-sm text-gray-400 mb-3">{alt.description}</p>
                     <div className="flex gap-2">
                       <a
                         href={alt.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs px-3 py-1 bg-green-600/30 hover:bg-green-600/50 text-green-300 rounded transition-colors"
+                        className="text-sm px-4 py-2 bg-green-600/30 hover:bg-green-600/50 text-green-300 rounded-lg transition-colors"
                       >
                         Get from {alt.source}
                       </a>
@@ -796,9 +1278,9 @@ export function PackageList({
                         href={alt.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs px-3 py-1 bg-gray-600/50 hover:bg-gray-600/70 text-gray-300 rounded transition-colors"
+                        className="text-sm px-4 py-2 bg-gray-600/50 hover:bg-gray-600/70 text-gray-300 rounded-lg transition-colors"
                       >
-                        View Source
+                        Source Code
                       </a>
                     </div>
                   </div>
@@ -813,10 +1295,7 @@ export function PackageList({
       {selectedDevice && (
         <PackageDetailsModal
           isOpen={showDetailsModal}
-          onClose={() => {
-            setShowDetailsModal(false);
-            setSelectedPackageForDetails(null);
-          }}
+          onClose={() => { setShowDetailsModal(false); setSelectedPackageForDetails(null); }}
           packageName={selectedPackageForDetails || ""}
           deviceId={selectedDevice.adb_id}
         />

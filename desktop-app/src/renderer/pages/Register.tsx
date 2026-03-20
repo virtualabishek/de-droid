@@ -43,13 +43,9 @@ export default function Register() {
       const result = await register(email, password, name || undefined);
 
       if (result.success) {
-        if (result.requiresVerification) {
-          setRegisteredEmail(email);
-          setShowVerification(true);
-          setMessage(result.message);
-        } else {
-          navigate("/");
-        }
+        setRegisteredEmail(email);
+        setShowVerification(true);
+        setMessage(result.message);
       } else {
         setError(result.message);
       }
@@ -122,7 +118,7 @@ export default function Register() {
         </div>
 
         {/* Card */}
-        <div className="bg-gray-800/95 rounded-xl border border-gray-700 p-6 shadow-lg">
+        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
           {!showVerification ? (
             <>
               <h2 className="text-xl font-semibold mb-6">Create Account</h2>
@@ -188,7 +184,7 @@ export default function Register() {
                 </div>
 
                 {error && (
-                  <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                  <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm">
                     {error}
                   </div>
                 )}
@@ -196,7 +192,7 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl px-4 py-2.5 font-medium transition-colors"
+                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-4 py-2 font-medium transition-colors"
                 >
                   {isLoading ? "Creating account..." : "Create Account"}
                 </button>
@@ -239,13 +235,13 @@ export default function Register() {
                 </div>
 
                 {error && (
-                  <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-sm">
+                  <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm">
                     {error}
                   </div>
                 )}
 
                 {message && (
-                  <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 text-sm">
+                  <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 text-sm">
                     {message}
                   </div>
                 )}
@@ -253,7 +249,7 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isLoading || otp.length !== 6}
-                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl px-4 py-2.5 font-medium transition-colors"
+                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-4 py-2 font-medium transition-colors"
                 >
                   {isLoading ? "Verifying..." : "Verify & Continue"}
                 </button>

@@ -1,0 +1,472 @@
+{
+  "packages": [
+    {
+      "id": "com.google.android.gms",
+      "list": "GOOGLE",
+      "description": "Google Play Services - Core Google services",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "dependencies": [],
+      "neededBy": ["com.google.android.gsf", "com.google.android.apps.maps"],
+      "labels": ["google", "core", "services"],
+      "alternatives": []
+    },
+    {
+      "id": "com.google.android.gsf",
+      "list": "GOOGLE",
+      "description": "Google Services Framework",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "dependencies": ["com.google.android.gms"],
+      "neededBy": [],
+      "labels": ["google", "framework"],
+      "alternatives": []
+    },
+    {
+      "id": "com.google.android.apps.photos",
+      "list": "GOOGLE",
+      "description": "Google Photos",
+      "removal": "RECOMMENDED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["google", "photos", "media"],
+      "alternatives": ["fossify-gallery"]
+    },
+    {
+      "id": "com.google.android.apps.maps",
+      "list": "GOOGLE",
+      "description": "Google Maps",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": ["com.google.android.gms"],
+      "neededBy": [],
+      "labels": ["google", "maps", "navigation"],
+      "alternatives": ["osmand", "organic-maps"]
+    },
+    {
+      "id": "com.google.android.youtube",
+      "list": "GOOGLE",
+      "description": "YouTube",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["google", "video", "streaming"],
+      "alternatives": ["newpipe", "pipepipe", "libretube"]
+    },
+    {
+      "id": "com.google.android.apps.docs",
+      "list": "GOOGLE",
+      "description": "Google Drive",
+      "removal": "RECOMMENDED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["google", "cloud", "storage"],
+      "alternatives": ["nextcloud"]
+    },
+    {
+      "id": "com.google.android.gm",
+      "list": "GOOGLE",
+      "description": "Gmail",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["google", "email"],
+      "alternatives": ["k9-mail", "fairemail"]
+    },
+    {
+      "id": "com.facebook.katana",
+      "list": "MISC",
+      "description": "Facebook App",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["facebook", "social", "bloatware"],
+      "alternatives": ["frost-for-facebook"]
+    },
+    {
+      "id": "com.facebook.orca",
+      "list": "MISC",
+      "description": "Facebook Messenger",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["facebook", "messenger", "bloatware"],
+      "alternatives": []
+    },
+    {
+      "id": "com.facebook.system",
+      "list": "MISC",
+      "description": "Facebook System Services",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["facebook", "system", "bloatware"],
+      "alternatives": []
+    },
+    {
+      "id": "com.samsung.android.bixby.agent",
+      "list": "SAMSUNG",
+      "description": "Bixby Voice Assistant",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["samsung", "bixby", "assistant"],
+      "alternatives": []
+    },
+    {
+      "id": "com.samsung.android.visionintelligence",
+      "list": "SAMSUNG",
+      "description": "Bixby Vision",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["samsung", "bixby", "vision"],
+      "alternatives": []
+    },
+    {
+      "id": "com.samsung.android.app.routines",
+      "list": "SAMSUNG",
+      "description": "Bixby Routines",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["samsung", "bixby", "automation"],
+      "alternatives": []
+    },
+    {
+      "id": "com.sec.android.app.samsungapps",
+      "list": "SAMSUNG",
+      "description": "Galaxy Store",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["samsung", "store", "apps"],
+      "alternatives": ["f-droid", "aurora-store"]
+    },
+    {
+      "id": "com.miui.analytics",
+      "list": "XIAOMI",
+      "description": "MIUI Analytics",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["xiaomi", "analytics", "telemetry"],
+      "alternatives": []
+    },
+    {
+      "id": "com.miui.msa.global",
+      "list": "XIAOMI",
+      "description": "MIUI System Ads",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["xiaomi", "ads", "bloatware"],
+      "alternatives": []
+    },
+    {
+      "id": "com.miui.cloudservice",
+      "list": "XIAOMI",
+      "description": "Mi Cloud",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["xiaomi", "cloud", "storage"],
+      "alternatives": ["nextcloud"]
+    },
+    {
+      "id": "com.android.browser",
+      "list": "AOSP",
+      "description": "AOSP Browser",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["aosp", "browser"],
+      "alternatives": ["fennec-fdroid", "mull"]
+    },
+    {
+      "id": "com.android.calendar",
+      "list": "AOSP",
+      "description": "AOSP Calendar",
+      "removal": "ADVANCED",
+      "category": "OPTIONAL",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["aosp", "calendar"],
+      "alternatives": ["fossify-calendar", "etar"]
+    },
+    {
+      "id": "com.android.email",
+      "list": "AOSP",
+      "description": "AOSP Email",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": ["aosp", "email"],
+      "alternatives": ["k9-mail", "fairemail"]
+    }
+  ],
+  "lists": [
+    {
+      "id": "AOSP",
+      "name": "Android Open Source Project",
+      "description": "Stock Android apps"
+    },
+    {
+      "id": "GOOGLE",
+      "name": "Google",
+      "description": "Google apps and services"
+    },
+    {
+      "id": "SAMSUNG",
+      "name": "Samsung",
+      "description": "Samsung device apps"
+    },
+    {
+      "id": "XIAOMI",
+      "name": "Xiaomi/MIUI",
+      "description": "Xiaomi/MIUI apps"
+    },
+    {
+      "id": "ONEPLUS",
+      "name": "OnePlus",
+      "description": "OnePlus device apps"
+    },
+    { "id": "HUAWEI", "name": "Huawei", "description": "Huawei device apps" },
+    { "id": "OPPO", "name": "Oppo", "description": "Oppo device apps" },
+    { "id": "VIVO", "name": "Vivo", "description": "Vivo device apps" },
+    {
+      "id": "OEM",
+      "name": "OEM/Carrier",
+      "description": "OEM and carrier apps"
+    },
+    {
+      "id": "MISC",
+      "name": "Miscellaneous",
+      "description": "Other bloatware apps"
+    }
+  ],
+  "removalTypes": [
+    {
+      "id": "RECOMMENDED",
+      "name": "Recommended",
+      "description": "Safe to remove, no side effects",
+      "color": "#22c55e"
+    },
+    {
+      "id": "ADVANCED",
+      "name": "Advanced",
+      "description": "May cause minor issues, proceed with caution",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "EXPERT",
+      "name": "Expert",
+      "description": "May cause significant issues, expert users only",
+      "color": "#f97316"
+    },
+    {
+      "id": "UNSAFE",
+      "name": "Unsafe",
+      "description": "May break device functionality, not recommended",
+      "color": "#ef4444"
+    }
+  ],
+  "categories": [
+    {
+      "id": "BLOATWARE",
+      "name": "Bloatware",
+      "description": "Apps that are safe to remove and usually unwanted",
+      "color": "#ef4444"
+    },
+    {
+      "id": "OPTIONAL",
+      "name": "Optional",
+      "description": "Apps that can be removed but may be useful to some users",
+      "color": "#f59e0b"
+    },
+    {
+      "id": "ESSENTIAL",
+      "name": "Essential",
+      "description": "Critical system apps - removing may break your phone",
+      "color": "#22c55e"
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "newpipe",
+      "name": "NewPipe",
+      "description": "Lightweight YouTube frontend without Google services",
+      "packageId": "org.schabi.newpipe",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.schabi.newpipe/",
+      "githubUrl": "https://github.com/TeamNewPipe/NewPipe",
+      "icon": "newpipe"
+    },
+    {
+      "id": "pipepipe",
+      "name": "PipePipe",
+      "description": "Open-source client for YouTube, NicoNico, and BiliBili",
+      "packageId": "InfinityLoop1309.NewPipeEnhanced",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/InfinityLoop1309.NewPipeEnhanced/",
+      "githubUrl": "https://github.com/InfinityLoop1308/PipePipe",
+      "icon": "pipepipe"
+    },
+    {
+      "id": "libretube",
+      "name": "LibreTube",
+      "description": "YouTube frontend using Piped API for privacy",
+      "packageId": "com.github.libretube",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.github.libretube/",
+      "githubUrl": "https://github.com/libre-tube/LibreTube",
+      "icon": "libretube"
+    },
+    {
+      "id": "osmand",
+      "name": "OsmAnd",
+      "description": "Offline maps and navigation using OpenStreetMap",
+      "packageId": "net.osmand.plus",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/net.osmand.plus/",
+      "githubUrl": "https://github.com/osmandapp/OsmAnd",
+      "icon": "osmand"
+    },
+    {
+      "id": "organic-maps",
+      "name": "Organic Maps",
+      "description": "Privacy-focused offline maps for hiking and cycling",
+      "packageId": "app.organicmaps",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/app.organicmaps/",
+      "githubUrl": "https://github.com/organicmaps/organicmaps",
+      "icon": "organic-maps"
+    },
+    {
+      "id": "fossify-gallery",
+      "name": "Fossify Gallery",
+      "description": "Lightweight gallery without ads or tracking (fork of Simple Gallery)",
+      "packageId": "org.fossify.gallery",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.fossify.gallery/",
+      "githubUrl": "https://github.com/FossifyOrg/Gallery",
+      "icon": "fossify-gallery"
+    },
+    {
+      "id": "nextcloud",
+      "name": "Nextcloud",
+      "description": "Self-hosted cloud storage solution",
+      "packageId": "com.nextcloud.client",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.nextcloud.client/",
+      "githubUrl": "https://github.com/nextcloud/android",
+      "icon": "nextcloud"
+    },
+    {
+      "id": "k9-mail",
+      "name": "K-9 Mail",
+      "description": "Open-source email client (now Thunderbird)",
+      "packageId": "com.fsck.k9",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.fsck.k9/",
+      "githubUrl": "https://github.com/thundernest/k-9",
+      "icon": "k9-mail"
+    },
+    {
+      "id": "fairemail",
+      "name": "FairEmail",
+      "description": "Privacy-conscious email client",
+      "packageId": "eu.faircode.email",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/eu.faircode.email/",
+      "githubUrl": "https://github.com/M66B/FairEmail",
+      "icon": "fairemail"
+    },
+    {
+      "id": "frost-for-facebook",
+      "name": "Frost for Facebook",
+      "description": "Open-source Facebook wrapper with privacy features",
+      "packageId": "com.pitchedapps.frost",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.pitchedapps.frost/",
+      "githubUrl": "https://github.com/AllanWang/Frost-for-Facebook",
+      "icon": "frost"
+    },
+    {
+      "id": "f-droid",
+      "name": "F-Droid",
+      "description": "Free and open source Android app store",
+      "packageId": "org.fdroid.fdroid",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/",
+      "githubUrl": "https://gitlab.com/fdroid/fdroidclient",
+      "icon": "fdroid"
+    },
+    {
+      "id": "aurora-store",
+      "name": "Aurora Store",
+      "description": "Open-source Google Play client",
+      "packageId": "com.aurora.store",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.aurora.store/",
+      "githubUrl": "https://gitlab.com/AuroraOSS/AuroraStore",
+      "icon": "aurora"
+    },
+    {
+      "id": "fennec-fdroid",
+      "name": "Fennec F-Droid",
+      "description": "Firefox-based browser without proprietary bits",
+      "packageId": "org.mozilla.fennec_fdroid",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.mozilla.fennec_fdroid/",
+      "githubUrl": "https://hg.mozilla.org/mozilla-central/",
+      "icon": "fennec"
+    },
+    {
+      "id": "mull",
+      "name": "Mull",
+      "description": "Privacy-hardened Firefox fork by DivestOS",
+      "packageId": "us.spotco.fennec_dos",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/us.spotco.fennec_dos/",
+      "githubUrl": "https://gitlab.com/nicholaschum/nicholaschum.gitlab.io",
+      "icon": "mull"
+    },
+    {
+      "id": "fossify-calendar",
+      "name": "Fossify Calendar",
+      "description": "Lightweight calendar without ads (fork of Simple Calendar)",
+      "packageId": "org.fossify.calendar",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.fossify.calendar/",
+      "githubUrl": "https://github.com/FossifyOrg/Calendar",
+      "icon": "fossify-calendar"
+    },
+    {
+      "id": "etar",
+      "name": "Etar",
+      "description": "Open-source calendar app",
+      "packageId": "ws.xsoh.etar",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/ws.xsoh.etar/",
+      "githubUrl": "https://github.com/Etar-Group/Etar-Calendar",
+      "icon": "etar"
+    }
+  ]
+}

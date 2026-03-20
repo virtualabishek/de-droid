@@ -76,6 +76,7 @@ function StatsCard({
   subValue,
   color,
   gradient,
+  trend,
 }: {
   icon: React.ReactNode;
   label: string;
@@ -83,17 +84,36 @@ function StatsCard({
   subValue?: string;
   color: string;
   gradient: string;
+  trend?: "up" | "down" | "neutral";
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-xl border ${color} p-4`}>
-      <div className={`absolute inset-0 opacity-10 ${gradient}`}></div>
+    <div className={`stats-card relative overflow-hidden rounded-2xl border ${color} p-5 cursor-default group`}>
+      <div className={`absolute inset-0 opacity-10 ${gradient} group-hover:opacity-20 transition-opacity`}></div>
       <div className="relative">
-        <div className="flex items-center gap-3 mb-2">
-          <div className={`p-2 rounded-lg ${gradient}`}>{icon}</div>
-          <span className="text-sm text-gray-400">{label}</span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <div className={`p-2.5 rounded-xl ${gradient} shadow-lg`}>{icon}</div>
+            <span className="text-sm font-medium text-gray-400">{label}</span>
+          </div>
+          {trend && (
+            <div className={`flex items-center gap-1 text-xs font-medium ${
+              trend === "up" ? "text-green-400" : trend === "down" ? "text-red-400" : "text-gray-400"
+            }`}>
+              {trend === "up" && (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              )}
+              {trend === "down" && (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              )}
+            </div>
+          )}
         </div>
-        <p className="text-2xl font-bold">{value}</p>
-        {subValue && <p className="text-xs text-gray-500 mt-1">{subValue}</p>}
+        <p className="text-3xl font-bold tracking-tight">{value}</p>
+        {subValue && <p className="text-sm text-gray-500 mt-2">{subValue}</p>}
       </div>
     </div>
   );
@@ -102,8 +122,8 @@ function StatsCard({
 // Circular Progress Component
 function CircularProgress({
   percentage,
-  size = 120,
-  strokeWidth = 10,
+  size = 140,
+  strokeWidth = 12,
   color = "#22c55e",
 }: {
   percentage: number;
@@ -115,9 +135,24 @@ function CircularProgress({
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
+  // Get status text based on percentage
+  const getStatusText = () => {
+    if (percentage >= 80) return "Excellent";
+    if (percentage >= 60) return "Good";
+    if (percentage >= 40) return "Fair";
+    return "Needs Work";
+  };
+
   return (
-    <div className="relative inline-flex items-center justify-center">
-      <svg width={size} height={size} className="-rotate-90">
+    <div className="relative inline-flex items-center justify-center group">
+      {/* Glow effect */}
+      <div 
+        className="absolute inset-0 rounded-full opacity-30 blur-xl transition-opacity group-hover:opacity-50"
+        style={{ backgroundColor: color }}
+      />
+      
+      <svg width={size} height={size} className="-rotate-90 relative">
+        {/* Background circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -125,8 +160,9 @@ function CircularProgress({
           strokeWidth={strokeWidth}
           stroke="currentColor"
           fill="transparent"
-          className="text-gray-700"
+          className="text-gray-700/50"
         />
+        {/* Progress circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -137,12 +173,14 @@ function CircularProgress({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="transition-all duration-500 ease-out"
+          className="transition-all duration-700 ease-out drop-shadow-lg"
+          style={{ filter: `drop-shadow(0 0 6px ${color})` }}
         />
       </svg>
+      
       <div className="absolute inset-0 flex items-center justify-center flex-col">
-        <span className="text-2xl font-bold">{percentage}%</span>
-        <span className="text-xs text-gray-400">Clean</span>
+        <span className="text-4xl font-bold tracking-tight">{percentage}%</span>
+        <span className="text-sm text-gray-400 font-medium">{getStatusText()}</span>
       </div>
     </div>
   );
@@ -478,14 +516,20 @@ export default function Dashboard() {
   return (
     <div className="h-full flex flex-col bg-gray-900">
       {/* Enhanced Header */}
-      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-900/20 border-b border-gray-700 p-6">
+      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-900/30 border-b border-gray-700/50 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-primary-300 bg-clip-text text-transparent">
               Dashboard
             </h1>
-            <p className="text-gray-400 mt-1">
-              Manage packages on your Android device
+            <p className="text-gray-400 mt-1 flex items-center gap-2">
+              <span>Manage packages on your Android device</span>
+              {selectedDevice && (
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">
+                  <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                  Connected
+                </span>
+              )}
             </p>
           </div>
 
@@ -495,7 +539,7 @@ export default function Dashboard() {
               {storageStats.recommendedCount > 0 && (
                 <button
                   onClick={() => setShowQuickDebloat(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-lg font-medium transition-all shadow-lg shadow-green-500/20"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl font-medium transition-all shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-105"
                 >
                   <svg
                     className="w-5 h-5"
@@ -510,7 +554,8 @@ export default function Dashboard() {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  Quick Debloat ({storageStats.recommendedCount})
+                  <span>Quick Debloat</span>
+                  <span className="px-2 py-0.5 bg-white/20 rounded-lg text-sm">{storageStats.recommendedCount}</span>
                 </button>
               )}
 
@@ -529,16 +574,24 @@ export default function Dashboard() {
                   deviceModel={selectedDevice.model}
                   onSave={saveDeviceNickname}
                 />
-                <div className="flex items-center gap-2 mt-1 text-sm text-gray-400">
-                  <span className="px-2 py-0.5 bg-gray-700 rounded text-xs">
+                <div className="flex items-center gap-2 mt-1.5 text-sm text-gray-400">
+                  <span className="px-2.5 py-1 bg-gray-700/80 rounded-lg text-xs font-medium border border-gray-600/50">
                     {selectedDevice.brand}
                   </span>
-                  <span>•</span>
-                  <span>
+                  <span className="text-gray-600">•</span>
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
                     Android {getAndroidVersion(selectedDevice.android_sdk)}
                   </span>
-                  <span>•</span>
-                  <span>{packages.length} packages</span>
+                  <span className="text-gray-600">•</span>
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    {packages.length} packages
+                  </span>
                 </div>
               </div>
             </div>
@@ -548,10 +601,10 @@ export default function Dashboard() {
 
       {/* Quick Debloat Modal */}
       {showQuickDebloat && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 max-w-md w-full mx-4 shadow-2xl">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-green-500/20 rounded-full">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl border border-gray-700/50 p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="p-4 bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-2xl border border-green-500/20">
                 <svg
                   className="w-8 h-8 text-green-400"
                   fill="none"
@@ -567,43 +620,59 @@ export default function Dashboard() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold">Quick Debloat</h3>
+                <h3 className="text-2xl font-bold">Quick Debloat</h3>
                 <p className="text-gray-400 text-sm">One-click safe cleanup</p>
               </div>
             </div>
 
-            <div className="bg-gray-700/50 rounded-lg p-4 mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-300">Packages to remove:</span>
-                <span className="text-green-400 font-bold">
+            <div className="bg-gradient-to-br from-gray-700/50 to-gray-700/30 rounded-xl p-5 mb-5 border border-gray-600/30">
+              <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-600/30">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span className="text-gray-300">Packages to remove</span>
+                </div>
+                <span className="text-2xl font-bold text-green-400">
                   {storageStats.recommendedCount}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Estimated space freed:</span>
-                <span className="text-green-400 font-bold">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                  </svg>
+                  <span className="text-gray-300">Estimated space freed</span>
+                </div>
+                <span className="text-2xl font-bold text-green-400">
                   {formatSize(storageStats.potentialSavings)}
                 </span>
               </div>
             </div>
 
-            <p className="text-sm text-gray-400 mb-4">
-              This will safely remove all packages marked as
-              &quot;Recommended&quot; for removal. These are safe to remove and
-              won&apos;t affect your device&apos;s functionality.
-            </p>
+            <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6">
+              <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-blue-300/90">
+                This will safely remove all packages marked as &quot;Recommended&quot; for removal. These packages are safe to remove and won&apos;t affect your device&apos;s core functionality.
+              </p>
+            </div>
 
             <div className="flex gap-3">
               <button
                 onClick={() => setShowQuickDebloat(false)}
-                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleQuickDebloat}
-                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl font-medium transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2"
               >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
                 Start Debloat
               </button>
             </div>

@@ -1,3 +1,33 @@
+/**
+ * Global type declarations for the renderer process
+ * These types match the API exposed by the preload script
+ */
+
+export interface AuthResult {
+  success: boolean;
+  message: string;
+  user?: PublicUser;
+  requiresVerification?: boolean;
+}
+
+export interface PublicUser {
+  id: string;
+  email: string;
+  name: string | null;
+  isVerified: boolean;
+}
+
+export interface UserDevice {
+  id: string;
+  user_id: string;
+  device_id: string;
+  device_model: string | null;
+  device_brand: string | null;
+  nickname: string | null;
+  last_connected_at: string | null;
+  created_at: string;
+}
+
 export interface Device {
   adb_id: string;
   model: string;
@@ -5,6 +35,11 @@ export interface Device {
   android_sdk: number;
   android_version?: string;
   users: Array<{ id: number; index: number }>;
+}
+
+export interface PackageInfo {
+  name: string;
+  state: "enabled" | "disabled" | "uninstalled";
 }
 
 export interface Permission {
@@ -22,11 +57,6 @@ export interface PermissionResult {
   dangerousCount: number;
   grantedDangerousCount: number;
   totalCount: number;
-}
-
-export interface PackageInfo {
-  name: string;
-  state: "enabled" | "disabled" | "uninstalled";
 }
 
 export interface EnrichedPackage extends PackageInfo {
@@ -115,37 +145,39 @@ export interface AlternativeApp {
   icon: string;
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
+export interface WirelessResponse {
+  success: boolean;
+  message: string;
+  port?: number;
+  ip_address?: string;
 }
 
-export interface RemovalType {
-  id: string;
-  name: string;
-  description: string;
-  color: string;
+export interface FdroidInstallResult {
+  success: boolean;
+  packageId: string;
+  install_message: string;
 }
 
-export interface DebloatList {
-  id: string;
-  name: string;
-  description: string;
+export interface FdroidDownloadInfo {
+  fdroidUrl: string | null;
+  githubUrl: string | null;
+  packageId: string | null;
+}
+
+export interface DownloadProgress {
+  packageId: string;
+  stage: "fetching" | "downloading" | "installing" | "success" | "error";
+  progress: number; // 0-100
+  downloadedMB?: number;
+  totalMB?: number;
+  speed?: string; // e.g., "1.5 MB/s"
+  message: string;
 }
 
 export interface HealthResponse {
   status: string;
   adb_available: boolean;
   mode: string;
-}
-
-export interface WirelessResponse {
-  success: boolean;
-  message: string;
-  port?: number;
-  ip_address?: string;
 }
 
 export interface ElectronAPI {
@@ -212,6 +244,7 @@ export interface ElectronAPI {
     getPackagePermissions: (
       deviceId: string,
       packageName: string,
+      userId?: number,
     ) => Promise<PermissionResult>;
     togglePermission: (
       deviceId: string,
@@ -219,7 +252,7 @@ export interface ElectronAPI {
       permission: string,
       action: "grant" | "revoke",
       userId?: number,
-    ) => Promise<{ success: boolean; error?: string }>;
+    ) => Promise<{ success: boolean; error?: string; message?: string }>;
     getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
   };
   debloat: {
@@ -228,14 +261,23 @@ export interface ElectronAPI {
     getAlternatives: () => Promise<AlternativeApp[]>;
     getAlternativeById: (altId: string) => Promise<AlternativeApp | null>;
     getAlternativesForPackage: (packageId: string) => Promise<AlternativeApp[]>;
-    getCategories: () => Promise<Category[]>;
+    getCategories: () => Promise<any[]>;
     getPackagesByCategory: (category: string) => Promise<DebloatPackage[]>;
-    getRemovalTypes: () => Promise<RemovalType[]>;
-    getLists: () => Promise<DebloatList[]>;
+    getRemovalTypes: () => Promise<any[]>;
+    getLists: () => Promise<any[]>;
   };
   alternatives: {
     getAll: () => Promise<AlternativeApp[]>;
     search: (query: string) => Promise<AlternativeApp[]>;
+  };
+  fdroid: {
+    install: (
+      deviceId: string,
+      packageId: string,
+    ) => Promise<FdroidInstallResult>;
+    getDownloadInfo: (alternativeId: string) => Promise<FdroidDownloadInfo>;
+    openExternal: (url: string) => Promise<{ success: boolean; error?: string }>;
+    onProgress: (callback: (progress: DownloadProgress) => void) => () => void;
   };
   backup: {
     create: (
@@ -334,27 +376,8 @@ export interface ElectronAPI {
   };
 }
 
-export interface AuthResult {
-  success: boolean;
-  message: string;
-  user?: PublicUser;
-  requiresVerification?: boolean;
-}
-
-export interface PublicUser {
-  id: string;
-  email: string;
-  name: string | null;
-  isVerified: boolean;
-}
-
-export interface UserDevice {
-  id: string;
-  user_id: string;
-  device_id: string;
-  device_model: string | null;
-  device_brand: string | null;
-  nickname: string | null;
-  last_connected_at: string | null;
-  created_at: string;
+declare global {
+  interface Window {
+    electronAPI: ElectronAPI;
+  }
 }

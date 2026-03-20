@@ -61,11 +61,11 @@ export function Layout() {
       <ToastContainer />
 
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-800/95 border-r border-gray-700 flex flex-col backdrop-blur-sm">
+      <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-primary-400 tracking-tight">De-Droid</h1>
+              <h1 className="text-2xl font-bold text-primary-400">De-Droid</h1>
               <p className="text-sm text-gray-400 mt-1">Android Debloater</p>
             </div>
             <ThemeToggle />
@@ -78,10 +78,10 @@ export function Layout() {
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-primary-600 text-white shadow-sm"
-                      : "text-gray-300 hover:bg-gray-700/80"
+                      ? "bg-primary-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
                   }`
                 }
               >
@@ -105,10 +105,10 @@ export function Layout() {
               <NavLink
                 to="/history"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-primary-600 text-white shadow-sm"
-                      : "text-gray-300 hover:bg-gray-700/80"
+                      ? "bg-primary-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
                   }`
                 }
               >
@@ -130,12 +130,39 @@ export function Layout() {
             </li>
             <li>
               <NavLink
+                to="/permissions"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
+                  }`
+                }
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+                Permissions
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="/alternatives"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-primary-600 text-white shadow-sm"
-                      : "text-gray-300 hover:bg-gray-700/80"
+                      ? "bg-green-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
                   }`
                 }
               >
@@ -159,10 +186,10 @@ export function Layout() {
               <NavLink
                 to="/settings"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? "bg-primary-600 text-white shadow-sm"
-                      : "text-gray-300 hover:bg-gray-700/80"
+                      ? "bg-primary-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
                   }`
                 }
               >
@@ -206,7 +233,7 @@ export function Layout() {
             </div>
             <button
               onClick={handleLogout}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-xl transition-colors"
+              className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
               title="Logout"
             >
               <svg

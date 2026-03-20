@@ -273,10 +273,10 @@ export default function Settings() {
         {/* Wireless Debugging */}
         <section className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Wireless ADB Debugging</h2>
-          <div className="bg-gray-800/95 rounded-xl border border-gray-700 p-4 space-y-4 shadow-sm">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4 space-y-4">
             {/* Status messages */}
             {wirelessStatus.error && (
-              <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 flex items-center justify-between">
+              <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 flex items-center justify-between">
                 <span>{wirelessStatus.error}</span>
                 <button
                   onClick={clearWirelessStatus}
@@ -287,7 +287,7 @@ export default function Settings() {
               </div>
             )}
             {wirelessStatus.success && (
-              <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 flex items-center justify-between">
+              <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-400 flex items-center justify-between">
                 <span>{wirelessStatus.success}</span>
                 <button
                   onClick={clearWirelessStatus}
@@ -340,7 +340,7 @@ export default function Settings() {
                   !pairingPort ||
                   !pairingCode
                 }
-                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
               >
                 {wirelessStatus.isPairing ? "Pairing..." : "Pair Device"}
               </button>
@@ -375,14 +375,14 @@ export default function Settings() {
                 <button
                   onClick={handleWirelessConnect}
                   disabled={wirelessStatus.isConnecting || !wirelessIp}
-                  className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
                 >
                   {wirelessStatus.isConnecting ? "Connecting..." : "Connect"}
                 </button>
                 <button
                   onClick={handleWirelessDisconnect}
                   disabled={wirelessStatus.isConnecting || !wirelessIp}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-sm font-medium transition-colors"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition-colors"
                 >
                   Disconnect
                 </button>
@@ -394,7 +394,7 @@ export default function Settings() {
         {/* Appearance */}
         <section className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Appearance</h2>
-          <div className="bg-gray-800/95 rounded-xl border border-gray-700 p-4 shadow-sm">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">Theme</p>
@@ -418,7 +418,7 @@ export default function Settings() {
         {/* Behavior */}
         <section className="mb-8">
           <h2 className="text-lg font-semibold mb-4">Behavior</h2>
-          <div className="bg-gray-800/95 rounded-xl border border-gray-700 divide-y divide-gray-700 shadow-sm">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 divide-y divide-gray-700">
             <div className="p-4 flex items-center justify-between">
               <div>
                 <p className="font-medium">Expert Mode</p>
@@ -435,7 +435,7 @@ export default function Settings() {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
 
@@ -455,7 +455,7 @@ export default function Settings() {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
 
@@ -475,7 +475,7 @@ export default function Settings() {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
 
@@ -495,7 +495,7 @@ export default function Settings() {
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:inset-s-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
           </div>
@@ -506,7 +506,7 @@ export default function Settings() {
           <button
             onClick={saveSettings}
             disabled={isSaving}
-            className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium transition-colors"
+            className="px-6 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
           >
             {isSaving ? "Saving..." : "Save Settings"}
           </button>

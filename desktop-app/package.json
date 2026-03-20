@@ -1,76 +1,108 @@
 {
-  "name": "de-droid",
-  "productName": "De Droid",
+  "name": "de-droid-frontend",
   "version": "1.0.0",
-  "description": "De Droid is a desktop application for removin bloatware. Your privacy matters.",
-  "type": "module",
+  "description": "Universal Android Debloater - Electron Desktop App",
   "main": "dist/main/index.js",
+  "private": true,
   "scripts": {
-    "postinstall": "pnpm exec electron-rebuild -f -w better-sqlite3",
-    "dev": "concurrently \"pnpm run dev:main\" \"pnpm run dev:preload\" \"pnpm run dev:renderer\" \"pnpm run dev:electron\"",
+    "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\" \"npm run dev:electron\"",
     "dev:main": "tsc -p tsconfig.main.json --watch",
-    "dev:preload": "tsc -p tsconfig.preload.json --watch",
     "dev:renderer": "vite",
-    "dev:electron": "sleep 3 && NODE_ENV=development electron .",
-    "build": "pnpm run build:main && pnpm run build:preload && pnpm run build:renderer",
+    "dev:electron": "wait-on http://localhost:3001 && NODE_ENV=development electron .",
+    "build": "npm run build:main && npm run build:renderer",
     "build:main": "tsc -p tsconfig.main.json",
-    "build:preload": "tsc -p tsconfig.preload.json",
     "build:renderer": "vite build",
     "start": "electron .",
-    "package": "pnpm run build && electron-builder",
-    "package:win": "pnpm run build && electron-builder --win",
-    "package:mac": "pnpm run build && electron-builder --mac",
-    "package:linux": "pnpm run build && electron-builder --linux"
-  },
-  "keywords": [],
-  "author": {
-    "name": "virtualabishek",
-    "email": "717abishekneupane@gmail.com"
-  },
-  "license": "MIT",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "electron",
-      "electron-winstaller",
-      "esbuild"
-    ]
-  },
-  "devDependencies": {
-    "@electron-forge/cli": "^7.10.2",
-    "@electron-forge/maker-deb": "^7.10.2",
-    "@electron-forge/maker-rpm": "^7.10.2",
-    "@electron-forge/maker-squirrel": "^7.10.2",
-    "@electron-forge/maker-zip": "^7.10.2",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
-    "@electron-forge/plugin-fuses": "^7.10.2",
-    "@electron-forge/plugin-vite": "^7.10.2",
-    "@electron/fuses": "^1.8.0",
-    "@tailwindcss/postcss": "^4.2.0",
-    "@types/electron-squirrel-startup": "^1.0.2",
-    "@types/node": "^20.0.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
-    "@vitejs/plugin-react": "^5.1.4",
-    "autoprefixer": "^10.4.24",
-    "concurrently": "^8.2.2",
-    "electron": "39.2.7",
-    "eslint": "^8.57.1",
-    "eslint-plugin-import": "^2.32.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.2.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.4.21",
-    "wait-on": "^7.2.0"
+    "lint": "eslint . --ext .ts,.tsx",
+    "package": "electron-builder",
+    "package:win": "electron-builder --win",
+    "package:mac": "electron-builder --mac",
+    "package:linux": "electron-builder --linux",
+    "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
-    "electron-squirrel-startup": "^1.0.1",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.0",
-    "zustand": "^5.0.11"
+    "@tanstack/react-virtual": "^3.13.19",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^17.2.3",
+    "electron-store": "^8.1.0",
+    "fuse.js": "^7.1.0",
+    "nodemailer": "^7.0.13",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "uuid": "^11.0.4",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^20.10.6",
+    "@types/nodemailer": "^7.0.9",
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9",
+    "eslint": "^8.56.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.dedroid.app",
+    "productName": "De-Droid",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "src/data",
+        "to": "data",
+        "filter": [
+          "**/*.json"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "resources/icon.icns",
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "resources/icon.png",
+      "category": "Utility"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   }
 }

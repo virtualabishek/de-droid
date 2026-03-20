@@ -1,0 +1,847 @@
+/**
+ * ADB IPC Handlers - Fully Local Implementation
+ * All operations use local ADB and SQLite storage
+ */
+import { ipcMain, shell } from "electron";
+import * as LocalAdb from "../adb";
+import * as Permissions from "../adb/permissions";
+import * as historyService from "../services/historyService";
+import * as backupService from "../services/backupService";
+import * as packageDataService from "../services/packageDataService";
+import * as fdroidService from "../services/fdroidService";
+
+// Cache for device information to use in logging
+const deviceInfoCache: Map<string, { model: string; brand: string }> =
+  new Map();
+
+/**
+ * Get device info from cache or return default values
+ */
+function getDeviceInfo(deviceId: string): { model: string; brand: string } {
+  return (
+    deviceInfoCache.get(deviceId) || { model: "Unknown", brand: "Unknown" }
+  );
+}
+
+export function registerAdbHandlers() {
+  // ============ DEVICE HANDLERS (LOCAL ADB) ============
+
+  // Get connected devices
+  ipcMain.handle("adb:get-devices", async () => {
+    try {
+      console.log("[ADB LOCAL] Getting devices");
+      const devices = await LocalAdb.getDevices();
+
+      // Cache device info for logging purposes
+      devices.forEach((d) => {
+        deviceInfoCache.set(d.id, { model: d.model, brand: d.brand });
+      });
+
+      // Transform to expected format
+      return devices.map((d) => ({
+        adb_id: d.id,
+        model: d.model,
+        brand: d.brand,
+        android_sdk: d.androidSdk,
+        android_version: d.androidVersion,
+        users: [{ id: 0, index: 0 }], // Default user
+      }));
+    } catch (error) {
+      console.error("[ADB LOCAL] Failed to get devices:", error);
+      return [];
+    }
+  });
+
+  // ============ PACKAGE HANDLERS (LOCAL ADB + LOCAL DATA) ============
+
+  // Get packages for a device
+  ipcMain.handle(
+    "adb:get-packages",
+    async (_, deviceId: string, userId = 0, systemOnly = true) => {
+      try {
+        console.log("[ADB LOCAL] Getting packages");
+        const packageStates = await LocalAdb.getPackageStates(
+          deviceId,
+          userId,
+          systemOnly,
+        );
+
+        console.log(`[ADB LOCAL] Found ${packageStates.length} packages`);
+
+        return {
+          packages: packageStates.map((p) => ({
+            name: p.name,
+            state: p.state,
+          })),
+          total: packageStates.length,
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to get packages:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Get enriched packages (LOCAL ADB + LOCAL JSON DATA)
+  ipcMain.handle(
+    "adb:get-enriched-packages",
+    async (_, deviceId: string, userId = 0, systemOnly = true) => {
+      try {
+        console.log("[ADB LOCAL] Getting enriched packages");
+
+        // Step 1: Get packages locally via ADB
+        const packageStates = await LocalAdb.getPackageStates(
+          deviceId,
+          userId,
+          systemOnly,
+        );
+        console.log(`[ADB LOCAL] Got ${packageStates.length} packages`);
+
+        // Step 2: Enrich with local debloat data
+        const enriched = packageDataService.enrichPackages(packageStates);
+        console.log(`[LOCAL DATA] Enriched ${enriched.length} packages`);
+
+        return { packages: enriched, total: enriched.length };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to get enriched packages:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Check package safety (LOCAL DATA)
+  ipcMain.handle("adb:check-safety", async (_, packageNames: string[]) => {
+    try {
+      console.log(
+        `[LOCAL DATA] Checking safety for ${packageNames.length} packages`,
+      );
+
+      const packages = packageNames.map((name) => {
+        const info = packageDataService.getPackageInfo(name);
+
+        if (info) {
+          return {
+            package_name: name,
+            safety: packageDataService.getSafetyColor(info.removal),
+            safety_description: info.description,
+            can_uninstall: info.removal !== "UNSAFE",
+            description: info.description,
+            category: info.category,
+            removal_type: info.removal,
+            dependencies: info.dependencies,
+            alternatives: info.alternatives,
+          };
+        }
+
+        // Unknown package
+        return {
+          package_name: name,
+          safety: "yellow" as const,
+          safety_description: "Unknown package - proceed with caution",
+          can_uninstall: true,
+          description: "",
+          category: "UNKNOWN",
+          removal_type: "ADVANCED",
+          dependencies: [],
+          alternatives: [],
+        };
+      });
+
+      return { packages, total: packages.length };
+    } catch (error) {
+      console.error("[LOCAL DATA] Failed to check safety:", error);
+      throw error;
+    }
+  });
+
+  // ============ PACKAGE ACTION HANDLERS (LOCAL ADB + LOCAL SQLITE) ============
+
+  // Uninstall package
+  ipcMain.handle(
+    "adb:uninstall",
+    async (
+      _,
+      deviceId: string,
+      packageName: string,
+      userId = 0,
+      androidSdk = 30,
+    ) => {
+      try {
+        console.log(`[ADB LOCAL] Uninstalling ${packageName}`);
+
+        const result = await LocalAdb.uninstallPackage(
+          deviceId,
+          packageName,
+          userId,
+          androidSdk,
+        );
+        const success =
+          result.success && !result.output.toLowerCase().includes("failure");
+
+        console.log(
+          `[ADB LOCAL] Uninstall result: ${success ? "success" : "failure"}`,
+        );
+
+        // Log to local SQLite
+        const deviceInfo = getDeviceInfo(deviceId);
+        historyService.createHistoryRecord({
+          deviceId,
+          deviceModel: deviceInfo.model,
+          deviceBrand: deviceInfo.brand,
+          packageName,
+          action: "UNINSTALL",
+          androidUser: userId,
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        return {
+          package_name: packageName,
+          action: "uninstall",
+          success,
+          message: result.output || result.error || "Unknown result",
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to uninstall package:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Restore package
+  ipcMain.handle(
+    "adb:restore",
+    async (
+      _,
+      deviceId: string,
+      packageName: string,
+      userId = 0,
+      androidSdk = 30,
+    ) => {
+      try {
+        console.log(`[ADB LOCAL] Restoring ${packageName}`);
+
+        const result = await LocalAdb.restorePackage(
+          deviceId,
+          packageName,
+          userId,
+          androidSdk,
+        );
+        const success =
+          result.success && !result.output.toLowerCase().includes("failure");
+
+        console.log(
+          `[ADB LOCAL] Restore result: ${success ? "success" : "failure"}`,
+        );
+
+        // Log to local SQLite
+        const deviceInfo = getDeviceInfo(deviceId);
+        historyService.createHistoryRecord({
+          deviceId,
+          deviceModel: deviceInfo.model,
+          deviceBrand: deviceInfo.brand,
+          packageName,
+          action: "RESTORE",
+          androidUser: userId,
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        return {
+          package_name: packageName,
+          action: "restore",
+          success,
+          message: result.output || result.error || "Unknown result",
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to restore package:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Disable package
+  ipcMain.handle(
+    "adb:disable",
+    async (_, deviceId: string, packageName: string, userId = 0) => {
+      try {
+        console.log(`[ADB LOCAL] Disabling ${packageName}`);
+
+        const result = await LocalAdb.disablePackage(
+          deviceId,
+          packageName,
+          userId,
+        );
+        const success =
+          result.success && !result.output.toLowerCase().includes("failure");
+
+        console.log(
+          `[ADB LOCAL] Disable result: ${success ? "success" : "failure"}`,
+        );
+
+        // Log to local SQLite
+        const deviceInfo = getDeviceInfo(deviceId);
+        historyService.createHistoryRecord({
+          deviceId,
+          deviceModel: deviceInfo.model,
+          deviceBrand: deviceInfo.brand,
+          packageName,
+          action: "DISABLE",
+          androidUser: userId,
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        return {
+          package_name: packageName,
+          action: "disable",
+          success,
+          message: result.output || result.error || "Unknown result",
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to disable package:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Enable package
+  ipcMain.handle(
+    "adb:enable",
+    async (_, deviceId: string, packageName: string, userId = 0) => {
+      try {
+        console.log(`[ADB LOCAL] Enabling ${packageName}`);
+
+        const result = await LocalAdb.enablePackage(
+          deviceId,
+          packageName,
+          userId,
+        );
+        const success =
+          result.success && !result.output.toLowerCase().includes("failure");
+
+        console.log(
+          `[ADB LOCAL] Enable result: ${success ? "success" : "failure"}`,
+        );
+
+        // Log to local SQLite
+        const deviceInfo = getDeviceInfo(deviceId);
+        historyService.createHistoryRecord({
+          deviceId,
+          deviceModel: deviceInfo.model,
+          deviceBrand: deviceInfo.brand,
+          packageName,
+          action: "ENABLE",
+          androidUser: userId,
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        return {
+          package_name: packageName,
+          action: "enable",
+          success,
+          message: result.output || result.error || "Unknown result",
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to enable package:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Bulk uninstall
+  ipcMain.handle(
+    "adb:bulk-uninstall",
+    async (
+      _,
+      deviceId: string,
+      packages: string[],
+      userId = 0,
+      androidSdk = 30,
+    ) => {
+      try {
+        console.log(
+          `[ADB LOCAL] Bulk uninstalling ${packages.length} packages`,
+        );
+        const deviceInfo = getDeviceInfo(deviceId);
+
+        const results = [];
+        for (const pkg of packages) {
+          const result = await LocalAdb.uninstallPackage(
+            deviceId,
+            pkg,
+            userId,
+            androidSdk,
+          );
+          const success =
+            result.success && !result.output.toLowerCase().includes("failure");
+
+          results.push({
+            package_name: pkg,
+            action: "uninstall",
+            success,
+            message: result.output || result.error || "Unknown result",
+          });
+
+          // Log to local SQLite
+          historyService.createHistoryRecord({
+            deviceId,
+            deviceModel: deviceInfo.model,
+            deviceBrand: deviceInfo.brand,
+            packageName: pkg,
+            action: "UNINSTALL",
+            androidUser: userId,
+            success,
+            errorMessage: success ? undefined : result.error || result.output,
+          });
+        }
+
+        const successCount = results.filter((r) => r.success).length;
+        return {
+          results,
+          total: results.length,
+          success_count: successCount,
+          failure_count: results.length - successCount,
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to bulk uninstall:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Health check
+  ipcMain.handle("adb:health", async () => {
+    try {
+      const adbAvailable = await LocalAdb.checkAdbAvailable();
+      return {
+        status: adbAvailable ? "healthy" : "unavailable",
+        adb_available: adbAvailable,
+        mode: "local",
+      };
+    } catch (error) {
+      return {
+        status: "unavailable",
+        adb_available: false,
+        mode: "local",
+      };
+    }
+  });
+
+  // ============ DEBLOAT DATA HANDLERS (LOCAL JSON) ============
+
+  ipcMain.handle("debloat:get-packages", async () => {
+    try {
+      return packageDataService.getAllPackages();
+    } catch (error) {
+      console.error("Failed to get debloat packages:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("debloat:get-package-info", async (_, packageId: string) => {
+    try {
+      return packageDataService.getPackageInfo(packageId);
+    } catch (error) {
+      console.error("Failed to get package info:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("debloat:get-alternatives", async () => {
+    try {
+      return packageDataService.getAllAlternatives();
+    } catch (error) {
+      console.error("Failed to get alternatives:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("debloat:get-alternative", async (_, altId: string) => {
+    try {
+      return packageDataService.getAlternativeById(altId);
+    } catch (error) {
+      console.error("Failed to get alternative:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle(
+    "debloat:get-alternatives-for-package",
+    async (_, packageId: string) => {
+      try {
+        return packageDataService.getAlternativesForPackage(packageId);
+      } catch (error) {
+        console.error("Failed to get alternatives for package:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle("debloat:get-categories", async () => {
+    try {
+      return packageDataService.getCategories();
+    } catch (error) {
+      console.error("Failed to get categories:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle(
+    "debloat:get-packages-by-category",
+    async (_, category: string) => {
+      try {
+        return packageDataService.getPackagesByCategory(category);
+      } catch (error) {
+        console.error("Failed to get packages by category:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle("debloat:get-removal-types", async () => {
+    try {
+      return packageDataService.getRemovalTypes();
+    } catch (error) {
+      console.error("Failed to get removal types:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("debloat:get-lists", async () => {
+    try {
+      return packageDataService.getLists();
+    } catch (error) {
+      console.error("Failed to get lists:", error);
+      throw error;
+    }
+  });
+
+  // ============ BACKUP HANDLERS (LOCAL SQLITE) ============
+
+  ipcMain.handle(
+    "backup:create",
+    async (
+      _,
+      deviceId: string,
+      deviceModel: string,
+      deviceBrand: string,
+      _androidSdk: number,
+      userId = 0,
+      systemOnly = true,
+    ) => {
+      try {
+        console.log("[BACKUP] Creating backup for device:", deviceId);
+
+        // Get current packages from device
+        const packageStates = await LocalAdb.getPackageStates(
+          deviceId,
+          userId,
+          systemOnly,
+        );
+
+        // Store in SQLite
+        const backup = backupService.createBackup({
+          deviceId,
+          deviceModel,
+          deviceBrand,
+          name: `Backup ${new Date().toISOString().split("T")[0]}`,
+          packages: packageStates,
+        });
+
+        console.log(
+          `[BACKUP] Created backup with ${packageStates.length} packages`,
+        );
+
+        return {
+          ...backup,
+          device_id: backup.device_id,
+          device_model: backup.device_model,
+          device_brand: backup.device_brand,
+          created_at: backup.created_at,
+          total_packages: backup.total_packages,
+        };
+      } catch (error) {
+        console.error("Failed to create backup:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "backup:compare",
+    async (
+      _,
+      deviceId: string,
+      backupId: string,
+      userId = 0,
+      systemOnly = true,
+    ) => {
+      try {
+        console.log("[BACKUP] Comparing backup with current state");
+
+        // Get the saved backup
+        const backup = backupService.getBackupById(backupId);
+        if (!backup) {
+          throw new Error("Backup not found");
+        }
+
+        // Get current packages from device
+        const currentPackages = await LocalAdb.getPackageStates(
+          deviceId,
+          userId,
+          systemOnly,
+        );
+
+        // Compare
+        const comparison = backupService.compareBackupWithCurrent(
+          backup.packages,
+          currentPackages,
+        );
+
+        return {
+          ...comparison,
+          backup_info: {
+            device_model: backup.device_model,
+            created_at: backup.created_at,
+            total_packages: backup.total_packages,
+          },
+        };
+      } catch (error) {
+        console.error("Failed to compare backup:", error);
+        throw error;
+      }
+    },
+  );
+
+  // ============ WIRELESS ADB HANDLERS (LOCAL ADB) ============
+
+  ipcMain.handle(
+    "adb:wireless:enable-tcpip",
+    async (_, deviceId: string, port = 5555) => {
+      try {
+        const result = await LocalAdb.executeAdbCommand(
+          `-s ${deviceId} tcpip ${port}`,
+        );
+        return {
+          success: result.success,
+          message: result.output || result.error || "TCP/IP mode enabled",
+          port,
+        };
+      } catch (error) {
+        console.error("Failed to enable TCP/IP mode:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:wireless:connect",
+    async (_, ipAddress: string, port = 5555) => {
+      try {
+        const result = await LocalAdb.executeAdbCommand(
+          `connect ${ipAddress}:${port}`,
+        );
+        const success = result.success && result.output.includes("connected");
+        return {
+          success,
+          message: result.output || result.error || "Connection result unknown",
+          ip_address: ipAddress,
+          port,
+        };
+      } catch (error) {
+        console.error("Failed to connect wirelessly:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:wireless:disconnect",
+    async (_, ipAddress: string, port = 5555) => {
+      try {
+        const result = await LocalAdb.executeAdbCommand(
+          `disconnect ${ipAddress}:${port}`,
+        );
+        return {
+          success: result.success,
+          message: result.output || result.error || "Disconnected",
+        };
+      } catch (error) {
+        console.error("Failed to disconnect:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:wireless:pair",
+    async (_, ipAddress: string, port: number, pairingCode: string) => {
+      try {
+        const result = await LocalAdb.executeAdbCommand(
+          `pair ${ipAddress}:${port} ${pairingCode}`,
+        );
+        const success =
+          result.success && result.output.includes("Successfully paired");
+        return {
+          success,
+          message: result.output || result.error || "Pairing result unknown",
+        };
+      } catch (error) {
+        console.error("Failed to pair:", error);
+        throw error;
+      }
+    },
+  );
+
+  // ============ PACKAGE DETAILS HANDLERS (LOCAL ADB) ============
+
+  ipcMain.handle(
+    "adb:get-package-permissions",
+    async (_, deviceId: string, packageName: string, userId = 0) => {
+      try {
+        console.log(`[ADB LOCAL] Getting permissions for ${packageName}`);
+        const result = await Permissions.getPackagePermissions(
+          deviceId,
+          packageName,
+          userId,
+        );
+        return result;
+      } catch (error) {
+        console.error("Failed to get package permissions:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Grant or revoke a permission
+  ipcMain.handle(
+    "adb:toggle-permission",
+    async (
+      _,
+      deviceId: string,
+      packageName: string,
+      permission: string,
+      action: "grant" | "revoke",
+      userId = 0,
+    ) => {
+      try {
+        console.log(`[ADB LOCAL] ${action} ${permission} for ${packageName}`);
+
+        if (action === "grant") {
+          return await Permissions.grantPermission(
+            deviceId,
+            packageName,
+            permission,
+            userId,
+          );
+        } else {
+          return await Permissions.revokePermission(
+            deviceId,
+            packageName,
+            permission,
+            userId,
+          );
+        }
+      } catch (error) {
+        console.error(`Failed to ${action} permission:`, error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:get-package-details",
+    async (_, deviceId: string, packageName: string) => {
+      try {
+        const result = await LocalAdb.executeAdbCommand(
+          `-s ${deviceId} shell dumpsys package ${packageName}`,
+        );
+
+        // Get additional info from local data
+        const localInfo = packageDataService.getPackageInfo(packageName);
+
+        return {
+          package_name: packageName,
+          dumpsys_output: result.output,
+          local_info: localInfo,
+        };
+      } catch (error) {
+        console.error("Failed to get package details:", error);
+        throw error;
+      }
+    },
+  );
+
+  // ============ ALTERNATIVES HANDLERS (LOCAL JSON) ============
+
+  ipcMain.handle("alternatives:get-all", async () => {
+    try {
+      return packageDataService.getAllAlternatives();
+    } catch (error) {
+      console.error("Failed to get alternatives:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("alternatives:search", async (_, query: string) => {
+    try {
+      const alternatives = packageDataService.getAllAlternatives();
+      const lowerQuery = query.toLowerCase();
+
+      return alternatives.filter(
+        (alt) =>
+          alt.name.toLowerCase().includes(lowerQuery) ||
+          alt.description.toLowerCase().includes(lowerQuery) ||
+          alt.packageId.toLowerCase().includes(lowerQuery),
+      );
+    } catch (error) {
+      console.error("Failed to search alternatives:", error);
+      throw error;
+    }
+  });
+
+  // ============ F-DROID HANDLERS ============
+
+  // Install app from F-Droid
+  ipcMain.handle(
+    "fdroid:install",
+    async (_, deviceId: string, packageId: string) => {
+      try {
+        console.log(`[F-Droid] Installing ${packageId} on device ${deviceId}`);
+        const result = await fdroidService.installFromFdroid(deviceId, packageId);
+        return result;
+      } catch (error) {
+        console.error("[F-Droid] Failed to install:", error);
+        return {
+          success: false,
+          packageId,
+          install_message:
+            error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    }
+  );
+
+  // Get download info for an alternative app
+  ipcMain.handle("fdroid:get-download-info", async (_, alternativeId: string) => {
+    try {
+      return fdroidService.getAppDownloadInfo(alternativeId);
+    } catch (error) {
+      console.error("[F-Droid] Failed to get download info:", error);
+      throw error;
+    }
+  });
+
+  // Open URL in external browser
+  ipcMain.handle("fdroid:open-external", async (_, url: string) => {
+    try {
+      await shell.openExternal(url);
+      return { success: true };
+    } catch (error) {
+      console.error("[F-Droid] Failed to open URL:", error);
+      return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+    }
+  });
+}
