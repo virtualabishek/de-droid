@@ -162,7 +162,7 @@ export const PERMISSION_TO_APPOP: Record<string, string> = {
   // Location
   "android.permission.ACCESS_FINE_LOCATION": "FINE_LOCATION",
   "android.permission.ACCESS_COARSE_LOCATION": "COARSE_LOCATION",
-  "android.permission.ACCESS_BACKGROUND_LOCATION": "MOCK_LOCATION",
+  "android.permission.ACCESS_BACKGROUND_LOCATION": "ACCESS_BACKGROUND_LOCATION",
 
   // Camera & Microphone
   "android.permission.CAMERA": "CAMERA",
@@ -253,6 +253,53 @@ interface TogglePermissionResult {
   message?: string;
 }
 
+function didCommandFail(result: {
+  success: boolean;
+  output?: string;
+  error?: string;
+}): boolean {
+  if (!result.success) return true;
+
+  const combined = `${result.output || ""}\n${result.error || ""}`.toLowerCase();
+  if (!combined.trim()) return false;
+
+  return (
+    combined.includes("securityexception") ||
+    combined.includes("unknown package") ||
+    combined.includes("not a changeable permission") ||
+    combined.includes("operation not allowed") ||
+    combined.includes("unknown operation") ||
+    combined.includes("exception:") ||
+    combined.includes("error:")
+  );
+}
+
+function isAppOpsAllowed(mode: string | null): boolean {
+  if (!mode) return false;
+  const normalizedMode = mode.toLowerCase();
+  return normalizedMode === "allow" || normalizedMode === "foreground";
+}
+
+async function setAppOpsMode(
+  deviceId: string,
+  packageName: string,
+  appOp: string,
+  mode: "allow" | "deny",
+  userId: number,
+): Promise<boolean> {
+  const withUser = await executeAdbCommand(
+    `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} ${mode}`,
+  );
+  if (!didCommandFail(withUser)) {
+    return true;
+  }
+
+  const withoutUser = await executeAdbCommand(
+    `-s ${deviceId} shell appops set ${packageName} ${appOp} ${mode}`,
+  );
+  return !didCommandFail(withoutUser);
+}
+
 /**
  * Get all permissions for a package
  */
@@ -317,12 +364,10 @@ export async function grantPermission(
   );
 
   // If pm grant succeeded, also reset appops to allow
-  if (result.success && !result.error) {
+  if (!didCommandFail(result)) {
     const appOp = PERMISSION_TO_APPOP[permission];
     if (appOp) {
-      await executeAdbCommand(
-        `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} allow`,
-      );
+      await setAppOpsMode(deviceId, packageName, appOp, "allow", userId);
     }
   } else {
     // If pm grant failed (SecurityException), try appops as fallback
@@ -332,11 +377,15 @@ export async function grantPermission(
       console.log(
         `[Permissions] pm grant failed, trying appops for ${permission}`,
       );
-      const appOpsResult = await executeAdbCommand(
-        `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} allow`,
+      const appOpsSuccess = await setAppOpsMode(
+        deviceId,
+        packageName,
+        appOp,
+        "allow",
+        userId,
       );
 
-      if (!appOpsResult.success || appOpsResult.error) {
+      if (!appOpsSuccess) {
         return {
           success: false,
           error: `Permission grant not supported on this device. Try granting from device Settings > Apps > ${packageName} > Permissions.`,
@@ -391,7 +440,7 @@ export async function revokePermission(
     `-s ${deviceId} shell pm revoke --user ${userId} ${packageName} ${permission}`,
   );
 
-  if (!result.success || result.error) {
+  if (didCommandFail(result)) {
     // If pm revoke failed (likely SecurityException), try appops as fallback
     // appops blocks the app from using the permission at runtime
     const appOp = PERMISSION_TO_APPOP[permission];
@@ -400,11 +449,15 @@ export async function revokePermission(
       console.log(
         `[Permissions] pm revoke failed, trying appops for ${permission}`,
       );
-      const appOpsResult = await executeAdbCommand(
-        `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} deny`,
+      const appOpsSuccess = await setAppOpsMode(
+        deviceId,
+        packageName,
+        appOp,
+        "deny",
+        userId,
       );
 
-      if (!appOpsResult.success || appOpsResult.error) {
+      if (!appOpsSuccess) {
         return {
           success: false,
           error: `Permission revocation not supported on this device. Try revoking from device Settings > Apps > ${packageName} > Permissions.`,
@@ -494,12 +547,23 @@ async function getEffectivePermissionState(
   let appOpMode: string | null = null;
 
   if (appOp) {
-    const appOpsResult = await executeAdbCommand(
+    const appOpsResultWithUser = await executeAdbCommand(
       `-s ${deviceId} shell appops get --user ${userId} ${packageName} ${appOp}`,
     );
-    if (appOpsResult.success && !appOpsResult.error) {
-      appOpMode = parseAppOpMode(appOpsResult.output, appOp);
+    if (!didCommandFail(appOpsResultWithUser)) {
+      appOpMode = parseAppOpMode(appOpsResultWithUser.output, appOp);
+    } else {
+      const appOpsResultWithoutUser = await executeAdbCommand(
+        `-s ${deviceId} shell appops get ${packageName} ${appOp}`,
+      );
+      if (!didCommandFail(appOpsResultWithoutUser)) {
+        appOpMode = parseAppOpMode(appOpsResultWithoutUser.output, appOp);
+      }
     }
+  }
+
+  if (appOpMode && appOpMode !== "default") {
+    return { effectiveGranted: isAppOpsAllowed(appOpMode) };
   }
 
   if (isAppOpsBlocking(appOpMode)) {
@@ -522,16 +586,27 @@ async function getAppOpsModes(
   packageName: string,
   userId: number,
 ): Promise<Record<string, string>> {
-  const result = await executeAdbCommand(
+  const withUserResult = await executeAdbCommand(
     `-s ${deviceId} shell appops get --user ${userId} ${packageName}`,
   );
 
-  if (!result.success || result.error || !result.output) {
+  let output = withUserResult.output;
+  if (didCommandFail(withUserResult) || !output) {
+    const withoutUserResult = await executeAdbCommand(
+      `-s ${deviceId} shell appops get ${packageName}`,
+    );
+    if (didCommandFail(withoutUserResult) || !withoutUserResult.output) {
+      return {};
+    }
+    output = withoutUserResult.output;
+  }
+
+  if (!output) {
     return {};
   }
 
   const modes: Record<string, string> = {};
-  const lines = result.output.split("\n");
+  const lines = output.split("\n");
 
   for (const line of lines) {
     const trimmed = line.trim();
