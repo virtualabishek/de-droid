@@ -1,11 +1,21 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "target": "ES2021",
+    "module": "commonjs",
+    "lib": ["ES2021"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "types": ["node"],
+    "composite": true
   },
-  "include": ["src/main/**/*", "src/@types/**/*"],
-  "exclude": ["node_modules", "dist", "src/renderer", "src/preload"]
+  "include": ["src/main/**/*", "src/preload/**/*", "src/data/**/*"],
+  "exclude": ["node_modules", "src/renderer"]
 }

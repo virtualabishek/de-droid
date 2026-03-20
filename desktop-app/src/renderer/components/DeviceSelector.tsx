@@ -24,11 +24,22 @@ export function DeviceSelector() {
   const [wirelessSuccess, setWirelessSuccess] = useState<string | null>(null);
 
   useEffect(() => {
+    // Initial device fetch on mount
     fetchDevices();
-    // Poll for device changes
-    const interval = setInterval(fetchDevices, 5000);
-    return () => clearInterval(interval);
   }, [fetchDevices]);
+
+  useEffect(() => {
+    // Poll only when no devices are connected
+    if (devices.length > 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      fetchDevices();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [devices.length, fetchDevices]);
 
   // Parse QR code data format: WIFI:T:ADB;S:hostname;P:port;;PAIRING:code;
   const parseQrCode = (data: string) => {

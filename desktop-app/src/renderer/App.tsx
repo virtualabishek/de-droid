@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
 import Alternatives from "./pages/Alternatives";
+import Permissions from "./pages/Permissions";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useAuthStore } from "./store/authStore";
@@ -64,6 +65,7 @@ function App() {
         >
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/permissions" element={<Permissions />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/history" element={<History />} />

@@ -74,6 +74,7 @@ export function PermissionManager({
       const result = await window.electronAPI.adb.getPackagePermissions(
         selectedDevice.adb_id,
         packageName,
+        selectedUser,
       );
       setPermissions(result);
     } catch (error) {
@@ -100,7 +101,10 @@ export function PermissionManager({
       );
 
       if (result.success) {
-        toast.success(`Permission ${action}ed`, `${permission.description}`);
+        toast.success(
+          `Permission ${action}ed`,
+          result.message || permission.description,
+        );
         // Refresh permissions
         await loadPermissions();
       } else {

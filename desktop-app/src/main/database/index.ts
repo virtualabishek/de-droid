@@ -1,4 +1,7 @@
-
+/**
+ * SQLite Database Module for De-Droid
+ * Local-first data storage for action history, backups, and settings
+ */
 import Database from "better-sqlite3";
 import { app } from "electron";
 import * as path from "path";
@@ -23,6 +26,7 @@ export function initDatabase(): Database.Database {
   const dbPath = getDatabasePath();
   console.log("[DB] Initializing database at:", dbPath);
 
+  // Ensure directory exists
   const dir = path.dirname(dbPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -30,8 +34,10 @@ export function initDatabase(): Database.Database {
 
   db = new Database(dbPath);
 
+  // Enable WAL mode for better performance
   db.pragma("journal_mode = WAL");
 
+  // Run migrations
   runMigrations(db);
 
   console.log("[DB] Database initialized successfully");
@@ -63,6 +69,7 @@ export function closeDatabase(): void {
  * Run database migrations
  */
 function runMigrations(database: Database.Database): void {
+  // Create migrations table if it doesn't exist
   database.exec(`
     CREATE TABLE IF NOT EXISTS migrations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -209,3 +216,74 @@ function runMigrations(database: Database.Database): void {
   }
 }
 
+// Export types
+export interface ActionHistoryRecord {
+  id: string;
+  device_id: string;
+  device_model: string | null;
+  device_brand: string | null;
+  package_name: string;
+  action: "UNINSTALL" | "DISABLE" | "RESTORE" | "ENABLE";
+  android_user: number;
+  success: boolean;
+  error_message: string | null;
+  created_at: string;
+  is_undone: boolean;
+}
+
+export interface SavedBackup {
+  id: string;
+  device_id: string;
+  device_model: string | null;
+  device_brand: string | null;
+  name: string;
+  packages: Array<{ name: string; state: string }>;
+  total_packages: number;
+  created_at: string;
+}
+
+export interface Setting {
+  key: string;
+  value: string;
+  updated_at: string;
+}
+
+export interface PackageNote {
+  id: string;
+  package_name: string;
+  note: string | null;
+  is_favorite: boolean;
+  custom_category: string | null;
+  updated_at: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  password_hash: string;
+  name: string | null;
+  is_verified: boolean;
+  otp_code: string | null;
+  otp_expires_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserDevice {
+  id: string;
+  user_id: string;
+  device_id: string;
+  device_model: string | null;
+  device_brand: string | null;
+  nickname: string | null;
+  last_connected_at: string | null;
+  created_at: string;
+}
+
+export interface UserSetting {
+  id: string;
+  user_id: string;
+  key: string;
+  value: string;
+  updated_at: string;
+}
