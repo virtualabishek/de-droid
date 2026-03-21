@@ -127,36 +127,67 @@ function parseTopProcesses(output: string): TopProcess[] {
   const lines = output.split("\n");
 
   for (const line of lines) {
-    const cpuMatch = line.match(/(\d+(?:\.\d+)?)%/);
-    if (!cpuMatch) continue;
+    const normalized = line.trim();
+    if (
+      !normalized ||
+      /tasks:/i.test(normalized) ||
+      /^mem:/i.test(normalized) ||
+      /^swap:/i.test(normalized) ||
+      /%cpu/i.test(normalized) ||
+      /^pid\s+user/i.test(normalized)
+    ) {
+      continue;
+    }
 
-    const cpuPercent = Number.parseFloat(cpuMatch[1]);
-    if (!Number.isFinite(cpuPercent) || cpuPercent <= 0) continue;
-
+    const parts = line.trim().split(/\s+/);
+    let cpuPercent: number | undefined;
     let processName: string | undefined;
 
-    const cpuInfoMatch = line.match(/\d+(?:\.\d+)?%\s+\d+\/(\S+)/);
-    if (cpuInfoMatch?.[1]) {
-      processName = cpuInfoMatch[1];
-    } else {
-      const parts = line.trim().split(/\s+/);
-      processName = parts[parts.length - 1];
+    // Android top -b usually emits:
+    // PID USER PR NI VIRT RES SHR S CPU MEM TIME+ ARGS
+    if (parts.length >= 12 && /^\d+$/.test(parts[0])) {
+      const cpuToken = parts[8]?.replace(/[\[\]%]/g, "");
+      const parsedCpu = Number.parseFloat(cpuToken);
+      if (Number.isFinite(parsedCpu)) {
+        cpuPercent = parsedCpu;
+        processName = parts.slice(11).join(" ");
+      }
     }
+
+    // Fallback for outputs that include percentages inline.
+    if (cpuPercent === undefined) {
+      const cpuMatch = line.match(/(\d+(?:\.\d+)?)%/);
+      if (cpuMatch) {
+        const parsedCpu = Number.parseFloat(cpuMatch[1]);
+        if (Number.isFinite(parsedCpu)) {
+          cpuPercent = parsedCpu;
+          processName = parts[parts.length - 1];
+        }
+      }
+    }
+
+    if (typeof cpuPercent !== "number" || !Number.isFinite(cpuPercent) || cpuPercent <= 0) {
+      continue;
+    }
+    const normalizedCpu = cpuPercent;
 
     if (!processName || processName === "ARGS" || processName.startsWith("[")) {
       continue;
     }
 
     const previous = entries.get(processName) || 0;
-    if (cpuPercent > previous) {
-      entries.set(processName, cpuPercent);
+    if (normalizedCpu > previous) {
+      entries.set(processName, normalizedCpu);
     }
   }
 
   return Array.from(entries.entries())
-    .map(([name, cpuPercent]) => ({ name, cpuPercent: Math.round(cpuPercent * 10) / 10 }))
+    .map(([name, cpuPercent]) => ({
+      name,
+      cpuPercent: Math.round(cpuPercent * 10) / 10,
+    }))
     .sort((a, b) => b.cpuPercent - a.cpuPercent)
-    .slice(0, 3);
+    .slice(0, 20);
 }
 
 /**
