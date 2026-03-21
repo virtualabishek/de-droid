@@ -180,6 +180,39 @@ export interface HealthResponse {
   mode: string;
 }
 
+export interface DeviceHealthSnapshot {
+  collectedAt: string;
+  battery: {
+    levelPercent?: number;
+    status: string;
+    charging: boolean;
+    temperatureC?: number;
+    voltageMv?: number;
+  };
+  memory: {
+    totalMb?: number;
+    usedMb?: number;
+    freeMb?: number;
+  };
+  storage: {
+    mountPoint: string;
+    totalGb?: number;
+    usedGb?: number;
+    freeGb?: number;
+    usedPercent?: number;
+  };
+  performance: {
+    cpuLoadPercent?: number;
+    topApps: Array<{
+      name: string;
+      cpuPercent: number;
+    }>;
+    thermalStatus: string;
+    thermalWarning: boolean;
+  };
+  errors: string[];
+}
+
 export interface ElectronAPI {
   adb: {
     getDevices: () => Promise<Device[]>;
@@ -254,6 +287,7 @@ export interface ElectronAPI {
       userId?: number,
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
     getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
+    getDeviceHealthSnapshot: (deviceId: string) => Promise<DeviceHealthSnapshot>;
   };
   debloat: {
     getPackages: () => Promise<DebloatPackage[]>;

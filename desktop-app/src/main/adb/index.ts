@@ -27,6 +27,138 @@ export interface PackageInfo {
   state: "enabled" | "disabled" | "uninstalled";
 }
 
+export interface TopProcess {
+  name: string;
+  cpuPercent: number;
+}
+
+export interface DeviceHealthSnapshot {
+  collectedAt: string;
+  battery: {
+    levelPercent?: number;
+    status: string;
+    charging: boolean;
+    temperatureC?: number;
+    voltageMv?: number;
+  };
+  memory: {
+    totalMb?: number;
+    usedMb?: number;
+    freeMb?: number;
+  };
+  storage: {
+    mountPoint: string;
+    totalGb?: number;
+    usedGb?: number;
+    freeGb?: number;
+    usedPercent?: number;
+  };
+  performance: {
+    cpuLoadPercent?: number;
+    topApps: TopProcess[];
+    thermalStatus: string;
+    thermalWarning: boolean;
+  };
+  errors: string[];
+}
+
+function parseInteger(text: string, regex: RegExp): number | undefined {
+  const value = text.match(regex)?.[1]?.replace(/,/g, "");
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function parseFloatValue(text: string, regex: RegExp): number | undefined {
+  const value = text.match(regex)?.[1];
+  if (!value) return undefined;
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function toMb(kb?: number): number | undefined {
+  if (kb === undefined) return undefined;
+  return Math.round((kb / 1024) * 10) / 10;
+}
+
+function toGb(kb?: number): number | undefined {
+  if (kb === undefined) return undefined;
+  return Math.round((kb / (1024 * 1024)) * 100) / 100;
+}
+
+function parseBatteryStatus(statusCode?: number): string {
+  switch (statusCode) {
+    case 2:
+      return "Charging";
+    case 3:
+      return "Discharging";
+    case 4:
+      return "Not charging";
+    case 5:
+      return "Full";
+    default:
+      return "Unknown";
+  }
+}
+
+function parseThermalStatusCode(statusCode?: number): string {
+  switch (statusCode) {
+    case 0:
+      return "None";
+    case 1:
+      return "Light";
+    case 2:
+      return "Moderate";
+    case 3:
+      return "Severe";
+    case 4:
+      return "Critical";
+    case 5:
+      return "Emergency";
+    case 6:
+      return "Shutdown";
+    default:
+      return "Unknown";
+  }
+}
+
+function parseTopProcesses(output: string): TopProcess[] {
+  const entries = new Map<string, number>();
+  const lines = output.split("\n");
+
+  for (const line of lines) {
+    const cpuMatch = line.match(/(\d+(?:\.\d+)?)%/);
+    if (!cpuMatch) continue;
+
+    const cpuPercent = Number.parseFloat(cpuMatch[1]);
+    if (!Number.isFinite(cpuPercent) || cpuPercent <= 0) continue;
+
+    let processName: string | undefined;
+
+    const cpuInfoMatch = line.match(/\d+(?:\.\d+)?%\s+\d+\/(\S+)/);
+    if (cpuInfoMatch?.[1]) {
+      processName = cpuInfoMatch[1];
+    } else {
+      const parts = line.trim().split(/\s+/);
+      processName = parts[parts.length - 1];
+    }
+
+    if (!processName || processName === "ARGS" || processName.startsWith("[")) {
+      continue;
+    }
+
+    const previous = entries.get(processName) || 0;
+    if (cpuPercent > previous) {
+      entries.set(processName, cpuPercent);
+    }
+  }
+
+  return Array.from(entries.entries())
+    .map(([name, cpuPercent]) => ({ name, cpuPercent: Math.round(cpuPercent * 10) / 10 }))
+    .sort((a, b) => b.cpuPercent - a.cpuPercent)
+    .slice(0, 3);
+}
+
 /**
  * Execute an ADB command
  */
@@ -365,4 +497,131 @@ export async function isPackageInstalled(
     `-s ${deviceId} shell pm list packages | grep ${packageName}`,
   );
   return result.success && result.output.includes(packageName);
+}
+
+export async function getDeviceHealthSnapshot(
+  deviceId: string,
+): Promise<DeviceHealthSnapshot> {
+  const errors: string[] = [];
+
+  const [batteryResult, memResult, procMemResult, dfResult, thermalResult] = await Promise.all([
+    executeAdb(`-s ${deviceId} shell dumpsys battery`, 10000),
+    executeAdb(`-s ${deviceId} shell dumpsys meminfo`, 15000),
+    executeAdb(`-s ${deviceId} shell cat /proc/meminfo`, 10000),
+    executeAdb(`-s ${deviceId} shell df /data`, 10000),
+    executeAdb(`-s ${deviceId} shell dumpsys thermalservice`, 10000),
+  ]);
+
+  let topResult = await executeAdb(`-s ${deviceId} shell top -n 1 -b`, 15000);
+  if (!topResult.success || !topResult.output) {
+    topResult = await executeAdb(`-s ${deviceId} shell top -n 1`, 15000);
+  }
+  if (!topResult.success || !topResult.output) {
+    topResult = await executeAdb(`-s ${deviceId} shell dumpsys cpuinfo`, 15000);
+  }
+
+  if (!batteryResult.success) errors.push(`battery: ${batteryResult.error || "unavailable"}`);
+  if (!memResult.success && !procMemResult.success) {
+    errors.push(`meminfo: ${(memResult.error || procMemResult.error || "unavailable")}`);
+  }
+  if (!dfResult.success) errors.push(`storage: ${dfResult.error || "unavailable"}`);
+  if (!thermalResult.success) errors.push(`thermal: ${thermalResult.error || "unavailable"}`);
+  if (!topResult.success) errors.push(`cpu/top: ${topResult.error || "unavailable"}`);
+
+  const batteryText = batteryResult.output || "";
+  const memText = memResult.output || "";
+  const procMemText = procMemResult.output || "";
+  const dfText = dfResult.output || "";
+  const thermalText = thermalResult.output || "";
+  const topText = topResult.output || "";
+
+  const batteryStatusCode = parseInteger(batteryText, /^\s*status:\s*(\d+)/m);
+  const plugged = parseInteger(batteryText, /^\s*plugged:\s*(\d+)/m) || 0;
+  const levelPercent = parseInteger(batteryText, /^\s*level:\s*(\d+)/m);
+  const tempTenths = parseInteger(batteryText, /^\s*temperature:\s*(-?\d+)/m);
+  const voltageMv = parseInteger(batteryText, /^\s*voltage:\s*(\d+)/m);
+
+  const totalRamKb =
+    parseInteger(memText, /Total RAM:\s*([\d,]+)K/i) ||
+    parseInteger(procMemText, /^MemTotal:\s*(\d+)\s*kB$/im) ||
+    parseInteger(topText, /Mem:\s*([\d,]+)K\s+total/i);
+  const usedRamKb =
+    parseInteger(memText, /Used RAM:\s*([\d,]+)K/i) ||
+    parseInteger(topText, /Mem:\s*[\d,]+K\s+total,\s*([\d,]+)K\s+used/i);
+  const freeRamKb =
+    parseInteger(memText, /Free RAM:\s*([\d,]+)K/i) ||
+    parseInteger(procMemText, /^MemAvailable:\s*(\d+)\s*kB$/im) ||
+    parseInteger(topText, /Mem:\s*[\d,]+K\s+total,\s*[\d,]+K\s+used,\s*([\d,]+)K\s+free/i);
+  const derivedUsedKb =
+    usedRamKb !== undefined
+      ? usedRamKb
+      : totalRamKb !== undefined && freeRamKb !== undefined
+        ? Math.max(totalRamKb - freeRamKb, 0)
+        : undefined;
+
+  const dataLine =
+    dfText
+      .split("\n")
+      .find((line) => /\s\/data\s*$/.test(line) || line.trim().endsWith(" /data")) ||
+    dfText.split("\n")[1] ||
+    "";
+  const dfParts = dataLine.trim().split(/\s+/);
+
+  let totalStorageKb: number | undefined;
+  let usedStorageKb: number | undefined;
+  let freeStorageKb: number | undefined;
+  let usedPercent: number | undefined;
+
+  if (dfParts.length >= 6) {
+    totalStorageKb = Number.parseInt(dfParts[1], 10);
+    usedStorageKb = Number.parseInt(dfParts[2], 10);
+    freeStorageKb = Number.parseInt(dfParts[3], 10);
+    usedPercent = Number.parseInt(dfParts[4].replace("%", ""), 10);
+  }
+
+  const thermalStatusCode = parseInteger(
+    thermalText,
+    /(?:Thermal Status|mStatus)\s*[:=]\s*(\d+)/i,
+  );
+  const thermalStatusText = parseThermalStatusCode(thermalStatusCode);
+
+  const cpuLoadPercent =
+    parseFloatValue(topText, /(\d+(?:\.\d+)?)%\s*cpu/i) ||
+    parseFloatValue(topText, /Load:\s*([\d.]+)\s*\/\s*/i);
+
+  const topApps = parseTopProcesses(topText);
+
+  return {
+    collectedAt: new Date().toISOString(),
+    battery: {
+      levelPercent,
+      status: parseBatteryStatus(batteryStatusCode),
+      charging: plugged > 0 || batteryStatusCode === 2 || batteryStatusCode === 5,
+      temperatureC: tempTenths !== undefined ? Math.round((tempTenths / 10) * 10) / 10 : undefined,
+      voltageMv,
+    },
+    memory: {
+      totalMb: toMb(totalRamKb),
+      usedMb: toMb(derivedUsedKb),
+      freeMb: toMb(freeRamKb),
+    },
+    storage: {
+      mountPoint: "/data",
+      totalGb: toGb(totalStorageKb),
+      usedGb: toGb(usedStorageKb),
+      freeGb: toGb(freeStorageKb),
+      usedPercent: Number.isFinite(usedPercent) ? usedPercent : undefined,
+    },
+    performance: {
+      cpuLoadPercent,
+      topApps,
+      thermalStatus: thermalStatusText,
+      thermalWarning:
+        thermalStatusText === "Severe" ||
+        thermalStatusText === "Critical" ||
+        thermalStatusText === "Emergency" ||
+        thermalStatusText === "Shutdown",
+    },
+    errors,
+  };
 }

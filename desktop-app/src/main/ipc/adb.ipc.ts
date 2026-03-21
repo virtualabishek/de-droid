@@ -543,6 +543,35 @@ export function registerAdbHandlers() {
     }
   });
 
+  ipcMain.handle("adb:get-device-health-snapshot", async (_, deviceId: string) => {
+    try {
+      if (!deviceId) {
+        throw new Error("Device ID is required");
+      }
+
+      return await LocalAdb.getDeviceHealthSnapshot(deviceId);
+    } catch (error) {
+      console.error("[ADB LOCAL] Failed to get device health snapshot:", error);
+      return {
+        collectedAt: new Date().toISOString(),
+        battery: {
+          status: "Unknown",
+          charging: false,
+        },
+        memory: {},
+        storage: {
+          mountPoint: "/data",
+        },
+        performance: {
+          topApps: [],
+          thermalStatus: "Unknown",
+          thermalWarning: false,
+        },
+        errors: [error instanceof Error ? error.message : "Failed to fetch health data"],
+      };
+    }
+  });
+
   // ============ DEBLOAT DATA HANDLERS (LOCAL JSON) ============
 
   ipcMain.handle("debloat:get-packages", async () => {

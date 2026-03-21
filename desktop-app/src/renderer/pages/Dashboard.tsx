@@ -4,6 +4,10 @@ import { DeviceIcon } from "../components/DeviceIcon";
 import { useDeviceStore } from "../store/deviceStore";
 import { useHistoryStore } from "../store/historyStore";
 
+type LiveHealth = Awaited<
+  ReturnType<typeof window.electronAPI.adb.getDeviceHealthSnapshot>
+>;
+
 function estimatePackageSize(packageName: string): number {
   if (
     packageName.includes("facebook") ||
@@ -80,6 +84,9 @@ export default function Dashboard() {
   } = useDeviceStore();
   const { stats, fetchStats } = useHistoryStore();
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+  const [liveHealth, setLiveHealth] = useState<LiveHealth | null>(null);
+  const [isHealthLoading, setIsHealthLoading] = useState(false);
+  const [healthError, setHealthError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStats();
@@ -88,11 +95,60 @@ export default function Dashboard() {
   useEffect(() => {
     if (!selectedDevice) {
       setLastSyncedAt(null);
+      setLiveHealth(null);
       return;
     }
 
     fetchPackages(true).then(() => setLastSyncedAt(new Date()));
   }, [selectedDevice, selectedUser, fetchPackages]);
+
+  useEffect(() => {
+    if (!selectedDevice) return;
+
+    let disposed = false;
+
+    if (!window.electronAPI?.adb?.getDeviceHealthSnapshot) {
+      setHealthError(
+        "Live health API not loaded. Restart the Electron app to load new IPC/preload changes.",
+      );
+      setLiveHealth(null);
+      return;
+    }
+
+    const fetchLiveHealth = async () => {
+      try {
+        setIsHealthLoading(true);
+        setHealthError(null);
+        const snapshot = await window.electronAPI.adb.getDeviceHealthSnapshot(
+          selectedDevice.adb_id,
+        );
+        if (!disposed) {
+          setLiveHealth(snapshot);
+        }
+      } catch (error) {
+        if (!disposed) {
+          setLiveHealth(null);
+          setHealthError(
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch live health data",
+          );
+        }
+      } finally {
+        if (!disposed) {
+          setIsHealthLoading(false);
+        }
+      }
+    };
+
+    fetchLiveHealth();
+    const timer = window.setInterval(fetchLiveHealth, 15000);
+
+    return () => {
+      disposed = true;
+      window.clearInterval(timer);
+    };
+  }, [selectedDevice]);
 
   const packageSummary = useMemo(() => {
     const enabled = packages.filter((pkg) => pkg.state === "enabled").length;
@@ -148,6 +204,22 @@ export default function Dashboard() {
     if (total <= 0) return 100;
     return Math.max(0, Math.min(100, Math.round((storageStats.freedSpace / total) * 100)));
   }, [storageStats.bloatwareSize, storageStats.freedSpace]);
+
+  const memoryUsagePercent = useMemo(() => {
+    if (!liveHealth?.memory.totalMb || !liveHealth?.memory.usedMb) return undefined;
+    const usage = (liveHealth.memory.usedMb / liveHealth.memory.totalMb) * 100;
+    return Math.round(usage);
+  }, [liveHealth]);
+
+  const storageUsagePercent = useMemo(() => {
+    if (liveHealth?.storage.usedPercent !== undefined) {
+      return Math.round(liveHealth.storage.usedPercent);
+    }
+
+    if (!liveHealth?.storage.totalGb || !liveHealth?.storage.usedGb) return undefined;
+    const usage = (liveHealth.storage.usedGb / liveHealth.storage.totalGb) * 100;
+    return Math.round(usage);
+  }, [liveHealth]);
 
   return (
     <div className="h-full flex flex-col bg-gray-900">
@@ -209,6 +281,119 @@ export default function Dashboard() {
                   {lastSyncedAt ? lastSyncedAt.toLocaleTimeString() : "-"}
                 </span>
               </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-gray-800 to-primary-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-200">Live Device Health</h3>
+              <span className="text-[11px] text-gray-400">
+                {isHealthLoading
+                  ? "Updating..."
+                  : liveHealth?.collectedAt
+                    ? new Date(liveHealth.collectedAt).toLocaleTimeString()
+                    : "-"}
+              </span>
+            </div>
+            <div className="space-y-2 text-sm">
+              {healthError ? (
+                <p className="text-[11px] text-yellow-400/90 pb-1">{healthError}</p>
+              ) : null}
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">Battery</span>
+                <span className="text-white text-right">
+                  {liveHealth?.battery.levelPercent !== undefined
+                    ? `${liveHealth.battery.levelPercent}% (${liveHealth.battery.status})`
+                    : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">Charging</span>
+                <span
+                  className={
+                    liveHealth?.battery.charging
+                      ? "text-green-400"
+                      : "text-yellow-400"
+                  }
+                >
+                  {liveHealth?.battery.charging ? "Yes" : "No"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">Temperature</span>
+                <span className="text-white">
+                  {liveHealth?.battery.temperatureC !== undefined
+                    ? `${liveHealth.battery.temperatureC}°C`
+                    : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">RAM</span>
+                <span className="text-white text-right">
+                  {liveHealth?.memory.usedMb !== undefined &&
+                  liveHealth?.memory.totalMb !== undefined
+                    ? `${liveHealth.memory.usedMb.toFixed(0)} / ${liveHealth.memory.totalMb.toFixed(0)} MB${
+                        memoryUsagePercent !== undefined ? ` (${memoryUsagePercent}%)` : ""
+                      }`
+                    : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">Storage</span>
+                <span className="text-white text-right">
+                  {liveHealth?.storage.usedGb !== undefined &&
+                  liveHealth?.storage.totalGb !== undefined
+                    ? `${liveHealth.storage.usedGb.toFixed(2)} / ${liveHealth.storage.totalGb.toFixed(2)} GB${
+                        storageUsagePercent !== undefined ? ` (${storageUsagePercent}%)` : ""
+                      }`
+                    : "-"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-gray-800 to-purple-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+            <h3 className="text-sm font-medium text-gray-200 mb-3">Performance Snapshot</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">CPU Load</span>
+                <span className="text-white">
+                  {liveHealth?.performance.cpuLoadPercent !== undefined
+                    ? `${liveHealth.performance.cpuLoadPercent.toFixed(1)}%`
+                    : "-"}
+                </span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span className="text-gray-400">Thermal</span>
+                <span
+                  className={
+                    liveHealth?.performance.thermalWarning
+                      ? "text-red-400"
+                      : "text-green-400"
+                  }
+                >
+                  {liveHealth?.performance.thermalStatus || "Unknown"}
+                </span>
+              </div>
+              <div className="pt-2 border-t border-gray-700/60">
+                <p className="text-xs text-gray-400 mb-2">Top CPU Apps</p>
+                <div className="space-y-1.5">
+                  {(liveHealth?.performance.topApps || []).slice(0, 3).map((app) => (
+                    <div key={app.name} className="flex justify-between gap-3 text-xs">
+                      <span className="text-gray-300 truncate">{app.name}</span>
+                      <span className="text-purple-300">{app.cpuPercent.toFixed(1)}%</span>
+                    </div>
+                  ))}
+                  {(!liveHealth || liveHealth.performance.topApps.length === 0) && (
+                    <p className="text-xs text-gray-500">No active process data</p>
+                  )}
+                </div>
+              </div>
+              {liveHealth?.errors?.length ? (
+                <p className="text-[11px] text-yellow-400/90 pt-1">
+                  Partial data: {liveHealth.errors[0]}
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -323,6 +508,22 @@ export default function Dashboard() {
                     </svg>
                   }
                   gradient="bg-gradient-to-br from-indigo-500 to-purple-500"
+                />
+                <InfoCard
+                  title="Battery"
+                  value={
+                    liveHealth?.battery.levelPercent !== undefined
+                      ? `${liveHealth.battery.levelPercent}%`
+                      : "-"
+                  }
+                  subtitle={liveHealth?.battery.status || "Unknown"}
+                  icon={
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h10v10H7z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 10h1a1 1 0 011 1v2a1 1 0 01-1 1h-1" />
+                    </svg>
+                  }
+                  gradient="bg-gradient-to-br from-lime-500 to-green-600"
                 />
               </div>
 
