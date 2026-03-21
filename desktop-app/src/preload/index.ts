@@ -102,6 +102,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ),
     getPackageDetails: (deviceId: string, packageName: string) =>
       ipcRenderer.invoke("adb:get-package-details", deviceId, packageName),
+    getDeviceHealthSnapshot: (deviceId: string) =>
+      ipcRenderer.invoke("adb:get-device-health-snapshot", deviceId),
   },
 
   // ============ DEBLOAT DATA API (LOCAL JSON) ============

@@ -11,6 +11,8 @@ import {
 } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
+import Packages from "./pages/Packages";
+import DeviceHealth from "./pages/DeviceHealth";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
 import Alternatives from "./pages/Alternatives";
@@ -65,6 +67,8 @@ function App() {
         >
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/device-health" element={<DeviceHealth />} />
+          <Route path="/packages" element={<Packages />} />
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/settings" element={<Settings />} />

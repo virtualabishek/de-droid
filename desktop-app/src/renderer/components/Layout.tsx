@@ -56,12 +56,12 @@ export function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
+    <div className="h-screen overflow-hidden bg-gray-900 text-white flex">
       {/* Toast Notifications */}
       <ToastContainer />
 
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+      <aside className="w-64 h-full bg-gray-800 border-r border-gray-700 flex flex-col">
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -99,6 +99,60 @@ export function Layout() {
                   />
                 </svg>
                 Dashboard
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/packages"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-primary-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
+                  }`
+                }
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 13V7a2 2 0 00-2-2h-4V3H10v2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0h-4a2 2 0 01-2-2V9a2 2 0 012-2h4m-16 6h4a2 2 0 002-2V9a2 2 0 00-2-2H4"
+                  />
+                </svg>
+                Packages
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/device-health"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-cyan-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
+                  }`
+                }
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2z"
+                  />
+                </svg>
+                Device Health
               </NavLink>
             </li>
             <li>
@@ -255,7 +309,7 @@ export function Layout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden">
         <Outlet />
       </main>
     </div>
