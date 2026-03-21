@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { DeviceSelector } from "../components/DeviceSelector";
 import { PackageList } from "../components/PackageList";
 import { BackupPanel } from "../components/BackupPanel";
@@ -283,6 +283,7 @@ function DeviceNicknameEditor({
 }
 
 export default function Dashboard() {
+  const rootRef = useRef<HTMLDivElement>(null);
   const {
     selectedDevice,
     selectedUser,
@@ -306,6 +307,7 @@ export default function Dashboard() {
   const [permissionPackage, setPermissionPackage] = useState<string | null>(
     null,
   );
+  const [showStatsCards, setShowStatsCards] = useState(true);
 
   // Fetch stats on mount
   useEffect(() => {
@@ -318,6 +320,41 @@ export default function Dashboard() {
       loadDeviceNickname();
     }
   }, [selectedDevice, fetchPackages]);
+
+  useEffect(() => {
+    const rootElement = rootRef.current;
+    if (!rootElement) return;
+
+    let parent: HTMLElement | null = rootElement.parentElement;
+    let scrollContainer: HTMLElement | null = null;
+
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      const isScrollable =
+        (style.overflowY === "auto" || style.overflowY === "scroll") &&
+        parent.scrollHeight > parent.clientHeight;
+
+      if (isScrollable) {
+        scrollContainer = parent;
+        break;
+      }
+
+      parent = parent.parentElement;
+    }
+
+    if (!scrollContainer) return;
+
+    const onScroll = () => {
+      setShowStatsCards(scrollContainer!.scrollTop < 12);
+    };
+
+    onScroll();
+    scrollContainer.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      scrollContainer?.removeEventListener("scroll", onScroll);
+    };
+  }, []);
 
   const loadDeviceNickname = async () => {
     if (!user?.id || !selectedDevice) return;
@@ -514,7 +551,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-900">
+    <div ref={rootRef} className="h-full flex flex-col bg-gray-900">
       {/* Enhanced Header */}
       <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-900/30 border-b border-gray-700/50 p-6">
         <div className="flex items-center justify-between">
@@ -697,7 +734,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Cards - Show when device is selected */}
-      {selectedDevice && (
+      {selectedDevice && showStatsCards && (
         <div className="px-6 pt-4">
           <div className="grid grid-cols-4 gap-4">
             <StatsCard

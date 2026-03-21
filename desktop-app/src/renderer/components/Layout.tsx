@@ -56,12 +56,12 @@ export function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
+    <div className="h-screen overflow-hidden bg-gray-900 text-white flex">
       {/* Toast Notifications */}
       <ToastContainer />
 
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
+      <aside className="w-64 h-full bg-gray-800 border-r border-gray-700 flex flex-col">
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -255,7 +255,7 @@ export function Layout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 h-full overflow-y-auto overflow-x-hidden">
         <Outlet />
       </main>
     </div>
