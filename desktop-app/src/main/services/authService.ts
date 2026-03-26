@@ -5,9 +5,7 @@
 import { getDatabase, User, UserDevice, UserSetting } from "../database";
 import { v4 as uuidv4 } from "uuid";
 import * as crypto from "crypto";
-import { sendOTPEmail } from "./emailService";
 
-// Simple password hashing using Node's crypto (for local app, bcrypt would be overkill)
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(16).toString("hex");
   const hash = crypto
@@ -24,11 +22,6 @@ function verifyPassword(password: string, storedHash: string): boolean {
   return hash === verifyHash;
 }
 
-// Generate 6-digit OTP
-function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
 export interface AuthResult {
   success: boolean;
   message: string;
@@ -38,7 +31,6 @@ export interface AuthResult {
     name: string | null;
     isVerified: boolean;
   };
-  requiresVerification?: boolean;
 }
 
 export interface PublicUser {
@@ -76,131 +68,23 @@ export async function registerUser(
 
   const id = uuidv4();
   const passwordHash = hashPassword(password);
-  const otp = generateOTP();
-  const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // 10 minutes
 
   db.prepare(
     `
-    INSERT INTO users (id, email, password_hash, name, otp_code, otp_expires_at)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO users (id, email, password_hash, name, is_verified)
+    VALUES (?, ?, ?, ?, 1)
   `,
-  ).run(id, email.toLowerCase(), passwordHash, name || null, otp, otpExpiresAt);
-
-  console.log(`[AUTH] User registered: ${email}, OTP: ${otp}`);
-
-  // Send OTP via email
-  const emailResult = await sendOTPEmail(email.toLowerCase(), otp, name);
-
-  if (!emailResult.success) {
-    console.error(`[AUTH] Failed to send OTP email: ${emailResult.message}`);
-  }
+  ).run(id, email.toLowerCase(), passwordHash, name || null);
 
   return {
     success: true,
-    message: emailResult.success
-      ? "Registration successful. Please check your email for the verification code."
-      : `Registration successful. Verification code: ${otp}`,
+    message: "Registration successful",
     user: {
       id,
       email: email.toLowerCase(),
       name: name || null,
-      isVerified: false,
+      isVerified: true,
     },
-    requiresVerification: true,
-  };
-}
-
-/**
- * Verify email with OTP
- */
-export function verifyEmail(email: string, otp: string): AuthResult {
-  const db = getDatabase();
-
-  const user = db
-    .prepare("SELECT * FROM users WHERE email = ?")
-    .get(email.toLowerCase()) as User | undefined;
-
-  if (!user) {
-    return { success: false, message: "User not found" };
-  }
-
-  if (user.is_verified) {
-    return { success: false, message: "Email already verified" };
-  }
-
-  if (user.otp_code !== otp) {
-    return { success: false, message: "Invalid verification code" };
-  }
-
-  if (user.otp_expires_at && new Date(user.otp_expires_at) < new Date()) {
-    return {
-      success: false,
-      message: "Verification code expired. Please request a new one.",
-    };
-  }
-
-  // Mark as verified
-  db.prepare(
-    `
-    UPDATE users 
-    SET is_verified = 1, otp_code = NULL, otp_expires_at = NULL, updated_at = ?
-    WHERE id = ?
-  `,
-  ).run(new Date().toISOString(), user.id);
-
-  return {
-    success: true,
-    message: "Email verified successfully",
-    user: { id: user.id, email: user.email, name: user.name, isVerified: true },
-  };
-}
-
-/**
- * Resend OTP
- */
-export async function resendOTP(email: string): Promise<AuthResult> {
-  const db = getDatabase();
-
-  const user = db
-    .prepare("SELECT * FROM users WHERE email = ?")
-    .get(email.toLowerCase()) as User | undefined;
-
-  if (!user) {
-    return { success: false, message: "User not found" };
-  }
-
-  if (user.is_verified) {
-    return { success: false, message: "Email already verified" };
-  }
-
-  const otp = generateOTP();
-  const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-
-  db.prepare(
-    `
-    UPDATE users SET otp_code = ?, otp_expires_at = ?, updated_at = ?
-    WHERE id = ?
-  `,
-  ).run(otp, otpExpiresAt, new Date().toISOString(), user.id);
-
-  console.log(`[AUTH] New OTP for ${email}: ${otp}`);
-
-  // Send OTP via email
-  const emailResult = await sendOTPEmail(
-    email.toLowerCase(),
-    otp,
-    user.name || undefined,
-  );
-
-  if (!emailResult.success) {
-    console.error(`[AUTH] Failed to send OTP email: ${emailResult.message}`);
-  }
-
-  return {
-    success: true,
-    message: emailResult.success
-      ? "New verification code sent to your email."
-      : `New verification code: ${otp}`,
   };
 }
 
@@ -226,39 +110,12 @@ export async function loginUser(
   }
 
   if (!user.is_verified) {
-    // Generate new OTP for unverified users
-    const otp = generateOTP();
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-
     db.prepare(
       `
-      UPDATE users SET otp_code = ?, otp_expires_at = ?, updated_at = ?
+      UPDATE users SET is_verified = 1, otp_code = NULL, otp_expires_at = NULL, updated_at = ?
       WHERE id = ?
     `,
-    ).run(otp, otpExpiresAt, new Date().toISOString(), user.id);
-
-    console.log(`[AUTH] Login requires verification for ${email}, OTP: ${otp}`);
-
-    // Send OTP via email
-    const emailResult = await sendOTPEmail(
-      email.toLowerCase(),
-      otp,
-      user.name || undefined,
-    );
-
-    return {
-      success: false,
-      message: emailResult.success
-        ? "Please verify your email. A new code has been sent."
-        : `Please verify your email. Code: ${otp}`,
-      requiresVerification: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        isVerified: false,
-      },
-    };
+    ).run(new Date().toISOString(), user.id);
   }
 
   return {
