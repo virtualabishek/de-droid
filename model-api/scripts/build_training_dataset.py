@@ -23,6 +23,13 @@ CATEGORY_MAP = {
     "CORE": "ESSENTIAL",
 }
 
+RISK_ORDER = {
+    "RECOMMENDED": 0,
+    "ADVANCED": 1,
+    "EXPERT": 2,
+    "UNSAFE": 3,
+}
+
 
 @dataclass
 class TrainingRow:
@@ -47,8 +54,6 @@ class TrainingRow:
                 " ".join(self.labels),
             ]
         ).strip()
-
-model-api/models/safety_baseline.joblib
 
 def normalize_string(value: Any) -> str:
     return value.strip() if isinstance(value, str) else ""
@@ -130,6 +135,42 @@ def merge_rows(
     return list(by_package.values())
 
 
+def safer_removal(current: str, incoming: str) -> str:
+    if RISK_ORDER.get(incoming, 1) > RISK_ORDER.get(current, 1):
+        return incoming
+    return current
+
+
+def apply_variant_rows(
+    merged_rows: list[TrainingRow],
+    variant_rows: list[TrainingRow],
+) -> list[TrainingRow]:
+    by_package: dict[str, TrainingRow] = {row.package_id: row for row in merged_rows}
+
+    for row in variant_rows:
+        existing = by_package.get(row.package_id)
+
+        if not existing:
+            by_package[row.package_id] = row
+            continue
+
+        merged_sources = sorted({*existing.source.split("+"), *row.source.split("+")})
+        by_package[row.package_id] = TrainingRow(
+            package_id=row.package_id,
+            oem_list=row.oem_list if row.oem_list != "UNKNOWN" else existing.oem_list,
+            removal=safer_removal(existing.removal, row.removal),
+            category=row.category if row.category != "OPTIONAL" else existing.category,
+            description=row.description if row.description else existing.description,
+            labels=sorted({*existing.labels, *row.labels}),
+            dependencies=sorted({*existing.dependencies, *row.dependencies}),
+            needed_by=sorted({*existing.needed_by, *row.needed_by}),
+            alternatives=sorted({*existing.alternatives, *row.alternatives}),
+            source="+".join(merged_sources),
+        )
+
+    return list(by_package.values())
+
+
 
 def write_json(path: Path, data: Any) -> None:
     with path.open("w", encoding="utf-8") as file:
@@ -159,6 +200,13 @@ def main() -> None:
         default=Path("model-api/processed/training_dataset.json"),
         help="Output canonical dataset path",
     )
+    parser.add_argument(
+        "--variants",
+        type=Path,
+        nargs="*",
+        default=[],
+        help="Optional variant JSON files (format: { packages: [...] } or list of package entries)",
+    )
 
     args = parser.parse_args()
 
@@ -178,7 +226,25 @@ def main() -> None:
         if row is not None
     ]
 
+    variant_rows: list[TrainingRow] = []
+    for variant_path in args.variants:
+        variant_data = load_json(variant_path)
+        variant_packages = (
+            variant_data.get("packages", [])
+            if isinstance(variant_data, dict)
+            else (variant_data if isinstance(variant_data, list) else [])
+        )
+
+        variant_source_name = f"variant:{variant_path.stem}"
+        variant_rows.extend(
+            row
+            for row in (build_row(item, variant_source_name) for item in variant_packages)
+            if row is not None
+        )
+
     merged = merge_rows(uad_rows, desktop_rows)
+    if variant_rows:
+        merged = apply_variant_rows(merged, variant_rows)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -201,6 +267,7 @@ def main() -> None:
             "sources": {
                 "uad_rows": len(uad_rows),
                 "desktop_rows": len(desktop_rows),
+                "variant_rows": len(variant_rows),
             },
         },
         "rows": serializable_rows,
