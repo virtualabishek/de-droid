@@ -26,7 +26,6 @@
     "dotenv": "^17.2.3",
     "electron-store": "^8.1.0",
     "fuse.js": "^7.1.0",
-    "nodemailer": "^7.0.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
@@ -36,7 +35,6 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.10.6",
-    "@types/nodemailer": "^7.0.9",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "@types/uuid": "^10.0.0",

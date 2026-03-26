@@ -16,6 +16,11 @@
     "types": ["node"],
     "composite": true
   },
-  "include": ["src/main/**/*", "src/preload/**/*", "src/data/**/*"],
+  "include": [
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/shared/**/*",
+    "src/data/**/*"
+  ],
   "exclude": ["node_modules", "src/renderer"]
 }
