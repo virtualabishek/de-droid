@@ -215,6 +215,23 @@ export interface HealthResponse {
   mode: string;
 }
 
+export interface ConnectionDiagnostics {
+  timestamp: string;
+  status: "healthy" | "warning" | "error";
+  adb_available: boolean;
+  adb_version: string | null;
+  connected_devices: number;
+  unauthorized_devices: number;
+  offline_devices: number;
+  raw_devices_output: string;
+  checks: Array<{
+    name: string;
+    ok: boolean;
+    message: string;
+  }>;
+  suggestions: string[];
+}
+
 export interface WirelessResponse {
   success: boolean;
   message: string;
@@ -313,6 +330,7 @@ export interface ElectronAPI {
       androidSdk?: number,
     ) => Promise<BulkActionResult>;
     health: () => Promise<HealthResponse>;
+    runConnectionDiagnostics: () => Promise<ConnectionDiagnostics>;
     checkSafety: (
       packageNames: string[],
     ) => Promise<{ packages: PackageSafetyInfo[]; total: number }>;

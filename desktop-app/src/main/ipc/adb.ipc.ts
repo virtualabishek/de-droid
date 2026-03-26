@@ -657,6 +657,123 @@ export function registerAdbHandlers() {
     }
   });
 
+  ipcMain.handle("adb:run-connection-diagnostics", async () => {
+    const timestamp = new Date().toISOString();
+
+    try {
+      const versionResult = await LocalAdb.executeAdbCommand("version", 10000);
+      const adbAvailable = versionResult.success;
+      const adbVersion = adbAvailable
+        ? versionResult.output.split("\n")[0] || versionResult.output
+        : null;
+
+      const devicesResult = await LocalAdb.executeAdbCommand("devices -l", 15000);
+      const devicesOutput = devicesResult.output || devicesResult.error || "";
+      const lines = devicesOutput
+        .split("\n")
+        .slice(1)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      const connected = lines.filter((line) => /\sdevice\b/.test(line)).length;
+      const unauthorized = lines.filter((line) => /\sunauthorized\b/.test(line)).length;
+      const offline = lines.filter((line) => /\soffline\b/.test(line)).length;
+
+      const checks = [
+        {
+          name: "ADB Installed",
+          ok: adbAvailable,
+          message: adbAvailable
+            ? "ADB command is available"
+            : "ADB command is not available in PATH",
+        },
+        {
+          name: "ADB Device Scan",
+          ok: devicesResult.success,
+          message: devicesResult.success
+            ? "ADB can list devices"
+            : devicesResult.error || "Failed to list devices",
+        },
+        {
+          name: "Authorized Device",
+          ok: connected > 0,
+          message:
+            connected > 0
+              ? `${connected} authorized device(s) connected`
+              : "No authorized devices found",
+        },
+      ];
+
+      const suggestions: string[] = [];
+
+      if (!adbAvailable) {
+        suggestions.push("Install Android Platform Tools and ensure `adb` is in PATH.");
+      }
+
+      if (unauthorized > 0) {
+        suggestions.push(
+          "Unlock phone and accept 'Allow USB debugging' prompt, then reconnect USB.",
+        );
+      }
+
+      if (offline > 0) {
+        suggestions.push(
+          "Run `adb kill-server && adb start-server`, reconnect cable, and refresh devices.",
+        );
+      }
+
+      if (connected === 0) {
+        suggestions.push(
+          "Enable Developer options + USB debugging, set USB mode to File Transfer, and try another data-capable cable.",
+        );
+        suggestions.push(
+          "For wireless debugging, ensure phone and PC are on same Wi-Fi and re-run Pair then Connect.",
+        );
+      }
+
+      const status: "healthy" | "warning" | "error" = !adbAvailable
+        ? "error"
+        : connected > 0
+          ? "healthy"
+          : "warning";
+
+      return {
+        timestamp,
+        status,
+        adb_available: adbAvailable,
+        adb_version: adbVersion,
+        connected_devices: connected,
+        unauthorized_devices: unauthorized,
+        offline_devices: offline,
+        raw_devices_output: devicesOutput,
+        checks,
+        suggestions,
+      };
+    } catch (error) {
+      return {
+        timestamp,
+        status: "error" as const,
+        adb_available: false,
+        adb_version: null,
+        connected_devices: 0,
+        unauthorized_devices: 0,
+        offline_devices: 0,
+        raw_devices_output: "",
+        checks: [
+          {
+            name: "Diagnostics Runner",
+            ok: false,
+            message: error instanceof Error ? error.message : "Unknown diagnostics error",
+          },
+        ],
+        suggestions: [
+          "Restart the app and run diagnostics again.",
+          "Verify Android Platform Tools are installed and `adb` is accessible.",
+        ],
+      };
+    }
+  });
+
   ipcMain.handle("adb:get-device-health-snapshot", async (_, deviceId: string) => {
     try {
       if (!deviceId) {

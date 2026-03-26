@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDeviceStore } from '../store/deviceStore';
+import type { ConnectionDiagnostics } from '../shared/electron-api';
 
 export function DeviceSelector() {
   const {
@@ -24,6 +25,8 @@ export function DeviceSelector() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [wirelessError, setWirelessError] = useState<string | null>(null);
   const [wirelessSuccess, setWirelessSuccess] = useState<string | null>(null);
+  const [isRunningDiagnostics, setIsRunningDiagnostics] = useState(false);
+  const [diagnostics, setDiagnostics] = useState<ConnectionDiagnostics | null>(null);
 
   useEffect(() => {
     // Initial device fetch on mount
@@ -161,6 +164,24 @@ export function DeviceSelector() {
     }
   };
 
+  const runConnectionDiagnostics = async () => {
+    setIsRunningDiagnostics(true);
+    setWirelessError(null);
+
+    try {
+      const result = await window.electronAPI.adb.runConnectionDiagnostics();
+      setDiagnostics(result);
+      setShowConnectionHelp(true);
+      setHelpMode('advanced');
+    } catch (error) {
+      setWirelessError(
+        error instanceof Error ? error.message : 'Failed to run connection diagnostics',
+      );
+    } finally {
+      setIsRunningDiagnostics(false);
+    }
+  };
+
   return (
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
       <div className="flex items-center justify-between mb-3">
@@ -276,6 +297,19 @@ export function DeviceSelector() {
         <span className="text-sm font-medium">Wireless ADB</span>
       </button>
 
+      <button
+        onClick={runConnectionDiagnostics}
+        disabled={isRunningDiagnostics}
+        className="w-full mt-2 flex items-center justify-center gap-2 p-3 rounded-lg transition-colors bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 text-amber-300 disabled:opacity-60"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1.5-1.5L6 20l-.75-3M4.5 10.5a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z" />
+        </svg>
+        <span className="text-sm font-medium">
+          {isRunningDiagnostics ? 'Running Diagnostics...' : 'Run Connection Diagnostics'}
+        </span>
+      </button>
+
       {/* Connection Help Panel */}
       {showConnectionHelp && (
         <div className="mt-3 p-4 bg-gray-700/40 rounded-lg border border-gray-600">
@@ -349,6 +383,60 @@ export function DeviceSelector() {
                 <li>Restart ADB server if still missing: <span className="font-mono">adb kill-server && adb start-server</span>.</li>
               </ul>
               <p className="text-gray-400">When device appears as unauthorized, disconnect/reconnect and accept debug prompt again.</p>
+
+              {diagnostics && (
+                <div className="mt-3 p-3 bg-gray-800/70 border border-gray-600 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold text-white">Latest Diagnostics</p>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full ${
+                        diagnostics.status === 'healthy'
+                          ? 'bg-green-500/20 text-green-300'
+                          : diagnostics.status === 'warning'
+                            ? 'bg-yellow-500/20 text-yellow-300'
+                            : 'bg-red-500/20 text-red-300'
+                      }`}
+                    >
+                      {diagnostics.status.toUpperCase()}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 text-[11px] mb-2">
+                    <div className="bg-gray-700/60 rounded p-2">
+                      <div className="text-gray-400">Connected</div>
+                      <div className="text-white font-medium">{diagnostics.connected_devices}</div>
+                    </div>
+                    <div className="bg-gray-700/60 rounded p-2">
+                      <div className="text-gray-400">Unauthorized</div>
+                      <div className="text-white font-medium">{diagnostics.unauthorized_devices}</div>
+                    </div>
+                    <div className="bg-gray-700/60 rounded p-2">
+                      <div className="text-gray-400">Offline</div>
+                      <div className="text-white font-medium">{diagnostics.offline_devices}</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 mb-2">
+                    {diagnostics.checks.map((check) => (
+                      <div key={check.name} className="text-[11px] flex items-start gap-2">
+                        <span className={check.ok ? 'text-green-400' : 'text-red-400'}>
+                          {check.ok ? '✓' : '✗'}
+                        </span>
+                        <span className="text-gray-300">{check.name}: {check.message}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {diagnostics.suggestions.length > 0 && (
+                    <div className="space-y-1">
+                      <p className="text-[11px] text-gray-400">Recommended fixes:</p>
+                      {diagnostics.suggestions.map((item, index) => (
+                        <p key={`${item}-${index}`} className="text-[11px] text-gray-300">• {item}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
