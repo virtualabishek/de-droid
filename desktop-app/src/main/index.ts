@@ -1,7 +1,3 @@
-/**
- * De-Droid Electron Main Process
- * Fully local implementation with SQLite storage
- */
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as dotenv from "dotenv";
@@ -9,11 +5,8 @@ import { initDatabase, closeDatabase } from "./database";
 import { registerAdbHandlers } from "./ipc/adb.ipc";
 import { registerAuthHandlers } from "./ipc/auth.ipc";
 import { registerHistoryHandlers } from "./ipc/history.ipc";
-import { verifyEmailConnection } from "./services/emailService";
 
-// Load environment variables early
-dotenv.config({ path: path.join(__dirname, "../../.env") });
-
+dotenv.config();
 let mainWindow: BrowserWindow | null = null;
 
 function createWindow() {
@@ -43,7 +36,6 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // Prevent drag and drop navigation
   mainWindow.webContents.on("will-navigate", (event) => {
     event.preventDefault();
   });
@@ -55,28 +47,14 @@ function createWindow() {
 
 // Initialize database and register IPC handlers
 async function setupApp() {
-  // Initialize SQLite database
   console.log("[APP] Initializing database...");
   initDatabase();
 
-  // Verify email connection
-  console.log("[APP] Verifying email connection...");
-  const emailOk = await verifyEmailConnection();
-  if (emailOk) {
-    console.log("[APP] Email service ready");
-  } else {
-    console.warn(
-      "[APP] Email service not configured - OTPs will be shown in console",
-    );
-  }
-
-  // Register IPC handlers
   console.log("[APP] Registering IPC handlers...");
   registerAdbHandlers();
   registerAuthHandlers();
   registerHistoryHandlers();
 
-  // Health check
   ipcMain.handle("app:health", async () => {
     return {
       status: "healthy",
@@ -105,7 +83,6 @@ app.on("window-all-closed", () => {
   }
 });
 
-// Clean up database on quit
 app.on("before-quit", () => {
   console.log("[APP] Closing database...");
   closeDatabase();

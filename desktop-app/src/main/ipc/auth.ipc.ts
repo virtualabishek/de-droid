@@ -23,37 +23,6 @@ export function registerAuthHandlers(): void {
     },
   );
 
-  // Verify email with OTP
-  ipcMain.handle(
-    "auth:verify-email",
-    async (_event, email: string, otp: string) => {
-      try {
-        return authService.verifyEmail(email, otp);
-      } catch (error) {
-        console.error("[AUTH IPC] Verify error:", error);
-        return {
-          success: false,
-          message:
-            error instanceof Error ? error.message : "Verification failed",
-        };
-      }
-    },
-  );
-
-  // Resend OTP
-  ipcMain.handle("auth:resend-otp", async (_event, email: string) => {
-    try {
-      return authService.resendOTP(email);
-    } catch (error) {
-      console.error("[AUTH IPC] Resend OTP error:", error);
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to resend code",
-      };
-    }
-  });
-
   // Login user
   ipcMain.handle(
     "auth:login",

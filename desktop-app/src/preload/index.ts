@@ -106,7 +106,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.invoke("adb:get-device-health-snapshot", deviceId),
   },
 
-  // ============ DEBLOAT DATA API (LOCAL JSON) ============
+  // ============ DEBLOAT DATA API (LOCAL JSON for now later we would have the real API) ============
   debloat: {
     getPackages: () => ipcRenderer.invoke("debloat:get-packages"),
     getPackageInfo: (packageId: string) =>
@@ -235,9 +235,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
   auth: {
     register: (email: string, password: string, name?: string) =>
       ipcRenderer.invoke("auth:register", email, password, name),
-    verifyEmail: (email: string, otp: string) =>
-      ipcRenderer.invoke("auth:verify-email", email, otp),
-    resendOtp: (email: string) => ipcRenderer.invoke("auth:resend-otp", email),
     login: (email: string, password: string) =>
       ipcRenderer.invoke("auth:login", email, password),
     getUser: (userId: string) => ipcRenderer.invoke("auth:get-user", userId),
@@ -623,8 +620,6 @@ export interface ElectronAPI {
       password: string,
       name?: string,
     ) => Promise<AuthResult>;
-    verifyEmail: (email: string, otp: string) => Promise<AuthResult>;
-    resendOtp: (email: string) => Promise<AuthResult>;
     login: (email: string, password: string) => Promise<AuthResult>;
     getUser: (userId: string) => Promise<PublicUser | null>;
     updateProfile: (
@@ -662,7 +657,6 @@ export interface AuthResult {
   success: boolean;
   message: string;
   user?: PublicUser;
-  requiresVerification?: boolean;
 }
 
 export interface PublicUser {

@@ -7,7 +7,6 @@ export interface AuthResult {
   success: boolean;
   message: string;
   user?: PublicUser;
-  requiresVerification?: boolean;
 }
 
 export interface PublicUser {
@@ -375,8 +374,6 @@ export interface ElectronAPI {
       password: string,
       name?: string,
     ) => Promise<AuthResult>;
-    verifyEmail: (email: string, otp: string) => Promise<AuthResult>;
-    resendOtp: (email: string) => Promise<AuthResult>;
     login: (email: string, password: string) => Promise<AuthResult>;
     getUser: (userId: string) => Promise<PublicUser | null>;
     updateProfile: (
