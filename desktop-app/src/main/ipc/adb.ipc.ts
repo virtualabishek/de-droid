@@ -265,22 +265,41 @@ export function registerAdbHandlers() {
       const packages = packageNames.map((name) => {
         const info = packageDataService.getPackageInfo(name);
 
+        const isCoreNamespace =
+          name.startsWith("com.android.") ||
+          name.startsWith("android.") ||
+          name.startsWith("com.miui.") ||
+          name.startsWith("com.xiaomi.") ||
+          name.startsWith("com.samsung.") ||
+          name.startsWith("com.sec.") ||
+          name.startsWith("com.huawei.") ||
+          name.startsWith("com.oppo.") ||
+          name.startsWith("com.vivo.") ||
+          name.startsWith("com.oneplus.");
+
         if (info) {
           const modelUnsafeGate =
             info.modelLabel === "UNSAFE" &&
             typeof info.modelConfidence === "number" &&
             info.modelConfidence >= 0.8;
 
+          const lowConfidenceGate =
+            typeof info.modelConfidence === "number" && info.modelConfidence < 0.55;
+
           const finalRemovalType =
             info.removal === "UNSAFE" || modelUnsafeGate
               ? "UNSAFE"
+              : lowConfidenceGate && info.removal === "RECOMMENDED"
+                ? "ADVANCED"
               : info.removal;
+
+          const canUninstall = finalRemovalType !== "UNSAFE" && !isCoreNamespace;
 
           return {
             package_name: name,
             safety: packageDataService.getSafetyColor(finalRemovalType),
             safety_description: info.description,
-            can_uninstall: finalRemovalType !== "UNSAFE",
+            can_uninstall: canUninstall,
             description: info.description,
             category: info.category,
             removal_type: finalRemovalType,
@@ -296,12 +315,14 @@ export function registerAdbHandlers() {
         // Unknown package
         return {
           package_name: name,
-          safety: "yellow" as const,
-          safety_description: "Unknown package - proceed with caution",
-          can_uninstall: true,
+          safety: isCoreNamespace ? ("red" as const) : ("yellow" as const),
+          safety_description: isCoreNamespace
+            ? "Unknown core/OEM package - uninstall blocked for safety"
+            : "Unknown package - proceed with caution",
+          can_uninstall: !isCoreNamespace,
           description: "",
           category: "UNKNOWN",
-          removal_type: "ADVANCED",
+          removal_type: isCoreNamespace ? "UNSAFE" : "ADVANCED",
           model_label: null,
           model_confidence: null,
           model_version: null,

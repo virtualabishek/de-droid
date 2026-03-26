@@ -260,6 +260,22 @@ def build_features(rows: list[dict]):
     return texts, oem_lists, numeric, pkg_features, labels
 
 
+def build_sample_weights(rows: list[dict]) -> np.ndarray:
+    weights: list[float] = []
+    for row in rows:
+        confidence = float(row.get("source_confidence", 0.75))
+        label = str(row.get("removal", "ADVANCED"))
+
+        if label == "UNSAFE":
+            confidence = min(1.0, confidence + 0.1)
+        elif label == "RECOMMENDED":
+            confidence = max(0.45, confidence - 0.05)
+
+        weights.append(max(0.35, min(1.2, confidence)))
+
+    return np.array(weights, dtype=float)
+
+
 def build_feature_names(
     text_vectorizer: TfidfVectorizer,
     char_vectorizer: TfidfVectorizer,
@@ -549,6 +565,7 @@ def train_and_predict(
     max_features: int,
 ) -> tuple[np.ndarray, np.ndarray, list[str]]:
     texts, oem_lists, numeric, pkg_features, labels = build_features(rows)
+    sample_weights = build_sample_weights(rows)
 
     text_vectorizer = TfidfVectorizer(
         max_features=max_features,
@@ -593,7 +610,7 @@ def train_and_predict(
         ),
         cv=3,
     )
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, sample_weight=sample_weights[train_indices])
 
     y_pred = model.predict(X_eval)
     y_prob = model.predict_proba(X_eval)
@@ -803,6 +820,7 @@ def main() -> None:
     print(f"After oversampling: {len(rows_oversampled)} rows")
 
     texts, oem_lists, numeric, pkg_features, labels = build_features(rows_oversampled)
+    sample_weights = build_sample_weights(rows_oversampled)
 
     train_idx, test_idx = train_test_split(
         np.arange(len(rows_oversampled)),
@@ -863,7 +881,7 @@ def main() -> None:
         ),
         cv=3,
     )
-    sgd_model.fit(X_train, y_train)
+    sgd_model.fit(X_train, y_train, sample_weight=sample_weights[train_idx])
 
     # ── Model 2: Logistic Regression (regularized, multiclass) ──
     print("Training Logistic Regression model...")
@@ -872,10 +890,9 @@ def main() -> None:
         class_weight="balanced",
         C=1.0,
         solver="saga",
-        multi_class="multinomial",
         random_state=42,
     )
-    lr_model.fit(X_train, y_train)
+    lr_model.fit(X_train, y_train, sample_weight=sample_weights[train_idx])
 
     # ── Soft voting ensemble ──
     # Since both models are already fitted, we'll use the better one

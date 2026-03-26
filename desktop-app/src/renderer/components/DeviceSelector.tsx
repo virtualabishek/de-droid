@@ -14,6 +14,8 @@ export function DeviceSelector() {
 
   const [showWirelessPanel, setShowWirelessPanel] = useState(false);
   const [wirelessMode, setWirelessMode] = useState<'connect' | 'pair' | 'qr'>('connect');
+  const [showConnectionHelp, setShowConnectionHelp] = useState(false);
+  const [helpMode, setHelpMode] = useState<'usb' | 'wireless' | 'advanced'>('usb');
   const [wirelessIp, setWirelessIp] = useState('');
   const [wirelessPort, setWirelessPort] = useState('5555');
   const [pairingCode, setPairingCode] = useState('');
@@ -163,15 +165,26 @@ export function DeviceSelector() {
     <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-gray-400">Connected Devices</h3>
-        <button
-          onClick={() => fetchDevices()}
-          className="p-1 hover:bg-gray-700 rounded transition-colors"
-          title="Refresh devices"
-        >
-          <svg className={`w-4 h-4 text-gray-400 ${isLoadingDevices ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setShowConnectionHelp(!showConnectionHelp)}
+            className="p-1 hover:bg-gray-700 rounded transition-colors"
+            title="Device connection help"
+          >
+            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.654 2.093-3 3.772-3 2.39 0 4.328 1.79 4.328 4 0 1.904-1.44 3.497-3.375 3.89M12 17h.01M12 13v-1" />
+            </svg>
+          </button>
+          <button
+            onClick={() => fetchDevices()}
+            className="p-1 hover:bg-gray-700 rounded transition-colors"
+            title="Refresh devices"
+          >
+            <svg className={`w-4 h-4 text-gray-400 ${isLoadingDevices ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {isLoadingDevices && devices.length === 0 ? (
@@ -197,6 +210,12 @@ export function DeviceSelector() {
           <p className="text-xs text-gray-500 mt-1">
             Connect via USB or wirelessly
           </p>
+          <button
+            onClick={() => setShowConnectionHelp(true)}
+            className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30"
+          >
+            Device not showing? Open setup guide
+          </button>
         </div>
       ) : (
         <div className="space-y-2">
@@ -256,6 +275,84 @@ export function DeviceSelector() {
         </svg>
         <span className="text-sm font-medium">Wireless ADB</span>
       </button>
+
+      {/* Connection Help Panel */}
+      {showConnectionHelp && (
+        <div className="mt-3 p-4 bg-gray-700/40 rounded-lg border border-gray-600">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold text-white">Device Connection Guide</h4>
+            <button
+              onClick={() => setShowConnectionHelp(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex gap-1 mb-3 bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setHelpMode('usb')}
+              className={`flex-1 px-2 py-1.5 rounded text-xs font-medium ${helpMode === 'usb' ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              USB Setup
+            </button>
+            <button
+              onClick={() => setHelpMode('wireless')}
+              className={`flex-1 px-2 py-1.5 rounded text-xs font-medium ${helpMode === 'wireless' ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              Wireless
+            </button>
+            <button
+              onClick={() => setHelpMode('advanced')}
+              className={`flex-1 px-2 py-1.5 rounded text-xs font-medium ${helpMode === 'advanced' ? 'bg-primary-600 text-white' : 'text-gray-400 hover:text-white'}`}
+            >
+              Advanced Fix
+            </button>
+          </div>
+
+          {helpMode === 'usb' && (
+            <div className="space-y-2 text-xs text-gray-300">
+              <p className="text-gray-200 font-medium">If your device is not detected via USB:</p>
+              <ol className="list-decimal pl-4 space-y-1">
+                <li>On phone: Settings → About phone → tap Build number 7 times.</li>
+                <li>Open Developer options → enable USB debugging.</li>
+                <li>Reconnect cable and choose File Transfer mode (not Charging only).</li>
+                <li>Accept the RSA prompt: “Allow USB debugging” on the phone.</li>
+                <li>Press refresh in this panel.</li>
+              </ol>
+              <p className="text-gray-400">Tip: use original cable/USB data cable and avoid charge-only cables.</p>
+            </div>
+          )}
+
+          {helpMode === 'wireless' && (
+            <div className="space-y-2 text-xs text-gray-300">
+              <p className="text-gray-200 font-medium">Wireless Debugging (Android 11+):</p>
+              <ol className="list-decimal pl-4 space-y-1">
+                <li>Enable Developer options and Wireless debugging on phone.</li>
+                <li>Phone and PC must be on same Wi-Fi network.</li>
+                <li>Use Pair tab: enter IP, pairing port, pairing code.</li>
+                <li>Then switch to Connect tab and connect using IP + connect port.</li>
+                <li>Press refresh to list device.</li>
+              </ol>
+              <p className="text-gray-400">If pairing fails, disable and re-enable Wireless debugging on phone and retry.</p>
+            </div>
+          )}
+
+          {helpMode === 'advanced' && (
+            <div className="space-y-2 text-xs text-gray-300">
+              <p className="text-gray-200 font-medium">Advanced troubleshooting checklist:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Revoke USB debugging authorizations and reconnect device.</li>
+                <li>Disable USB debugging, enable again, reconnect.</li>
+                <li>Try another USB port/cable and unlock phone screen.</li>
+                <li>On Linux, ensure adb has permission (udev rule if needed).</li>
+                <li>Restart ADB server if still missing: <span className="font-mono">adb kill-server && adb start-server</span>.</li>
+              </ul>
+              <p className="text-gray-400">When device appears as unauthorized, disconnect/reconnect and accept debug prompt again.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Wireless ADB Panel */}
       {showWirelessPanel && (

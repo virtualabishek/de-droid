@@ -144,8 +144,9 @@ def safer_removal(current: str, incoming: str) -> str:
 def apply_variant_rows(
     merged_rows: list[TrainingRow],
     variant_rows: list[TrainingRow],
-) -> list[TrainingRow]:
+) -> tuple[list[TrainingRow], int]:
     by_package: dict[str, TrainingRow] = {row.package_id: row for row in merged_rows}
+    conflict_count = 0
 
     for row in variant_rows:
         existing = by_package.get(row.package_id)
@@ -153,6 +154,9 @@ def apply_variant_rows(
         if not existing:
             by_package[row.package_id] = row
             continue
+
+        if existing.removal != row.removal:
+            conflict_count += 1
 
         merged_sources = sorted({*existing.source.split("+"), *row.source.split("+")})
         by_package[row.package_id] = TrainingRow(
@@ -168,7 +172,28 @@ def apply_variant_rows(
             source="+".join(merged_sources),
         )
 
-    return list(by_package.values())
+    return list(by_package.values()), conflict_count
+
+
+def source_confidence(source: str, removal: str) -> float:
+    source_parts = set(source.split("+"))
+
+    if "desktop" in source_parts and "uad" in source_parts:
+        return 1.0
+    if "uad" in source_parts:
+        return 0.95
+    if "desktop" in source_parts:
+        return 0.9
+
+    variant_only = all(part.startswith("variant:") for part in source_parts)
+    if variant_only:
+        if removal == "UNSAFE":
+            return 0.8
+        if removal == "EXPERT":
+            return 0.65
+        return 0.55
+
+    return 0.75
 
 
 
@@ -243,8 +268,9 @@ def main() -> None:
         )
 
     merged = merge_rows(uad_rows, desktop_rows)
+    label_conflict_count = 0
     if variant_rows:
-        merged = apply_variant_rows(merged, variant_rows)
+        merged, label_conflict_count = apply_variant_rows(merged, variant_rows)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -256,6 +282,7 @@ def main() -> None:
         payload["needed_by_count"] = len(row.needed_by)
         payload["label_count"] = len(row.labels)
         payload["has_alternatives"] = 1 if row.alternatives else 0
+        payload["source_confidence"] = source_confidence(row.source, row.removal)
         serializable_rows.append(payload)
 
     distribution = Counter(r["removal"] for r in serializable_rows)
@@ -268,6 +295,7 @@ def main() -> None:
                 "uad_rows": len(uad_rows),
                 "desktop_rows": len(desktop_rows),
                 "variant_rows": len(variant_rows),
+                "label_conflicts": label_conflict_count,
             },
         },
         "rows": serializable_rows,
