@@ -1,4 +1,10 @@
+# ML dependencies
 scikit-learn>=1.5
 scipy>=1.13
 numpy>=1.26
 joblib>=1.4
+
+# API dependencies
+fastapi>=0.115
+uvicorn[standard]>=0.34
+pydantic>=2.0
