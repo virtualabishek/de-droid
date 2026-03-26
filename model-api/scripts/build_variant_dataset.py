@@ -9,6 +9,14 @@ from typing import Any
 PACKAGE_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+$")
 PACKAGE_EXTRACT_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+")
 
+GENERIC_PREFIX_TOKENS = {
+    "com.android",
+    "com.google.android",
+    "com.miui",
+    "com.xiaomi",
+    "com.samsung.android",
+}
+
 RISK_ORDER = {
     "RECOMMENDED": 0,
     "ADVANCED": 1,
@@ -27,6 +35,8 @@ def normalize_package(candidate: str) -> str | None:
     value = value.split("-", 1)[0].strip() if " - " in value else value
 
     if PACKAGE_PATTERN.match(value):
+        if value in GENERIC_PREFIX_TOKENS:
+            return None
         return value
     return None
 

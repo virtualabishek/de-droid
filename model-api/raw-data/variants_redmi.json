@@ -1,73 +1,17 @@
 {
   "meta": {
     "oem": "XIAOMI",
-    "count": 285,
+    "count": 280,
     "sources": {
-      "list_file": "model-api/raw-data/samsung-bloatware-list.txt",
-      "table_file": "model-api/raw-data/samsung-data-table.txt",
-      "list_rows_parsed": 563,
+      "input_dir": "/home/virtualabishek/Projects/de-droid/model-api/raw-data/redmi",
+      "list_file": null,
+      "table_file": null,
+      "list_rows_parsed": 558,
       "table_rows_parsed": 2,
-      "files_parsed": 4
+      "files_parsed": 3
     }
   },
   "packages": [
-    {
-      "id": "14.0.1",
-      "list": "XIAOMI",
-      "description": "Community OEM variant candidate",
-      "removal": "UNSAFE",
-      "category": "BLOATWARE",
-      "dependencies": [],
-      "neededBy": [],
-      "labels": [
-        "community",
-        "list-import",
-        "section:unsafe",
-        "source:sample1",
-        "variant",
-        "xiaomi"
-      ],
-      "alternatives": [],
-      "source": "variant"
-    },
-    {
-      "id": "14.0.1.0",
-      "list": "XIAOMI",
-      "description": "Community OEM variant candidate",
-      "removal": "UNSAFE",
-      "category": "BLOATWARE",
-      "dependencies": [],
-      "neededBy": [],
-      "labels": [
-        "community",
-        "list-import",
-        "section:unsafe",
-        "source:sample1",
-        "variant",
-        "xiaomi"
-      ],
-      "alternatives": [],
-      "source": "variant"
-    },
-    {
-      "id": "4.0",
-      "list": "XIAOMI",
-      "description": "Community OEM variant candidate",
-      "removal": "ADVANCED",
-      "category": "BLOATWARE",
-      "dependencies": [],
-      "neededBy": [],
-      "labels": [
-        "community",
-        "list-import",
-        "section:safe",
-        "source:sample1",
-        "variant",
-        "xiaomi"
-      ],
-      "alternatives": [],
-      "source": "variant"
-    },
     {
       "id": "android.autoinstalls.config.xiaomi.model",
       "list": "XIAOMI",
@@ -194,25 +138,6 @@
         "community",
         "list-import",
         "section:safe",
-        "source:sample1",
-        "variant",
-        "xiaomi"
-      ],
-      "alternatives": [],
-      "source": "variant"
-    },
-    {
-      "id": "com.android",
-      "list": "XIAOMI",
-      "description": "Community OEM variant candidate",
-      "removal": "UNSAFE",
-      "category": "BLOATWARE",
-      "dependencies": [],
-      "neededBy": [],
-      "labels": [
-        "community",
-        "list-import",
-        "section:unsafe",
         "source:sample1",
         "variant",
         "xiaomi"
@@ -5481,25 +5406,6 @@
         "community",
         "list-import",
         "section:safe",
-        "source:sample1",
-        "variant",
-        "xiaomi"
-      ],
-      "alternatives": [],
-      "source": "variant"
-    },
-    {
-      "id": "tkq1.221114.001",
-      "list": "XIAOMI",
-      "description": "Community OEM variant candidate",
-      "removal": "UNSAFE",
-      "category": "BLOATWARE",
-      "dependencies": [],
-      "neededBy": [],
-      "labels": [
-        "community",
-        "list-import",
-        "section:unsafe",
         "source:sample1",
         "variant",
         "xiaomi"
