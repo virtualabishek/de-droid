@@ -7,6 +7,7 @@ interface UserSettings {
   multiUserMode: boolean;
   confirmActions: boolean;
   autoBackup: boolean;
+  telemetryOptIn: boolean;
 }
 
 interface WirelessStatus {
@@ -30,6 +31,7 @@ export default function Settings() {
     multiUserMode: true,
     confirmActions: true,
     autoBackup: true,
+    telemetryOptIn: false,
   });
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">(
@@ -60,7 +62,10 @@ export default function Settings() {
 
     try {
       // Load user-specific settings from SQLite
-      const allSettings = await window.electronAPI.auth.getAllSettings(user.id);
+      const [allSettings, telemetrySetting] = await Promise.all([
+        window.electronAPI.auth.getAllSettings(user.id),
+        window.electronAPI.settings.get("telemetry_opt_in"),
+      ]);
 
       setSettings({
         theme: allSettings.theme ?? "dark",
@@ -68,6 +73,7 @@ export default function Settings() {
         multiUserMode: allSettings.multiUserMode !== "false",
         confirmActions: allSettings.confirmActions !== "false",
         autoBackup: allSettings.autoBackup !== "false",
+        telemetryOptIn: telemetrySetting === "true",
       });
     } catch (error) {
       console.error("Failed to load settings:", error);
@@ -102,6 +108,10 @@ export default function Settings() {
           user.id,
           "autoBackup",
           String(settings.autoBackup),
+        ),
+        window.electronAPI.settings.set(
+          "telemetry_opt_in",
+          String(settings.telemetryOptIn),
         ),
       ]);
       setSaveStatus("success");
@@ -492,6 +502,26 @@ export default function Settings() {
                   checked={settings.autoBackup}
                   onChange={(e) =>
                     updateSetting("autoBackup", e.target.checked)
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <p className="font-medium">Anonymous Model Telemetry (Opt-in)</p>
+                <p className="text-sm text-gray-400">
+                  Share anonymized action outcomes to improve safety model retraining
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.telemetryOptIn}
+                  onChange={(e) =>
+                    updateSetting("telemetryOptIn", e.target.checked)
                   }
                   className="sr-only peer"
                 />

@@ -5,6 +5,7 @@ import { ipcMain } from "electron";
 import * as historyService from "../services/historyService";
 import * as backupService from "../services/backupService";
 import * as settingsService from "../services/settingsService";
+import * as telemetryService from "../services/telemetryService";
 
 export function registerHistoryHandlers() {
   // ============ HISTORY HANDLERS (LOCAL SQLITE) ============
@@ -89,9 +90,45 @@ export function registerHistoryHandlers() {
   // Mark action as undone
   ipcMain.handle("history:mark-undone", async (_, actionId: string) => {
     try {
-      return historyService.markActionUndone(actionId);
+      const success = historyService.markActionUndone(actionId);
+
+      if (success) {
+        const action = historyService.getHistoryById(actionId);
+        if (action) {
+          telemetryService.recordActionOutcome({
+            deviceId: action.device_id,
+            deviceBrand: action.device_brand || undefined,
+            deviceModel: action.device_model || undefined,
+            packageName: action.package_name,
+            action: "UNDO",
+            success: true,
+          });
+        }
+      }
+
+      return success;
     } catch (error) {
       console.error("Failed to mark action as undone:", error);
+      throw error;
+    }
+  });
+
+  // ============ TELEMETRY HANDLERS (OPT-IN) ============
+
+  ipcMain.handle("telemetry:get-summary", async (_, days?: number) => {
+    try {
+      return telemetryService.getTelemetrySummary(days || 30);
+    } catch (error) {
+      console.error("Failed to get telemetry summary:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("telemetry:get-retraining-signals", async (_, days?: number) => {
+    try {
+      return telemetryService.getRetrainingSignals(days || 30);
+    } catch (error) {
+      console.error("Failed to get telemetry retraining signals:", error);
       throw error;
     }
   });

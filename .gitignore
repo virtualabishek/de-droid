@@ -6,3 +6,21 @@
 **/dist
 **/build
 **/coverage
+# Python env + caches
+model-api/env/
+model-api/**/__pycache__/
+model-api/.pytest_cache/
+model-api/.mypy_cache/
+model-api/.ruff_cache/
+model-api/.ipynb_checkpoints/
+
+model-api/models/*.joblib
+model-api/models/*.pkl
+model-api/models/*.npz
+model-api/models/*.npy
+model-api/models/*.pt
+model-api/models/*.onnx
+
+model-api/processed/*.tmp
+model-api/processed/*.cache
+model-api/processed/*.bak

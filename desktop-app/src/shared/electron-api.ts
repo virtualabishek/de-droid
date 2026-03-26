@@ -62,7 +62,29 @@ export interface EnrichedPackage extends PackageInfo {
   neededBy: string[];
   labels: string[];
   alternatives: string[];
+  modelLabel?: string;
+  modelConfidence?: number;
+  modelVersion?: string;
+  modelTopFactors?: string[];
+  oemOverrideApplied?: boolean;
+  oemOverrideReason?: string;
   isKnown: boolean;
+}
+
+export interface PackageSafetyInfo {
+  package_name: string;
+  safety: "green" | "yellow" | "orange" | "red";
+  safety_description: string;
+  can_uninstall: boolean;
+  description: string;
+  category: string;
+  removal_type: string;
+  model_label: string | null;
+  model_confidence: number | null;
+  model_version: string | null;
+  model_gate_applied: boolean;
+  dependencies: string[];
+  alternatives: string[];
 }
 
 export interface PackageActionResult {
@@ -126,6 +148,12 @@ export interface DebloatPackage {
   neededBy: string[];
   labels: string[];
   alternatives: string[];
+  modelLabel?: "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
+  modelConfidence?: number;
+  modelVersion?: string;
+  modelTopFactors?: string[];
+  oemOverrideApplied?: boolean;
+  oemOverrideReason?: string;
 }
 
 export interface AlternativeApp {
@@ -227,6 +255,22 @@ export interface DeviceHealthSnapshot {
   errors: string[];
 }
 
+export interface TelemetrySummary {
+  enabled: boolean;
+  total_events: number;
+  success_rate: number;
+  rollback_rate: number | null;
+  avg_model_confidence: number | null;
+  by_action: Record<string, number>;
+}
+
+export interface RetrainingSignals {
+  enabled: boolean;
+  low_confidence_rate: number | null;
+  unsafe_false_safe_proxy: number | null;
+  sample_size: number;
+}
+
 export interface ElectronAPI {
   adb: {
     getDevices: () => Promise<Device[]>;
@@ -271,7 +315,7 @@ export interface ElectronAPI {
     health: () => Promise<HealthResponse>;
     checkSafety: (
       packageNames: string[],
-    ) => Promise<{ packages: any[]; total: number }>;
+    ) => Promise<{ packages: PackageSafetyInfo[]; total: number }>;
     wireless: {
       enableTcpip: (
         deviceId: string,
@@ -362,6 +406,10 @@ export interface ElectronAPI {
       errorMessage?: string;
     }) => Promise<ActionHistoryRecord>;
     markUndone: (actionId: string) => Promise<boolean>;
+  };
+  telemetry: {
+    getSummary: (days?: number) => Promise<TelemetrySummary>;
+    getRetrainingSignals: (days?: number) => Promise<RetrainingSignals>;
   };
   savedBackups: {
     getAll: () => Promise<SavedBackup[]>;

@@ -36,6 +36,12 @@ interface Package {
   dependencies?: string[];
   neededBy?: string[];
   alternatives?: string[];
+  modelLabel?: string;
+  modelConfidence?: number;
+  modelVersion?: string;
+  modelTopFactors?: string[];
+  oemOverrideApplied?: boolean;
+  oemOverrideReason?: string;
 }
 
 // Vendor detection for grouping
@@ -75,7 +81,7 @@ function isSystemPackage(packageName: string): boolean {
   );
 }
 
-type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal" | "vendor";
+type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal" | "vendor" | "confidence";
 type ViewMode = "list" | "compact" | "grid";
 type GroupBy = "none" | "category" | "vendor" | "state" | "removal";
 
@@ -127,6 +133,7 @@ export function PackageList({
   const [filterCategory, setFilterCategory] = useState<"all" | "BLOATWARE" | "OPTIONAL" | "ESSENTIAL">("all");
   const [packageTypeFilter, setPackageTypeFilter] = useState<"all" | "system" | "user">("all");
   const [filterRemoval, setFilterRemoval] = useState<"all" | "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">("all");
+  const [filterModelConfidence, setFilterModelConfidence] = useState<"all" | "high" | "medium" | "low" | "unknown">("all");
   const [activePreset, setActivePreset] = useState<string>("all");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -210,6 +217,18 @@ export function PackageList({
       const matchesState = filterState === "all" || pkg.state === filterState;
       const matchesCategory = filterCategory === "all" || pkg.category?.toUpperCase() === filterCategory;
       const matchesRemoval = filterRemoval === "all" || pkg.removal === filterRemoval;
+      const modelConfidence = pkg.modelConfidence;
+
+      let matchesModelConfidence = true;
+      if (filterModelConfidence === "high") {
+        matchesModelConfidence = typeof modelConfidence === "number" && modelConfidence >= 0.8;
+      } else if (filterModelConfidence === "medium") {
+        matchesModelConfidence = typeof modelConfidence === "number" && modelConfidence >= 0.6 && modelConfidence < 0.8;
+      } else if (filterModelConfidence === "low") {
+        matchesModelConfidence = typeof modelConfidence === "number" && modelConfidence < 0.6;
+      } else if (filterModelConfidence === "unknown") {
+        matchesModelConfidence = typeof modelConfidence !== "number";
+      }
 
       let matchesPackageType = true;
       if (packageTypeFilter === "system") {
@@ -218,7 +237,7 @@ export function PackageList({
         matchesPackageType = !isSystemPackage(pkg.name);
       }
 
-      return matchesState && matchesCategory && matchesPackageType && matchesRemoval;
+      return matchesState && matchesCategory && matchesPackageType && matchesRemoval && matchesModelConfidence;
     });
 
     // Sort
@@ -241,13 +260,15 @@ export function PackageList({
                  (removalOrder[b.removal as keyof typeof removalOrder] ?? 4);
         case "vendor":
           return getVendor(a.name).localeCompare(getVendor(b.name));
+        case "confidence":
+          return (b.modelConfidence ?? -1) - (a.modelConfidence ?? -1);
         default:
           return 0;
       }
     });
 
     return filtered;
-  }, [packages, searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, sortBy, fuse]);
+  }, [packages, searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, sortBy, fuse]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filteredAndSortedPackages.length / itemsPerPage)),
@@ -271,7 +292,7 @@ export function PackageList({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, sortBy, groupBy, itemsPerPage]);
+  }, [searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, sortBy, groupBy, itemsPerPage]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -371,9 +392,10 @@ export function PackageList({
     if (filterCategory !== "all") count++;
     if (packageTypeFilter !== "all") count++;
     if (filterRemoval !== "all") count++;
+    if (filterModelConfidence !== "all") count++;
     if (searchQuery) count++;
     return count;
-  }, [filterState, filterCategory, packageTypeFilter, filterRemoval, searchQuery]);
+  }, [filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, searchQuery]);
 
   // Handlers
   const handleSearch = (query: string) => {
@@ -404,6 +426,7 @@ export function PackageList({
     setFilterCategory("all");
     setPackageTypeFilter("all");
     setFilterRemoval("all");
+    setFilterModelConfidence("all");
     setSearchQuery("");
     setActivePreset("all");
   };
@@ -564,6 +587,19 @@ export function PackageList({
                 {pkg.removal}
               </span>
             )}
+            {typeof pkg.modelConfidence === "number" && (
+              <span className="text-xs px-1.5 py-0.5 rounded bg-primary-600/20 text-primary-300 border border-primary-500/30">
+                ML {Math.round(pkg.modelConfidence * 100)}%
+              </span>
+            )}
+            {pkg.oemOverrideApplied && (
+              <span
+                className="text-xs px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30"
+                title={pkg.oemOverrideReason || "OEM-specific safety override applied"}
+              >
+                OEM Override
+              </span>
+            )}
           </div>
         </div>
       );
@@ -634,6 +670,19 @@ export function PackageList({
           {pkg.removal && (
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${getRemovalColor(pkg.removal)}`}>
               {pkg.removal}
+            </span>
+          )}
+          {typeof pkg.modelConfidence === "number" && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded bg-primary-600/20 text-primary-300 border border-primary-500/30">
+              ML {Math.round(pkg.modelConfidence * 100)}%
+            </span>
+          )}
+          {pkg.oemOverrideApplied && (
+            <span
+              className="text-xs font-medium px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30"
+              title={pkg.oemOverrideReason || "OEM-specific safety override applied"}
+            >
+              OEM
             </span>
           )}
           <span className={`text-xs font-medium uppercase ${getStateColor(pkg.state)} ${isCompact ? "" : "w-20 text-right"}`}>
@@ -769,6 +818,12 @@ export function PackageList({
                     <button onClick={() => setFilterRemoval("all")} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
+                {filterModelConfidence !== "all" && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                    Model: {filterModelConfidence}
+                    <button onClick={() => setFilterModelConfidence("all")} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
                 {packageTypeFilter !== "all" && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
                     Type: {packageTypeFilter}
@@ -898,6 +953,21 @@ export function PackageList({
                 <option value="category">By Category</option>
                 <option value="removal">By Removal Type</option>
                 <option value="vendor">By Vendor</option>
+                <option value="confidence">By ML Confidence</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Model Confidence</label>
+              <select
+                value={filterModelConfidence}
+                onChange={(e) => setFilterModelConfidence(e.target.value as typeof filterModelConfidence)}
+                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
+              >
+                <option value="all">All</option>
+                <option value="high">High (≥ 80%)</option>
+                <option value="medium">Medium (60-79%)</option>
+                <option value="low">Low (&lt; 60%)</option>
+                <option value="unknown">Unknown</option>
               </select>
             </div>
             <div>

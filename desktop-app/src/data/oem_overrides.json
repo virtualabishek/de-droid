@@ -1,0 +1,51 @@
+{
+  "version": "phase7-v1",
+  "description": "OEM-specific safety overrides for known edge-case packages",
+  "overrides": [
+    {
+      "packageId": "com.samsung.android.kgclient",
+      "oem": "SAMSUNG",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "reason": "Knox guard / anti-theft component can lock device if removed",
+      "evidence": "internal-review",
+      "lastReviewedAt": "2026-03-26"
+    },
+    {
+      "packageId": "com.huawei.securitymgr",
+      "oem": "HUAWEI",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "reason": "Core security manager dependency on EMUI systems",
+      "evidence": "internal-review",
+      "lastReviewedAt": "2026-03-26"
+    },
+    {
+      "packageId": "com.oneplus.launcher",
+      "oem": "ONEPLUS",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "reason": "Primary launcher package; removal causes home screen failure",
+      "evidence": "internal-review",
+      "lastReviewedAt": "2026-03-26"
+    },
+    {
+      "packageId": "com.coloros.safecenter",
+      "oem": "OPPO",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "reason": "System-level permissions and security policy manager",
+      "evidence": "internal-review",
+      "lastReviewedAt": "2026-03-26"
+    },
+    {
+      "packageId": "com.vivo.permissionmanager",
+      "oem": "VIVO",
+      "removal": "UNSAFE",
+      "category": "ESSENTIAL",
+      "reason": "Permission control service tightly coupled to OS settings",
+      "evidence": "internal-review",
+      "lastReviewedAt": "2026-03-26"
+    }
+  ]
+}
