@@ -1,0 +1,5511 @@
+{
+  "meta": {
+    "oem": "XIAOMI",
+    "count": 285,
+    "sources": {
+      "list_file": "model-api/raw-data/samsung-bloatware-list.txt",
+      "table_file": "model-api/raw-data/samsung-data-table.txt",
+      "list_rows_parsed": 563,
+      "table_rows_parsed": 2,
+      "files_parsed": 4
+    }
+  },
+  "packages": [
+    {
+      "id": "14.0.1",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "14.0.1.0",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "4.0",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "android.autoinstalls.config.xiaomi.model",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "android.qvaoverlay.common",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "auto.ru",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "cn.wps.moffice_eng",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "cn.wps.xiaomi.abroad.lite",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "code.name.monkey.retromusic",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.alibaba.aliexpresshd",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.apps.tag",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.bips",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.bookmarkprovider",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.browser",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.calendar",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.cellbroadcastreceiver",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.cellbroadcastreceiver.overlay.common",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.chrome",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.contacts",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.deskclock",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.dreams.basic",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.dreams.phototable",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.egg",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.emergency",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.fmradio",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.hotwordenrollment.okgoogle",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.hotwordenrollment.xgoogle",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.incallui.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.inputsettings.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.managedprovisioning.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.mms",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.mms.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.musicfx",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.overlay.gmscontactprovider",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.overlay.gmssettingprovider",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.overlay.gmssettings",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.printspooler",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.printspoolercom.android.statementservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.providers.downloads.ui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.providers.partnerbookmarks",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.remoteprovisioner",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.settings.intelligence",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.settings.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.soundrecorder",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.stk",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.stk2",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.systemui.overlay.common",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.systemui.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.thememanager",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.thememanager.gliobal_config.config.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.thememanager.module",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.traceur",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.updater",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.wallpaper.livepicker",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.wallpaperbackup",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.wallpapercropper",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.autonavi.minimap",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.booking",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.bsp.catchlog",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.caf.fmradio",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.duokan.phone.remotecontroller",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.duokan.phone.remotecontroller.peel.plugin",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.ebay.carrier",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.ebay.mobile",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.example.critical",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "not-recommended",
+        "table-import",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.example.package",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "table-import",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.appmanager",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.katana",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.services",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.system",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.funnypuri.client",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.ambient.streaming",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.adservices.api",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.docs",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.googleassistant",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.maps",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.messaging",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.nbu.paisa.user",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.photos",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.restore",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.subscriptions.red",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.tachyon",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.turbo",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.walletnfcrel",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.wellbeing",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.youtube.music",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.as.oss",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.calendar",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.cellbroadcast",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.cellbroadcastreceiver",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.cellbroadcastservice.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.feedback",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.gm",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.gms",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.gms.location.history",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.googlequicksearchbox",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.inputmethod.latin",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.marvin.talkback",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.music",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.overlay.gmsconfig.gsa",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.overlay.modules.captiveportallogin.forframework",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.overlay.modules.documentsui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.overlay.modules.permissioncontroller",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.partnersetup",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.printservice.recommendation",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.projection.gearhead",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.safetycenter.resources",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.syncadapters.calendar",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.syncadapters.contacts",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.tts",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.videos",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.youtube",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.ar.lens",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.mainline.adservices",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.hampusolsson.abstruct",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.igg.android.lordsmobile",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.lbe.security.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.linkedin.android",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.mi.android.globalfileexplorer",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.mi.android.globalminusscreen",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.mi.globalbrowser",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.micredit.in",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.milink.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.mipay.wallet.in",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.accessibility",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.analytics",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unknown",
+        "section:unsafe",
+        "source:redmi-bloatware-list",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.android.fashiongallery",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.aod",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.audioeffect",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.audiomonitor",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.backup",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.bugreport",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.calculator",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cit",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cleaner",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cleanmaster",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cloudbackup",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:caution",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cloudservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:caution",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.cloudservice.sysbase",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:caution",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.compass",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.contentcatcher",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.core",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.core.internal.services",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.daemon",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.face",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.face.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.fm",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.freeform",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.gallery",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:caution",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.global.packageinstaller",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.guardprovider",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.home",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.hybrid",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.hybrid.accessory",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.maintenancdemode",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.maintenancemode",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.mediaeditor",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.micloudsync",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:caution",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.miservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.mishare.connectivity",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.misound",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.miwallpaper",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.miwallpaper.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.miwallpaper.overlay.customize",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.msa.global",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.newmidrive",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.nextpay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.notes",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.packageinstaller",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.personalassistant",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.phone.carriers.overlay.h3g",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.phone.carriers.overlay.vodafone",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.phrase",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.player",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.powerkeeper",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.screenrecorder",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.securityadd",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.securitycenter",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.securitycore",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.settings.rro.device.hide.statusbar.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.settings.rro.device.type.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.smsextra",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.system.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.systemadsolution",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.touchassistant",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.translation.kingsoft",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.translation.xmcloud",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.translation.youdao",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.translationservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.tsmclient",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.videoplayer",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.voiceassist",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.voicetrigger",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.vsimcore",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.wallpaper.overlay",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.wallpaper.overlay.customize",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.weather2",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.webkit.core",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.wmsvc",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miui.yellowpage",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.miuix.editor",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.mobiletools.systemhelper",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.modemdebug",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.netflix.mediaclient",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.netflix.partner.activation",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.app.news",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.branding",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.branding.news",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.browser.afin",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.mini.native",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.opera.preinstall",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.dcf",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.dpmserviceapp",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.qcc",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.qualcomm.deviceinfo",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.service.colorservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qti.snapdragon.qdcm_ff",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.location",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.devicestatisticsservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.powersavemode",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.qcolor",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.qms.service.trustzoneaccess",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.remotesimlockauth",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.ridemodeaudio",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.server.qtiwifi",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.qualcomm.qti.workloadclassifier",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.quicinc.voice.activation",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.aasaservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.syberia.ota",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.syberia.syberiapapers",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.tencent.soter.soterserver",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.ab",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.account",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.aiasst.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.barrage",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.bluetooth",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.calendar",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.discover",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.finddevice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.gamecenter.sdk.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.glgm",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.joyose",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.market",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.metoknlp",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mi_connect_service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.micloud.sdk",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.midrop",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unknown",
+        "source:redmi-bloatware-list",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.migameservice",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mipicks",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.miplay_client",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mircs",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mirecycle",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mirror",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.misettings",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.mtb",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.networkboost",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.payment",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.powerchecker",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.scanner",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.simactivate.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.xmsf",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.xmsfkeeper",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.xiaomi.xsmf",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.yandex.zen",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.zhiliaoapp.musically",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "devcondition.com",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "in.amazon.mshop.android.shopping",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "org.ifaa.aidl.manager",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "org.lineageos.recorder",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "org.lineageos.snap",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "org.mipay.android.manager",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "org.simalliance.openmobileapi.service",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "pl.zdunex25.updater",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "receiver.overlay.miui",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ro.product.manufacturer",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unknown",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ro.product.model",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unknown",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ro.product.odm.marketname",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unknown",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ros.ota.updater",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ru.auto.ara",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ru.ozon.app.android",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "ru.yandex.searchplugin",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "sg.bigo.live",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "technastic.com",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:safe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "tkq1.221114.001",
+      "list": "XIAOMI",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "section:unsafe",
+        "source:sample1",
+        "variant",
+        "xiaomi"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    }
+  ]
+}

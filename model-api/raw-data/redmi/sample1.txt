@@ -1,0 +1,760 @@
+#!/bin/bash
+
+# ====================================================================================
+# A SAFER XIAOMI (MIUI) DEBLOATING SCRIPT
+#
+# REORGANIZED AND COMMENTED TO PREVENT BOOT LOOPS AND SYSTEM INSTABILITY.
+# The script is divided into three sections:
+# 1. DO NOT REMOVE: Critical packages that were in your original list. They are
+#    here for reference only and will NOT be removed.
+# 2. USE WITH CAUTION: Packages that can be removed, but will disable specific
+#    features. This section is COMMENTED OUT by default.
+# 3. SAFE TO REMOVE: General bloatware, ad services, and redundant apps that can
+#    be removed without harming the system. This is the only list that runs
+#    by default.
+# ====================================================================================
+
+
+# DO NOT REMOVE
+
+# declare -a do_not_remove=(
+
+#   com.xiaomi.account                  # CRITICAL: Manages Mi Account, essential for many services.
+#   com.android.updater                 # CRITICAL: Required for receiving and installing system OTA updates.
+#   com.android.thememanager            # CRITICAL: Manages all themes, icons, and fonts in MIUI.
+#   com.miui.daemon                     # HIGHLY UNSTABLE: Deeply integrated system daemon. You already had to restore this.
+#   com.google.android.inputmethod.latin  # CRITICAL (IF NO ALTERNATIVE): This is Gboard. Removing it without another
+#                                       # keyboard installed and active will leave you with NO WAY TO TYPE.
+# )
+
+
+# USE WITH CAUTION
+
+declare -a use_with_caution=(
+
+  com.miui.cloudservice               # Mi Cloud core service. Remove this and all other "cloud" packages if you don't use Mi Cloud.
+  com.miui.cloudbackup                # Mi Cloud backup functionality.
+  com.miui.micloudsync                # Mi Cloud sync functionality.
+  com.miui.cloudservice.sysbase       # Mi Cloud system base.
+  com.miui.gallery                    # Default MIUI Gallery app. System may still try to call it. Remove only if you have an alternative.
+  com.android.deskclock               # The default Clock app (alarms, timer). Do not remove unless you have a reliable alternative.
+  com.xiaomi.joyose                   # A performance/gaming service. Some users report issues after removal.
+  com.miui.cit                        # Hardware test mode (CIT). Useful for diagnostics.
+  com.miui.misound                    # Sound effects and equalizer settings (Dirac). Sound quality might change if removed.
+  com.miui.audioeffect                # Related to audio effects.
+  com.miui.freeform                   # Floating windows feature.
+  com.miui.touchassistant             # The "Quick Ball" floating assistant.
+  com.google.android.projection.gearhead # Android Auto.
+  com.android.printspooler            # Service for printing documents from your phone.
+#   com.android.emergency               # Manages emergency contacts and SOS features.
+)
+
+
+# SECTION 3: SAFE TO REMOVE
+# This list contains third-party bloat, ad services, analytics, and redundant
+# Xiaomi/Google apps that can be removed without causing system instability.
+# This is the primary list that the script will process.
+#
+declare -a safe_to_remove=(
+
+# --- Analytics and Ad Services ---
+com.miui.analytics
+com.miui.msa.global
+com.miui.systemAdSolution
+
+# --- Pre-installed Third-Party Apps ---
+in.amazon.mShop.android.shopping
+com.facebook.appmanager
+com.facebook.services
+com.facebook.system
+com.facebook.katana
+com.netflix.partner.activation
+com.netflix.mediaclient
+com.booking
+com.linkedin.android
+com.igg.android.lordsmobile
+cn.wps.moffice_eng
+cn.wps.xiaomi.abroad.lite
+com.funnypuri.client
+
+# --- Redundant/Unused Google Apps ---
+com.google.android.apps.docs
+com.google.android.apps.maps
+com.google.android.apps.photos
+com.google.android.apps.tachyon         # Google Duo (video calling)
+com.google.android.apps.subscriptions.red # YouTube Premium
+com.google.android.music
+com.google.android.apps.youtube.music
+com.google.android.videos               # Google TV (Play Movies & TV)
+com.google.android.apps.googleassistant
+com.google.android.gm                   # Gmail
+com.google.android.googlequicksearchbox # Google Search bar and Discover feed
+com.google.ar.lens
+com.google.android.apps.nbu.paisa.user  # Google Pay (Tez for India)
+com.google.android.youtube
+com.google.android.calendar
+com.google.android.apps.walletnfcrel    # Google Wallet
+com.google.android.apps.messaging
+com.google.android.apps.restore
+com.google.android.apps.turbo           # Device Health Services
+com.google.android.tts                  # Text-to-speech engine
+com.google.android.feedback
+com.google.android.syncadapters.contacts # Syncs contacts with Google account. Keep if you use Google contacts.
+
+# --- Redundant/Bloat MIUI System Apps ---
+com.milink.service
+com.miui.audiomonitor
+com.miui.bugreport
+com.miui.contentcatcher
+com.miui.hybrid
+com.miui.hybrid.accessory
+com.miui.maintenancdemode
+com.miui.miservice
+com.miui.mishare.connectivity
+com.miui.nextpay
+com.miui.personalassistant
+com.miui.phrase
+com.miui.smsextra
+com.miui.translation.kingsoft
+com.miui.translation.xmcloud
+com.miui.translation.youdao
+com.miui.translationservice
+com.miui.voiceassist
+com.miui.voicetrigger
+com.miui.vsimcore
+com.miui.wmsvc
+com.mobiletools.systemhelper
+com.miui.android.fashiongallery
+com.miui.mediaeditor
+com.android.fmradio
+com.miui.fm
+com.mipay.wallet.in
+com.micredit.in
+com.mi.globalbrowser
+com.mi.android.globalminusscreen       
+com.mi.android.globalFileexplorer
+com.miui.backup
+com.miui.calculator
+com.miui.cleanmaster
+com.miui.compass
+com.miui.notes
+com.miui.player
+com.android.soundrecorder
+com.miui.screenrecorder
+com.miui.videoplayer
+com.miui.weather2
+com.miui.yellowpage
+com.xiaomi.calendar
+com.xiaomi.glgm
+com.xiaomi.midrop
+com.xiaomi.mipicks
+com.xiaomi.miplay_client
+com.xiaomi.mirecycle
+com.xiaomi.payment
+com.xiaomi.scanner
+com.duokan.phone.remotecontroller      
+com.miui.newmidrive
+com.xiaomi.mircs
+com.xiaomi.discover
+org.mipay.android.manager
+com.android.egg                         
+com.android.wallpaperbackup
+com.android.musicfx                     
+com.tencent.soter.soterserver
+com.android.providers.downloads.ui     
+)
+
+
+# ====================================================================================
+# SCRIPT EXECUTION LOGIC
+# ====================================================================================
+
+# WAIT FOR A DEVICE TO CONNECT
+clear
+tput civis # Hide the cursor
+echo "This $(tput setaf 6)safer bash$(tput sgr0) script will remove bloatware from your Xiaomi device."
+echo ""
+echo "$(tput setaf 3)Please ensure your phone has USB Debugging enabled.$(tput sgr0)"
+echo "Waiting ⏳ for a device to be connected..."
+adb wait-for-device
+
+# TAKE DEVICE MARKET NAME
+device_name=$(adb shell getprop ro.product.odm.marketname)
+if [ -z "$device_name" ]; then
+    device_name="$(adb shell getprop ro.product.manufacturer) $(adb shell getprop ro.product.model)"
+fi
+clear
+echo "Device Connected: $(tput setaf 2)$device_name$(tput sgr0)"
+echo ""
+sleep 2
+
+# --- UNINSTALL SAFE APPS ---
+echo "$(tput bold)$(tput setaf 2)--- Removing SAFE packages ---$(tput sgr0)"
+for pkg in "${safe_to_remove[@]}"
+do
+    echo "🛁 Removing: $(tput setaf 6)$pkg$(tput sgr0)"
+    adb shell pm uninstall -k --user 0 "$pkg" > /dev/null 2>&1
+done
+echo "$(tput setaf 2)Safe packages removed.$(tput sgr0)"
+echo ""
+
+
+# --- UNINSTALL CAUTION APPS ---
+if [ ${#use_with_caution[@]} -gt 0 ]; then
+    echo "$(tput bold)$(tput setaf 3)--- Removing CAUTION packages you enabled ---$(tput sgr0)"
+    for pkg in "${use_with_caution[@]}"
+    do
+        echo "🤔 Removing: $(tput setaf 6)$pkg$(tput sgr0)"
+        adb shell pm uninstall -k --user 0 "$pkg" > /dev/null 2>&1
+    done
+    echo "$(tput setaf 3)Caution packages removed.$(tput sgr0)"
+    echo ""
+fi
+
+tput cnorm # Show the cursor again
+echo "$(tput bold)$(tput setaf 2)✅ Debloating process complete!$(tput sgr0)"
+echo "It is recommended to reboot your device now."
+
+
+
+
+对于所有应用，不建议直接删除，使用adb shell pm disable-user package-name禁用即可，方便出问题时恢复。
+
+DO NOT UNINSTALL:
+com.miui.securitycenter
+com.miui.securityadd
+com.xiaomi.finddevice
+(Don’t uninstall these three apps or services from your Xiaomi device. Otherwise, you may encounter device bricking or bootloop issues.)
+
+Attention
+Tested on MIUI 13 on Mi 11 Pro
+
+I suggest do not uninstall any prefix with com.android apps
+
+不能禁用或删除（会导致无法启动） [WILL BOOTLOOP, DO NOT UNINSTALL OR DISABLE]
+com.lbe.security.miui 权限管理服务*
+com.android.updater 系统更新*
+com.miui.securitycenter 手机管家*
+com.xiaomi.finddevice 查找手机*
+com.miui.home 系统桌面*
+com.miui.guardprovider MIUI安全组件*
+com.xiaomi.market 应用商店*
+com.xiaomi.account 小米账号*
+com.miui.packageinstaller 应用包管理组件*
+必须为小米签名 [DO NOT UNINSTALL OR DISABLE]
+com.android.updater 系统更新
+com.miui.securitycenter 手机管家
+com.xiaomi.finddevice 查找手机
+com.xiaomi.market 应用商店
+不建议禁用或删除 [CAN DISABLE, NOT RECOMMANDED]
+com.miui.powerkeeper 电量和性能
+com.xiaomi.metoknlp 网络位置服务
+com.miui.tsmclient 小米智能卡
+com.miui.accessibility 无障碍服务(TTS)
+com.miui.backup 备份与恢复
+com.miui.freeform 自由窗口
+com.miui.face 人脸识别
+com.miui.miwallpaper 桌面壁纸
+com.miui.aod 息屏显示
+禁用后会自动启用 [DISABLE NOT WORKING]
+com.miui.contentcatcher
+com.android.printspooler
+com.miui.audiomonitor
+com.miui.voicetrigger
+com.xiaomi.mircs
+com.miui.daemon
+com.xiaomi.xmsfkeeper
+可以安全禁用 [SAFE TO UNINSTALL OR DISABLE]
+com.xiaomi.ab
+com.xiaomi.aiasst.service
+com.xiaomi.bluetooth
+com.xiaomi.gamecenter.sdk.service
+com.xiaomi.joyose
+com.xiaomi.mi_connect_service
+com.xiaomi.micloud.sdk
+com.xiaomi.migameservice
+com.xiaomi.miplay_client
+com.xiaomi.mircs
+com.xiaomi.mirror
+com.xiaomi.payment
+com.xiaomi.powerchecker
+com.xiaomi.simactivate.service
+com.xiaomi.xmsf
+com.xiaomi.xmsfkeeper
+可以安全禁用 [SAFE TO UNINSTALL OR DISABLE]
+com.milink.service
+com.miui.analytics
+com.miui.audioeffect
+com.miui.audiomonitor
+com.miui.bugreport
+com.miui.cit
+com.miui.cloudbackup
+com.miui.cloudservice
+com.miui.cloudservice.sysbase
+com.miui.contentcatcher
+com.miui.daemon
+com.miui.hybrid
+com.miui.hybrid.accessory
+com.miui.maintenancemode
+com.miui.micloudsync
+com.miui.miservice
+com.miui.mishare.connectivity
+com.miui.misound
+com.miui.nextpay
+com.miui.personalassistant
+com.miui.phrase
+com.miui.smsextra
+com.miui.systemAdSolution
+com.miui.touchassistant
+com.miui.translation.kingsoft
+com.miui.translation.xmcloud
+com.miui.translation.youdao
+com.miui.translationservice
+com.miui.voiceassist
+com.miui.voicetrigger
+com.miui.vsimcore
+com.miui.wmsvc
+com.mobiletools.systemhelper
+
+
+ISCLAIMER: "BE CAREFUL NOT TO UNINSTALL THESE APPS ON THE WRONG DEVICE OR SOFTWARE."
+DEVICE: POCO F5
+MIUI VERSION (FOR POCO): MIUI Global 14.0.1
+14.0.1.0 (TMRINXM)
+ANDROID VERSION: 13 TKQ1.221114.001
+
+com.miui.analytics
+com.google.android.projection.gearhead
+com.google.android.apps.restore
+android.qvaoverlay.common
+com.mi.android.globalminusscreen
+com.miui.backup
+com.xiaomi.calendar
+com.milink.service
+com.android.chrome
+com.miui.cleaner
+com.miui.cloudbackup
+com.android.cellbroadcastreceiver.overlay.common
+com.android.incallui.overlay
+com.android.inputsettings.overlay.miui
+com.android.managedprovisioning.overlay
+com.android.overlay.gmscontactprovider
+com.android.overlay.gmssettingprovider
+com.android.overlay.gmssettings
+com.android.providers.partnerbookmarks
+com.android.settings.overlay.miui
+com.android.systemui.overlay.common
+com.android.systemui.overlay.miui
+com.android.thememanager.gliobal_config.config.overlay
+com.google.android.cellbroadcast receiver.overlay.miui
+com.google.android.cellbroadcastservice.overlay.miui
+com.google.android.overlay.gmsconfig.gsa
+com.google.android.overlay.modules.captiveportallogin.forframework
+com.google.android.overlay.modules.documentsui
+com.google.android.overlay.modules.permissioncontroller
+com.miui.core.internal.services
+com.miui.miwallpaper.overlay
+com.miui.miwallpaper.overlay.customize
+com.miui.phone.carriers.overlay.h3g
+com.miui.phone.carriers.overlay.vodafone
+com.miui.settings.rro.device.hide.statusbar.overlay
+com.miui.settings.rro.device.type.overlay
+com.miui.system.overlay
+com.miui.wallpaper.overlay
+com.miui.wallpaper.overlay.customize
+com.modemdebug
+com.qti.dpmserviceapp
+com.qti.service.colorservice
+com.qualcomm.qti.devicestatisticsservice
+com.qualcomm.qti.qms.service.trustzoneaccess
+com.qualcomm.qti.remoteSimlockAuth
+com.qualcomm.qti.workloadclassifier
+com.xiaomi.NetworkBoost
+com.google.ambient.streaming
+com.qti.dcf
+com.qti.qualcomm.deviceinfo
+com.google.android.apps.wellbeing
+com.android.providers.downloads.ui
+com.miui.bugreport
+com.xiaomi.finddevice
+com.miui.phrase
+com.xiaomi.glgm
+com.xiaomi.mipicks
+com.google.android.googlequicksearchbox
+com.android.hotwordenrollment.xgoogle
+com.android.hotwordenrollment.okgoogle
+com.google.android.partnersetup
+com.google.android.safetycenter.resources
+com.google.android.videos
+org.ifaa.aidl.manager
+com.qualcomm.location
+com.google.mainline.adservices
+com.google.android.feedback
+com.google.android.apps.tachyon
+com.google.android.apps.turbo
+com.android.mms
+com.facebook.system
+com.facebook.appmanager
+com.facebook.services
+com.xiaomi.payment
+com.miui.mishare.connectivity
+com.miui.micloudsync
+org.mipay.android.manager
+com.xiaomi.bluetooth
+com.miui.daemon
+com.miui.core
+com.miui.guardprovider
+com.miui.msa.global
+com.miui.player
+com.opera.browser.afin
+android.autoinstalls.config.Xiaomi.model
+com.google.android.printservice.recommendation
+com.google.android.as.oss
+com.qti.qcc
+com.qualcomm.qti.qcolor
+com.qti.snapdragon.qdcm_ff
+com.qualcomm.qti.server.qtiwifi
+com.quicinc.voice.activation
+com.android.remoteprovisioner
+com.qualcomm.qti.ridemodeaudio
+com.xiaomi.mtb
+com.miui.securitycore
+com.miui.miservice
+com.android.settings.intelligence
+com.tencent.soter.soterserver
+com.google.android.tts
+com.xiaomi.discover
+com.miui.securityadd
+com.android.traceur
+com.android.apps.tag
+com.miuix.editor
+com.android.updater
+com.qualcomm.qti.powersavemode
+com.xiaomi.account
+com.miui.cloudservice
+com.xiaomi.xmsf
+com.xiaomi.xmsfkeeper
+com.xiaomi.simactivate.service
+com.miui.yellowpage
+com.google.android.youtube
+com.google.android.apps.youtube.music
+
+"Uninstall-able but not recommended. Foreground battery might get worse, could be because of com.miui.powerkeeper , it might remove some app info settings which could increase battery usage."
+
+com.miui.securitycenter
+
+Bootloop app, need to try uninstalling with MIUI/system optimization off. This could be the main culprit behind my battery drain, this might be the so called "Greenify" of the system apps by Xiaomi into MIUI/HyperOS.
+
+com.miui.powerkeeper
+
+Newly Uninstalled RAM using apps
+
+com.xiaomi.barrage
+com.miui.aod
+com.miui.face.overlay.miui
+com.miui.face
+com.xiaomi.micloud.sdk
+com.android.printspooler
+com.android.bips
+com.google.android.adservices.api
+com.google.android.cellbroadcastreceiver
+
+Reinstalled to improve foreground battery
+
+com.qualcomm.qti.workloadclassifier
+com.qti.dpmserviceapp
+com.qualcomm.qti.powersavemode
+com.miui.core
+com.xiaomi.xmsf
+com.xiaomi.finddevice
+com.google.android.apps.turbo
+
+"com.xiaomi.xsmf might be used for internet connections with Xiaomi to provide internet-based features on OEM user apps. It might have wakelock after every few moments, but not drain the battery"
+
+com.xiaomi.xmsf
+com.miui.core
+
+"com.miui.core might cause the video mode of the Dolby Atmos to stop working correctly, and it might also remove which might be the only way to access the sidebar by searching in the settings until reinstalled."
+
+You might need to reinstall com.xiaomi.finddevice to revoke authorisation for apps. Network access for the settings app might also be necessary.
+
+Reinstalled Part 2
+
+com.google.android.overlay.modules.documentsui
+com.google.android.safetycenter.resources
+com.android.printspooler
+com.miui.core.internal.services
+com.xiaomi.joyose
+
+"I used the Canta app which might provide discussed public user reviews of known apps, downloaded and represented in the app from a centralised GitHub issue page in a single user interface."
+
+
+
+ore System Bloatware (MIUI & HyperOS)
+These are usually the worst offenders. A lot of these apps are just about tracking you, showing ads, or they’re features that Google’s default options already handle better:
+Package Name	Purpose (Why to Remove)
+com.miui.msa.global	The main application for serving advertisements in the MIUI/HyperOS system. Removing this is essential for an ad-free experience.
+com.miui.analytics	Used for tracking user behavior and sending data to Xiaomi servers. A privacy concern for many users.
+com.miui.daemon	A background tracking service. Some users report no issues after removal, while others have noted possible battery consumption changes. Generally safe to remove for privacy reasons, but proceed with caution.
+com.xiaomi.joyose	Another background tracking tool. Opinions vary, but it's often linked to data collection or minor performance management. You can generally remove it.
+com.miui.cleanmaster	A cleaning utility that provides minimal help and often includes excessive advertising.
+com.miui.android.fashiongallery	The "Wallpaper Carousel." It constantly loads new images and often displays ads on your lock screen, draining data and battery.
+com.miui.webkit.core	Xiaomi's custom system webview. Removing this forces the device to rely on Google's standard Android WebView, which is usually preferred for security and compatibility.
+com.android.browser	The default Xiaomi browser. If you use Chrome, Firefox, or any other browser, you don't need this one.
+com.miui.bugreport	The tool for bug reporting and tracking. Useful if you're a beta tester, but unnecessary for most daily users.
+com.xiaomi.glgm	A system tracking or gaming-related service. Removing it usually frees up resources.
+
+
+
+Here is a list of Xiaomi and Google apps that I find unnecessary:
+
+UNSAFE TO DISABLE/UNINSTALL
+
+com.xiaomi.finddevice	Result: endless boot loop, some time after it will ask to erase the phone and start over. Guess how I learned that?
+com.miui.securitycenter	Result: phone reboots only in recovery mode
+com.android.contacts	Result: you lose the phone icon
+com.mi.android.globalminusscreen	Xiaomi App Vault. Result: if you are logged in with Mi account, device becomes locked, to unlock you should bring it to Xiaomi Services Center. Settings -> Home Screen crashes Settings app. See comment by @satnited.
+Xiaomi:
+
+com.miui.analytics	Mi Analytics (Spyware?)
+com.xiaomi.mipicks	GetApps - app store like Google Play from Xiaomi. The most annoying one, periodically shows advertisement.
+com.miui.msa.global	MIUI Ad Services - also responsible for showing ads.
+com.miui.cloudservice com.miui.cloudservice.sysbase com.miui.newmidrive	Mi Cloud
+com.miui.cloudbackup	Mi Cloud Backup
+com.miui.backup	MIUI Backup
+com.xiaomi.glgm	Games
+com.xiaomi.payment com.mipay.wallet.in	Mi Credit
+com.tencent.soter.soterserver	Authorize payments in WeChat and other Chinese services, useless if you don’t live in China.
+cn.wps.xiaomi.abroad.lite	Mi DocViewer(Powered by WPS Office)
+com.miui.videoplayer	Mi Video
+com.miui.player	Mi Music
+com.mi.globalbrowser	Mi Browser
+com.xiaomi.midrop	Mi ShareMe
+com.miui.yellowpage	Mi YellowPages. Some kind of caller id app.
+com.miui.gallery	MIUI Gallery - if you use another gallery app WARNING: @nihalanand697 reports disabling it isn’t safe. But I had no problems after uninstalling it.
+com.miui.android.fashiongallery	Wallpaper Carousel
+com.miui.bugreport com.miui.miservice	Mi Bug Report - if you not using this feature
+com.miui.weather2	MIUI Weather. I prefer another weather app.
+com.miui.hybrid com.miui.hybrid.accessory	Quick apps.
+com.miui.global.packageinstaller	MIUI package installer. Without it Play Store app will be used. It shows ads, but I like that you can manage app permissions before starting it.
+com.xiaomi.joyose	?? Some junk
+Google:
+
+com.google.android.gms.location.history	Location History
+com.google.android.videos	Google Movies
+com.google.android.music	Google Music
+com.google.android.apps.photos	Google Photos
+com.google.android.youtube	Youtube - I prefer to use a browser
+com.google.android.apps.tachyon	Google Duo - video calling app
+com.google.ar.lens	Google Lens - identify things on camera
+com.google.android.googlequicksearchbox	Google search box - I prever to use a browser or widget
+com.google.android.apps.wellbeing	Digital wellbeing
+com.google.android.apps.googleassistant	Google Assistant
+Facebook:
+
+What the @#$%? I just got a fresh phone, didn’t install any Facebook apps and I still have a bunch of Facebook services eating my battery and memory.
+
+com.facebook.katana	Facebook mobile app
+com.facebook.services	Facebook Services
+com.facebook.system	Facebook App Installer
+com.facebook.appmanager	Facebook app manager
+Default Android Apps
+
+com.android.browser	Default Browser - not necessary if you use Firefox or Chrome
+com.android.wallpaper.livepicker	Wallpaper live picker
+com.android.dreams.basic	Screen saver
+com.android.dreams.phototable	Screen saver
+com.android.providers.downloads.ui	Downloads UI. Periodically show notifications about files you downloaded. I find no use for it.
+Miscelanneous Promoted Apps
+
+com.netflix.partner.activation	Some Netflix stuff
+com.zhiliaoapp.musically	TikTok
+ru.yandex.searchplugin	Yandex Search
+com.yandex.zen	Yandex Zen
+com.ebay.mobile com.ebay.carrier	Ebay Store
+ru.ozon.app.android	Ozon Store
+com.alibaba.aliexpresshd	Aliexpress Store
+sg.bigo.live	Some social media
+ru.auto.ara	auto.ru app
+And some additional steps to disable Xiaomi ads and collecting data:
+
+⚙️ Settings - Passwords & Security - Authorization & revocation. Revoke authorization from msa(MIUI System Ads) application. Not necessary if you already disabled com.miui.msa.global.
+⚙️ Settings - Passwords & Security - Privacy. Disable “User Experience Program” and “Send diagnostic data automatically”.
+⚙️ Settings - Passwords & Security - Privacy - Ad services. Disable “Personalized ad recommendations”.
+SIM Toolkit
+
+Some Russian mobile operators use SIM card built-in application to promote paid services. They show pop-up windows with OK/Cancel buttons. Hit the wrong button - and you are suddenly subscribed to some freaking SMS horoscope with daily fee.
+
+com.android.stk	SIM Toolkit
+com.android.stk2	SIM Toolkit for the second SIM card
+Note, that some mobile operators may use SIM toolkit for useful things, and you will lose that functions. In my experience I have never seen anything useful there.
+
+Another good articles on de-bloating MIUI:
+
+technastic.com/xiaomi-bloatware-list-miui/
+devcondition.com/article/removing-unneeded-miui-applications/
+
+License: This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License Share: share on reddit share on hacker news share on facebook share on twitter share on linkedin share on slashdot
+
+
+Debloat/Remove Bloatware from Xiaomi
+com.android.chrome | Chrome Browser (you may loose webview)
+com.android.deskclock | Stock Clock app
+Google Bloatware on Xiaomi Phones
+com.google.android.apps.docs | Google Docs
+com.google.android.apps.maps | Google Maps
+com.google.android.apps.photos | Google Photos
+com.google.android.apps.tachyon | Google Duo
+com.google.android.apps.subscriptions.red | Google One
+com.google.android.music | Google Play Music
+com.google.android.videos | Google Play Movies & TV
+com.google.android.feedback | Feedback app
+com.google.android.youtube | Youtube
+com.mi.android.globalminusscreen | App Vault
+com.mi.android.globalFileexplorer| Mi File Manager
+com.mi.globalbrowser | Mi Browser
+com.mipay.wallet.in | Mi Wallet (India)
+com.miui.analytics | MIUI Analytics (spyware)
+com.miui.backup | Backup app
+com.miui.bugreport | Bug reporting app
+com.miui.calculator | Mi Calculator
+com.miui.cleanmaster | System Cleaner
+com.miui.cloudbackup | Cloud Backup service
+com.miui.cloudservice | Cloud service
+com.miui.micloudsync | Cloud Sync
+com.miui.cloudservice.sysbase | Cloud service
+com.miui.compass | MIUI Compass
+com.miui.fm | MIUI FM
+com.miui.freeform | MIUI Picture in Picture service
+com.miui.hybrid | Quick Apps (data mining app)
+com.miui.hybrid.accessory | Quick Apps (data mining app)
+com.miui.miservice | Services & feedback
+com.miui.mishare.connectivity | Mi Share
+com.miui.miwallpaper | Wallpaper app (may not change lockscreen wallpaper after)
+com.miui.msa.global | MSA or MIUI Ad Services
+com.miui.notes | Notes
+com.miui.phrase | Frequent phrases
+com.miui.player | Music Player
+com.android.soundrecorder | Sound Recorder
+com.miui.screenrecorder | Screen Recorder
+com.miui.touchassistant | Quick Ball feature
+com.miui.videoplayer | MIUI Video player
+com.miui.weather2 | Weather app
+com.miui.yellowpage | Yellow Page app
+com.xiaomi.account | Mi Account
+com.xiaomi.calendar | Mi Calendar
+com.xiaomi.discover | Xiaomi System apps updater
+com.xiaomi.glgm | Games
+com.xiaomi.joyose | Junk and safe to remove
+com.xiaomi.midrop | Mi Drop
+com.xiaomi.mipicks | GetApps(Xiaomi app store)
+com.xiaomi.miplay_client
+com.xiaomi.mircs | MIUI to MIUI Message
+com.xiaomi.mirecycle | Mi Recycle (MIUI Security Cleaning)
+com.xiaomi.misettings | Mi Settings
+com.xiaomi.payment | Mi Pay
+com.xiaomi.scanner | Scanner app
+com.xiaomi.xmsf | Xiaomi Service Framework
+com.xiaomi.xmsfkeeper | Xiaomi Service Framework
+com.netflix.partner.activation | Netflix
+com.netflix.mediaclient | Netflix
+com.tencent.soter.soterserver | Chinese Payment service
+com.facebook.appmanager | Facebook
+com.facebook.services | Facebook
+com.facebook.system | Facebook
+com.facebook.katana | Facebook
+
+On your Xiaomi phone, your initial task is to enable USB Debugging and Developer Options.
+This can be done by going to Settings > About phone> Build Number. Here, you need to tap the option of build number seven times to start working on it.
+Finally, go to Settings > Advanced Settings> USB Debugging. Enable the option if it is toggled off.
+Consecutively, download Xiaomi ADB and the Fastboot tool on your laptop or system.
+Move to Minimal ADB and write adb devices. This assists in verifying the connection. Select Yes on the prompt message. This begins the USB debugging, to initiate process to remove bloatware from Xiaomi.
+6. Here, type adb shell to begin uninstallation of packages mentioned in the section below.
+
+7. Now run the command
+
+adb shell pm uninstall –user 0 <package name>
+
+8. Similarly, delete all packages that you want to remove as a part of bloatware.
+
+List of bloatware that can be removed
+Android bloatware
+List of Android bloatware that comes appended as a part of your mobile devices.
+
+com.android.chrome
+com.android.deskclock
+com.android.calendar
+com.android.mms.service
+com.android.printspoolercom.android.statementservice
+com.android.cellbroadcastreceiver
+com.android.thememanager.module
+com.android.wallpaper.livepicker
+com.android.wallpaperbackup
+com.android.cellbroadcastreceiver.overlay.common
+com.android.dreams.basic
+com.android.dreams.phototable | Screensaver app
+com.android.egg z
+com.android.emergency
+com.android.hotwordenrollment.okgoogle
+com.android.mms
+com.android.stk
+com.android.wallpapercropper
+com.android.thememanager
+com.android.bookmarkprovider
+com.android.browser
+Google bloatware
+The section contains list of packages added as a part of Google package. These can allow you remove bloatware from Xiaomi phone.
+
+com.google.android.apps.docs
+com.google.android.gm
+com.google.android.gms
+com.google.android.apps.wellbeing
+com.google.android.gms.location.history
+com.google.android.apps.maps
+com.google.android.apps.photos
+com.google.ar.lens
+com.google.android.apps.tachyon
+com.google.android.tts
+com.google.android.videos
+com.google.android.youtube
+com.google.android.feedback
+com.google.android.googlequicksearchbox
+com.google.android.inputmethod.latin
+com.google.android.marvin.talkback
+com.google.android.music
+com.google.android.printservice.recommendation
+com.google.android.syncadapters.calendar
+Also Read: How To Troubleshoot Dell Laptop Battery Issues?
+
+Third party bloatware
+These are the third party applications that comes loaded as a part of the bloatware. You will have to remove these bloatware from Xiaomi phones
+
+com.opera.app.news
+com.opera.branding
+in.amazon.mShop.android.shopping
+com.bsp.catchlog
+com.netflix.partner.activation
+com.netflix.mediaclient
+cn.wps.xiaomi.abroad.lite
+com.samsung.aasaservice
+org.simalliance.openmobileapi.service
+com.duokan.phone.remotecontroller.peel.plugin
+com.autonavi.minimap
+com.caf.fmradio
+com.opera.mini.native
+com.opera.preinstall
+com.tencent.soter.soterserver
+com.facebook.katana
+com.facebook.appmanager
+com.facebook.services
+com.facebook.system
+pl.zdunex25.updater
+ros.ota.updater
+org.lineageos.recorder
+org.lineageos.snap
+com.hampusolsson.abstruct
+code.name.monkey.retromusic
+com.syberia.ota
+com.opera.branding.news
+com.syberia.SyberiaPapers
+com.duokan.phone.remotecontroller

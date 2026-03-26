@@ -1,0 +1,4 @@
+# One package per line
+# Example:
+# com.miui.analytics
+# com.xiaomi.midrop
