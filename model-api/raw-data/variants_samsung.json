@@ -1,0 +1,3212 @@
+{
+  "meta": {
+    "oem": "SAMSUNG",
+    "count": 176,
+    "sources": {
+      "list_file": "model-api/raw-data/samsung-bloatware-list.txt",
+      "table_file": "model-api/raw-data/samsung-data-table.txt",
+      "list_rows_parsed": 87,
+      "table_rows_parsed": 150
+    }
+  },
+  "packages": [
+    {
+      "id": "com.android.apps.tag",
+      "list": "SAMSUNG",
+      "description": "No Idea, but it doesn't seem to cause any problems",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.backupconfirm",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.bookmarkprovider",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.bookmarksprovider",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.chrome",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Chrome, but there are so many other options for browsers",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.dreams.basic",
+      "list": "SAMSUNG",
+      "description": "I don't even know if this is still a thing you can access.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.dreams.phototable",
+      "list": "SAMSUNG",
+      "description": "Obviously Removes Photo Screensavers, no that anyone really uses screensavers",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.egg",
+      "list": "SAMSUNG",
+      "description": "Different letters for other Android versions",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.hotwordenrollment.okgoogle",
+      "list": "SAMSUNG",
+      "description": "Google Assistant related, if you use it probably leave them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.hotwordenrollment.xgoogle",
+      "list": "SAMSUNG",
+      "description": "Google Assistant related, if you use it probably leave them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.managedprovisioning",
+      "list": "SAMSUNG",
+      "description": "Not useful if you don't use work profile",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.mms.service",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "not-recommended",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.printspooler",
+      "list": "SAMSUNG",
+      "description": "Causes problems when printing from your phone.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.providers.calendar",
+      "list": "SAMSUNG",
+      "description": "Calendar related, if you use a calendar on your phone I would keep it.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.providers.partnerbookmarks",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.sharedstoragebackup",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.wallpaper.livepicker",
+      "list": "SAMSUNG",
+      "description": "Removes the ability to set a live wallpaper",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.android.wallpapercropper",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.diotek.sec.lookup.dictionary",
+      "list": "SAMSUNG",
+      "description": "I have no idea what the point of this is",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.appmanager",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.katana",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.services",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.facebook.system",
+      "list": "SAMSUNG",
+      "description": "I'm betting this causes facebook to come back after updates",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.restore",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to restore data from a Google backup",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.tachyon",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.apps.turbo",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.as",
+      "list": "SAMSUNG",
+      "description": "Google Device Personalization related, not needed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.feedback",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.gms.location.history",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Google Location History",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.googlequicksearchbox",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.onetimeinitializer",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.projection.gearhead",
+      "list": "SAMSUNG",
+      "description": "Obviously stops android auto from working.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.setupwizard",
+      "list": "SAMSUNG",
+      "description": "Once your phone is set up you don't need the setup wizard anymore",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.syncadapters.calendar",
+      "list": "SAMSUNG",
+      "description": "If you use a calendar probably leave it.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.syncadapters.contacts",
+      "list": "SAMSUNG",
+      "description": "If you use Google Contact Syncing probably leave it",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.android.tts",
+      "list": "SAMSUNG",
+      "description": "Probably breaks any TTS functionality",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.ar.core",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.google.audio.hearing.visualization.accessibility.scribe",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Live Transcribe",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.hiya.star",
+      "list": "SAMSUNG",
+      "description": "Caller ID & Call Protection features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.knox.vpn.proxyhandler",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.microsoft.appmanager",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Your Phone compatibility",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.microsoft.skydrive",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks OneDrive support",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.netflix.mediaclient",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.osp.app.signin",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.aasaservice",
+      "list": "SAMSUNG",
+      "description": "No Idea, but it's classed as bloatware and everything seems to work fine.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.advp.imssettings",
+      "list": "SAMSUNG",
+      "description": "Could break cellular/data related stuff",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "not-recommended",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.accessibility.talkback",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.allshare.service.fileshare",
+      "list": "SAMSUNG",
+      "description": "Breaking Wi-Fi Direct sharing, idk if this is even still a thing.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.allshare.service.mediashare",
+      "list": "SAMSUNG",
+      "description": "Removes the option to share stuff to nearby devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.appsedge",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.camera.sticker.facearavatar.preload",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.clipboardedge",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.cocktailbarservice",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.dofviewer",
+      "list": "SAMSUNG",
+      "description": "Probably breaks the ability to edit portrait mode photos",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.galaxyfinder",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.omcagent",
+      "list": "SAMSUNG",
+      "description": "I don't know where to see these but I don't need samsung recommending me apps",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.readingglass",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.reminder",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Samsung Reminders App",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.routines",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.settings.bixby",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.sharelive",
+      "list": "SAMSUNG",
+      "description": "Yet another sharing option I've never used",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.simplesharing",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.soundpicker",
+      "list": "SAMSUNG",
+      "description": "Idk, doesn't seem to interfere with alarm or ringtone/notification sound menu",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.spage",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the Free news page thing",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.taskedge",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.app.watchmanagerstub",
+      "list": "SAMSUNG",
+      "description": "Might cause problems if you use Samsung Wear devices.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.appsedge",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.ardrawing",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use AR Doodles",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.aremoji",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use AR Emojis",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.aremojieditor",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to edit AR Emojis",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.arzone",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use AR Zone",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.authfw",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.aware.service",
+      "list": "SAMSUNG",
+      "description": "Yet another sharing option I've never used",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.beaconmanager",
+      "list": "SAMSUNG",
+      "description": "Could cause problems if you use smartthings devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.bixby.agent",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.bixby.service",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.bixby.wakeup",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.bixbyvision.framework",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.bluelightfilter",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Samsung's blue light filter",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.calendar",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the Samsung Calendar app",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.carkey",
+      "list": "SAMSUNG",
+      "description": "Samsung Pass related, if you use it probably leave them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.coldwalletservice",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.da.daagent",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.dkey",
+      "list": "SAMSUNG",
+      "description": "Samsung Pass related, if you use it probably leave them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.easysetup",
+      "list": "SAMSUNG",
+      "description": "Could cause problems if you use other samsung smart devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.fast",
+      "list": "SAMSUNG",
+      "description": "Not actually useful, just sends notifications randomly",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.fmm",
+      "list": "SAMSUNG",
+      "description": "Obviously breaking Find My Mobile support",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.fmmm",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.forest",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks digital wellbeing",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.game.gamehome",
+      "list": "SAMSUNG",
+      "description": "Some useful settings for games but not really needed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.game.gametools",
+      "list": "SAMSUNG",
+      "description": "Some useful settings for games but not really needed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.game.gos",
+      "list": "SAMSUNG",
+      "description": "Some useful settings for games but not really needed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.ipsgeofence",
+      "list": "SAMSUNG",
+      "description": "I assume this is for if you go to samsung store. Not really needed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.kgclient",
+      "list": "SAMSUNG",
+      "description": "This is knox related, DO NOT DISABLE IT, it will lock your phone completely.",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "not-recommended",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.kidsinstaller",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.knox.analytics.uploader",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.knox.containeragent",
+      "list": "SAMSUNG",
+      "description": "Not useful if you don't use work profile",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.knox.containercore",
+      "list": "SAMSUNG",
+      "description": "Not useful if you don't use work profile",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.knox.kpecore",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.knox.pushmananger",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.livestickers",
+      "list": "SAMSUNG",
+      "description": "No idea, I assume it's something to do with Emojis/stickers",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.location",
+      "list": "SAMSUNG",
+      "description": "Could break certain apps that use it but I haven't had any issues",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.mdeservice",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to call and text on other deivces.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.mdx",
+      "list": "SAMSUNG",
+      "description": "Probably breaks the 'Your Phone' connection to Windows",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.mdx.quickboard",
+      "list": "SAMSUNG",
+      "description": "Could break things if you use Smartthings devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.messaging",
+      "list": "SAMSUNG",
+      "description": "Built in Samsung Messages Client, if you use another SMS client you can disable it",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.mobileservice",
+      "list": "SAMSUNG",
+      "description": "Idk exactly what this is but I've never used 'group sharing'",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.net.wifi.wifiguider",
+      "list": "SAMSUNG",
+      "description": "Idk but it seems like some bloatware",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.privateshare",
+      "list": "SAMSUNG",
+      "description": "Yet another sharing option I've never used",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.rubin.app",
+      "list": "SAMSUNG",
+      "description": "Samsung Customization service (data collection)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.samsungpassautofill",
+      "list": "SAMSUNG",
+      "description": "Obviously causes problems with Samsung Pass",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.samsunpass",
+      "list": "SAMSUNG",
+      "description": "Samsung Pass related, if you use it probably leave them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.scloud",
+      "list": "SAMSUNG",
+      "description": "Didn't this shutdown? I don't even know how to acces this.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.sdk.hardwriting",
+      "list": "SAMSUNG",
+      "description": "Could break S-Pen writing in certain apps or S-Pen to text keyboard option",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.aircommand",
+      "list": "SAMSUNG",
+      "description": "Only present on phones with S-Pen support, removes the floating Air Command button",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.airviewdictionary",
+      "list": "SAMSUNG",
+      "description": "Probably for some translate option in aircommand or something else",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.health",
+      "list": "SAMSUNG",
+      "description": "Probably related to Samsung Health.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.livedrawing",
+      "list": "SAMSUNG",
+      "description": "That texting thing where you can draw to each other? I don't use Samsung's messages app",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.peoplestripe",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.stplatform",
+      "list": "SAMSUNG",
+      "description": "Probably breaks things related to smartthings devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.service.tagservice",
+      "list": "SAMSUNG",
+      "description": "No Idea, but it doesn't seem to cause any problems",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.sm.devicesecurity",
+      "list": "SAMSUNG",
+      "description": "I think is the McAfee nonsense under device care but idk",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.smartcallprovider",
+      "list": "SAMSUNG",
+      "description": "I don't know what smart call is but if you use it probably leave it",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.smartface",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.smartmirroring",
+      "list": "SAMSUNG",
+      "description": "No Idea, never heard of Smart View",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.stickercenter",
+      "list": "SAMSUNG",
+      "description": "Something related to stickers/emojis",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.svoiceime",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use Samsung's voice input but most apps seem to use google's (even on samsung keyboard)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.themecenter",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.themestore",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.visionintelligence",
+      "list": "SAMSUNG",
+      "description": "If you use Bixby I would probably leave it enabled",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.voc",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.voc.launcheractivity",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.android.vtcamerasettings",
+      "list": "SAMSUNG",
+      "description": "Probably for some backgrounds or effects in video calls",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.bbc.bbcagent",
+      "list": "SAMSUNG",
+      "description": "No Idea, but it's classed as bloatware and everything seems to work fine.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.faceservice",
+      "list": "SAMSUNG",
+      "description": "Probably breaks face unlock stuff",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.klmsagent",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.knox.securefolder",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.providers.calendar",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.safetyinformation",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.smt",
+      "list": "SAMSUNG",
+      "description": "I don't know how to enable this nor have I ever used it",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.samsung.storyservice",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Stories from your Gallery",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.billing",
+      "list": "SAMSUNG",
+      "description": "Doesn't break Samsung Pay, idk about other stuff.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.chromecustomizations",
+      "list": "SAMSUNG",
+      "description": "Probably breaks something with chrome, but it's likely not needed.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.datacreate",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.dexonpc",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use DeX on PC",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.kidshome",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.magnifier",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.quicktool",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.safetyassurance",
+      "list": "SAMSUNG",
+      "description": "Probably breaks some SOS functionality",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.samsungapps",
+      "list": "SAMSUNG",
+      "description": "Not recommended, Goodlock gets regular updates as well as other system apps.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.sbrowser",
+      "list": "SAMSUNG",
+      "description": "Obivously breaks the built in samsung browser",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.secsetupwizard",
+      "list": "SAMSUNG",
+      "description": "Once your phone is set up you don't need the setup wizard anymore",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.soundalive",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks SoundAlive (built in music player)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.app.ve.vebgm",
+      "list": "SAMSUNG",
+      "description": "Could cause problems with the video editor",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.autodoodle.service",
+      "list": "SAMSUNG",
+      "description": "Probably breaks some image editing, but idk what",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.daemonapp",
+      "list": "SAMSUNG",
+      "description": "Removes the weather app & widgets.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.easymover",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.easymover.agent",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.mimage.avatar.stickers",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.mimage.avatarstickers",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks the ability to use AR Emoji Stickers",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.mimage.photoretouching",
+      "list": "SAMSUNG",
+      "description": "Removes the ability to edit photos",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.widgetapp.easymodecontactswidget",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.android.widgetapp.webmanual",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.bcservice",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.enterprise.knox.cloudmdm.smdms",
+      "list": "SAMSUNG",
+      "description": "Knox Related, could break secure folder and other knox features",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.epdgtestapp",
+      "list": "SAMSUNG",
+      "description": "No Idea, but it's classed as bloatware and everything seems to work fine.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.factory",
+      "list": "SAMSUNG",
+      "description": "Unrelated to hidden hardware test menu (#0#)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.hearingadjust",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.location.nsflp2",
+      "list": "SAMSUNG",
+      "description": "Could break certain apps that use it but I haven't had any issues",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.mhs.smarttethering",
+      "list": "SAMSUNG",
+      "description": "Breaks the ability to turn on your hotspot from other devices",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.provides.assisteddialing",
+      "list": "SAMSUNG",
+      "description": "Obviously breaks Assisted Dialing",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.samsung.android.widgetapp.samsungapps",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sec.spp.push",
+      "list": "SAMSUNG",
+      "description": "This is what shows those annoying ads in your notifications.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "com.sem.factoryapp",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "safe-to-disable",
+        "samsung",
+        "table-import",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "de.axelspringer.yana.zeropage",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    },
+    {
+      "id": "samsung.android.beaconmanager",
+      "list": "SAMSUNG",
+      "description": "Community OEM variant candidate",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "community",
+        "list-import",
+        "samsung",
+        "variant"
+      ],
+      "alternatives": [],
+      "source": "variant"
+    }
+  ]
+}

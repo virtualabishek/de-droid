@@ -188,6 +188,7 @@ export default function Packages() {
   const [permissionPackage, setPermissionPackage] = useState<string | null>(
     null,
   );
+  const [isFocusMode, setIsFocusMode] = useState(false);
 
   // Fetch stats on mount
   useEffect(() => {
@@ -200,6 +201,39 @@ export default function Packages() {
       loadDeviceNickname();
     }
   }, [selectedDevice, fetchPackages]);
+
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFocusMode(false);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
+  }, []);
+
+  const enterFocusMode = async () => {
+    setIsFocusMode(true);
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      }
+    } catch {
+      // Fallback keeps in-app focus overlay even if fullscreen API fails
+    }
+  };
+
+  const exitFocusMode = async () => {
+    setIsFocusMode(false);
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      }
+    } catch {
+      // Ignore fullscreen API failures
+    }
+  };
 
 
   const loadDeviceNickname = async () => {
@@ -442,6 +476,27 @@ export default function Packages() {
                 </button>
               )}
 
+              {activeTab === "packages" && (
+                <button
+                  onClick={isFocusMode ? exitFocusMode : enterFocusMode}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/90 hover:bg-gray-600 rounded-xl font-medium transition-colors border border-gray-600"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d={
+                        isFocusMode
+                          ? "M9 9L4 4m0 0h5M4 4v5m11 0l5-5m0 0v5m0-5h-5m-6 11l-5 5m0 0h5m-5 0v-5m11 5l5 5m0 0v-5m0 5h-5"
+                          : "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                      }
+                    />
+                  </svg>
+                  {isFocusMode ? "Exit Full Screen" : "Full Screen"}
+                </button>
+              )}
+
               {/* Device Preview Icon */}
               <DeviceIcon
                 brand={selectedDevice.brand}
@@ -580,7 +635,7 @@ export default function Packages() {
       )}
 
       {/* Main content */}
-      <div className="flex-1 flex gap-6 p-6 overflow-hidden">
+      <div className={`flex-1 flex gap-6 p-6 overflow-hidden ${isFocusMode ? "hidden" : ""}`}>
         {/* Device selector sidebar */}
         <div className="w-80 flex-shrink-0 flex flex-col gap-4">
           <DeviceSelector />
@@ -662,6 +717,7 @@ export default function Packages() {
                   onAction={handleAction}
                   isLoading={actionLoading}
                   onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
+                  userId={user?.id}
                 />
               )
             ) : (
@@ -738,6 +794,31 @@ export default function Packages() {
           packageName={permissionPackage}
           onClose={() => setPermissionPackage(null)}
         />
+      )}
+
+      {isFocusMode && selectedDevice && activeTab === "packages" && (
+        <div className="fixed inset-0 z-[70] bg-gray-900 flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 bg-gray-800">
+            <div>
+              <h2 className="text-lg font-semibold">Packages - Full Screen</h2>
+              <p className="text-xs text-gray-400">Focused mode with full filter controls</p>
+            </div>
+            <button
+              onClick={exitFocusMode}
+              className="px-3 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm"
+            >
+              Exit
+            </button>
+          </div>
+          <div className="flex-1 p-3 overflow-hidden">
+            <PackageList
+              onAction={handleAction}
+              isLoading={actionLoading}
+              onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
+              userId={user?.id}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

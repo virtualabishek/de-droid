@@ -1,0 +1,3 @@
+App Name	Package Name	Extra Information	Safe To Disable?
+Example App	com.example.package	Optional app	Yes
+Critical Service	com.example.critical	Core security component	No

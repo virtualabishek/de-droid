@@ -11,6 +11,7 @@ interface PackageListProps {
   ) => void;
   isLoading: boolean;
   onOpenPermissions?: (packageName: string) => void;
+  userId?: string;
 }
 
 interface AlternativeApp {
@@ -90,32 +91,85 @@ interface FilterPreset {
   name: string;
   icon: string;
   filters: {
-    state?: string;
-    category?: string;
-    packageType?: string;
-    removal?: string;
+    states?: Array<"enabled" | "disabled" | "uninstalled">;
+    categories?: Array<"BLOATWARE" | "OPTIONAL" | "ESSENTIAL">;
+    packageTypes?: Array<"system" | "user">;
+    removals?: Array<"RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">;
   };
 }
 
+type CustomFilterPreset = {
+  id: string;
+  name: string;
+  filters: FilterPreset["filters"];
+};
+
+type PersistedFilterState = {
+  states: Array<"enabled" | "disabled" | "uninstalled">;
+  categories: Array<"BLOATWARE" | "OPTIONAL" | "ESSENTIAL">;
+  packageTypes: Array<"system" | "user">;
+  removals: Array<"RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">;
+  modelConfidence: "all" | "high" | "medium" | "low" | "unknown";
+  searchQuery: string;
+};
+
+const DEFAULT_STATES: Array<"enabled" | "disabled" | "uninstalled"> = [
+  "enabled",
+  "disabled",
+  "uninstalled",
+];
+const DEFAULT_CATEGORIES: Array<"BLOATWARE" | "OPTIONAL" | "ESSENTIAL"> = [
+  "BLOATWARE",
+  "OPTIONAL",
+  "ESSENTIAL",
+];
+const DEFAULT_PACKAGE_TYPES: Array<"system" | "user"> = ["system", "user"];
+const DEFAULT_REMOVALS: Array<"RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE"> = [
+  "RECOMMENDED",
+  "ADVANCED",
+  "EXPERT",
+  "UNSAFE",
+];
+
 const FILTER_PRESETS: FilterPreset[] = [
   { id: "all", name: "All Packages", icon: "📦", filters: {} },
-  { id: "bloatware", name: "Bloatware", icon: "🗑️", filters: { category: "BLOATWARE" } },
-  { id: "safe-remove", name: "Safe to Remove", icon: "✅", filters: { removal: "RECOMMENDED", state: "enabled" } },
-  { id: "disabled", name: "Disabled", icon: "⏸️", filters: { state: "disabled" } },
-  { id: "uninstalled", name: "Removed", icon: "❌", filters: { state: "uninstalled" } },
-  { id: "essential", name: "Essential", icon: "⚠️", filters: { category: "ESSENTIAL" } },
-  { id: "user-apps", name: "User Apps", icon: "👤", filters: { packageType: "user" } },
+  {
+    id: "bloatware",
+    name: "Bloatware",
+    icon: "🗑️",
+    filters: { categories: ["BLOATWARE"] },
+  },
+  {
+    id: "safe-remove",
+    name: "Safe to Remove",
+    icon: "✅",
+    filters: { removals: ["RECOMMENDED"], states: ["enabled"] },
+  },
+  { id: "disabled", name: "Disabled", icon: "⏸️", filters: { states: ["disabled"] } },
+  {
+    id: "uninstalled",
+    name: "Removed",
+    icon: "❌",
+    filters: { states: ["uninstalled"] },
+  },
+  {
+    id: "essential",
+    name: "Essential",
+    icon: "⚠️",
+    filters: { categories: ["ESSENTIAL"] },
+  },
+  { id: "user-apps", name: "User Apps", icon: "👤", filters: { packageTypes: ["user"] } },
 ];
 
 export function PackageList({
   onAction,
   isLoading,
   onOpenPermissions,
+  userId,
 }: PackageListProps) {
   const {
     packages,
     togglePackageSelection,
-    selectAllPackages,
     selectAllByCategory,
     clearSelection,
     fetchAlternativesForPackage,
@@ -129,13 +183,18 @@ export function PackageList({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter state
-  const [filterState, setFilterState] = useState<"all" | "enabled" | "disabled" | "uninstalled">("all");
-  const [filterCategory, setFilterCategory] = useState<"all" | "BLOATWARE" | "OPTIONAL" | "ESSENTIAL">("all");
-  const [packageTypeFilter, setPackageTypeFilter] = useState<"all" | "system" | "user">("all");
-  const [filterRemoval, setFilterRemoval] = useState<"all" | "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">("all");
+  const [filterStates, setFilterStates] =
+    useState<Array<"enabled" | "disabled" | "uninstalled">>(DEFAULT_STATES);
+  const [filterCategories, setFilterCategories] =
+    useState<Array<"BLOATWARE" | "OPTIONAL" | "ESSENTIAL">>(DEFAULT_CATEGORIES);
+  const [packageTypeFilter, setPackageTypeFilter] =
+    useState<Array<"system" | "user">>(DEFAULT_PACKAGE_TYPES);
+  const [filterRemovals, setFilterRemovals] =
+    useState<Array<"RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">>(DEFAULT_REMOVALS);
   const [filterModelConfidence, setFilterModelConfidence] = useState<"all" | "high" | "medium" | "low" | "unknown">("all");
   const [activePreset, setActivePreset] = useState<string>("all");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [customPresets, setCustomPresets] = useState<CustomFilterPreset[]>([]);
 
   // View state
   const [sortBy, setSortBy] = useState<SortOption>("name-asc");
@@ -162,13 +221,67 @@ export function PackageList({
 
   const { selectedDevice } = useDeviceStore();
 
+  const scopedStorageKey = (baseKey: string) =>
+    `${baseKey}:${userId || "anonymous"}`;
+
+  const applyPersistedState = (state: PersistedFilterState) => {
+    setFilterStates(state.states?.length ? state.states : DEFAULT_STATES);
+    setFilterCategories(state.categories?.length ? state.categories : DEFAULT_CATEGORIES);
+    setPackageTypeFilter(state.packageTypes?.length ? state.packageTypes : DEFAULT_PACKAGE_TYPES);
+    setFilterRemovals(state.removals?.length ? state.removals : DEFAULT_REMOVALS);
+    setFilterModelConfidence(state.modelConfidence || "all");
+    setSearchQuery(state.searchQuery || "");
+    setActivePreset("all");
+  };
+
   // Load recent searches from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("recentPackageSearches");
+    const saved = localStorage.getItem(scopedStorageKey("recentPackageSearches"));
     if (saved) {
       setRecentSearches(JSON.parse(saved).slice(0, 5));
     }
-  }, []);
+    const savedPresets = localStorage.getItem(scopedStorageKey("packageCustomFilterPresets"));
+    if (savedPresets) {
+      try {
+        const parsed = JSON.parse(savedPresets) as CustomFilterPreset[];
+        if (Array.isArray(parsed)) {
+          setCustomPresets(parsed.slice(0, 10));
+        }
+      } catch {
+        setCustomPresets([]);
+      }
+    }
+
+    const savedFilters = localStorage.getItem(scopedStorageKey("packageLastFilters"));
+    if (savedFilters) {
+      try {
+        const parsed = JSON.parse(savedFilters) as PersistedFilterState;
+        applyPersistedState(parsed);
+      } catch {
+        // ignore invalid persisted state
+      }
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      scopedStorageKey("packageCustomFilterPresets"),
+      JSON.stringify(customPresets),
+    );
+  }, [customPresets, userId]);
+
+  useEffect(() => {
+    const payload: PersistedFilterState = {
+      states: filterStates,
+      categories: filterCategories,
+      packageTypes: packageTypeFilter,
+      removals: filterRemovals,
+      modelConfidence: filterModelConfidence,
+      searchQuery,
+    };
+
+    localStorage.setItem(scopedStorageKey("packageLastFilters"), JSON.stringify(payload));
+  }, [filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, searchQuery, userId]);
 
   useEffect(() => {
     fetchCategories();
@@ -214,9 +327,15 @@ export function PackageList({
 
     // Apply filters
     filtered = filtered.filter((pkg) => {
-      const matchesState = filterState === "all" || pkg.state === filterState;
-      const matchesCategory = filterCategory === "all" || pkg.category?.toUpperCase() === filterCategory;
-      const matchesRemoval = filterRemoval === "all" || pkg.removal === filterRemoval;
+      const matchesState = filterStates.includes(pkg.state);
+      const matchesCategory = filterCategories.includes(
+        (pkg.category?.toUpperCase() as "BLOATWARE" | "OPTIONAL" | "ESSENTIAL") ||
+          "OPTIONAL",
+      );
+      const matchesRemoval = filterRemovals.includes(
+        (pkg.removal as "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE") ||
+          "ADVANCED",
+      );
       const modelConfidence = pkg.modelConfidence;
 
       let matchesModelConfidence = true;
@@ -230,12 +349,8 @@ export function PackageList({
         matchesModelConfidence = typeof modelConfidence !== "number";
       }
 
-      let matchesPackageType = true;
-      if (packageTypeFilter === "system") {
-        matchesPackageType = isSystemPackage(pkg.name);
-      } else if (packageTypeFilter === "user") {
-        matchesPackageType = !isSystemPackage(pkg.name);
-      }
+      const packageType = isSystemPackage(pkg.name) ? "system" : "user";
+      const matchesPackageType = packageTypeFilter.includes(packageType);
 
       return matchesState && matchesCategory && matchesPackageType && matchesRemoval && matchesModelConfidence;
     });
@@ -268,7 +383,7 @@ export function PackageList({
     });
 
     return filtered;
-  }, [packages, searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, sortBy, fuse]);
+  }, [packages, searchQuery, filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, sortBy, fuse]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filteredAndSortedPackages.length / itemsPerPage)),
@@ -292,7 +407,7 @@ export function PackageList({
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, sortBy, groupBy, itemsPerPage]);
+  }, [searchQuery, filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, sortBy, groupBy, itemsPerPage]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -388,14 +503,26 @@ export function PackageList({
   // Active filters count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (filterState !== "all") count++;
-    if (filterCategory !== "all") count++;
-    if (packageTypeFilter !== "all") count++;
-    if (filterRemoval !== "all") count++;
+    if (filterStates.length !== DEFAULT_STATES.length) count++;
+    if (filterCategories.length !== DEFAULT_CATEGORIES.length) count++;
+    if (packageTypeFilter.length !== DEFAULT_PACKAGE_TYPES.length) count++;
+    if (filterRemovals.length !== DEFAULT_REMOVALS.length) count++;
     if (filterModelConfidence !== "all") count++;
     if (searchQuery) count++;
     return count;
-  }, [filterState, filterCategory, packageTypeFilter, filterRemoval, filterModelConfidence, searchQuery]);
+  }, [filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, searchQuery]);
+
+  const toggleMultiFilter = <T extends string>(
+    value: T,
+    current: T[],
+    setter: (next: T[]) => void,
+  ) => {
+    if (current.includes(value)) {
+      setter(current.filter((item) => item !== value));
+      return;
+    }
+    setter([...current, value]);
+  };
 
   // Handlers
   const handleSearch = (query: string) => {
@@ -407,28 +534,70 @@ export function PackageList({
     if (searchQuery.trim() && !recentSearches.includes(searchQuery.trim())) {
       const newRecent = [searchQuery.trim(), ...recentSearches].slice(0, 5);
       setRecentSearches(newRecent);
-      localStorage.setItem("recentPackageSearches", JSON.stringify(newRecent));
+      localStorage.setItem(scopedStorageKey("recentPackageSearches"), JSON.stringify(newRecent));
     }
     setShowSearchSuggestions(false);
   };
 
   const applyPreset = (preset: FilterPreset) => {
     setActivePreset(preset.id);
-    setFilterState((preset.filters.state as typeof filterState) || "all");
-    setFilterCategory((preset.filters.category as typeof filterCategory) || "all");
-    setPackageTypeFilter((preset.filters.packageType as typeof packageTypeFilter) || "all");
-    setFilterRemoval((preset.filters.removal as typeof filterRemoval) || "all");
+    setFilterStates(preset.filters.states || DEFAULT_STATES);
+    setFilterCategories(preset.filters.categories || DEFAULT_CATEGORIES);
+    setPackageTypeFilter(preset.filters.packageTypes || DEFAULT_PACKAGE_TYPES);
+    setFilterRemovals(preset.filters.removals || DEFAULT_REMOVALS);
     setSearchQuery("");
   };
 
+  const applyCustomPreset = (preset: CustomFilterPreset) => {
+    setActivePreset(preset.id);
+    setFilterStates(preset.filters.states || DEFAULT_STATES);
+    setFilterCategories(preset.filters.categories || DEFAULT_CATEGORIES);
+    setPackageTypeFilter(preset.filters.packageTypes || DEFAULT_PACKAGE_TYPES);
+    setFilterRemovals(preset.filters.removals || DEFAULT_REMOVALS);
+    setSearchQuery("");
+  };
+
+  const saveCurrentPreset = () => {
+    const name = window.prompt("Preset name", "My Filter Preset")?.trim();
+    if (!name) return;
+
+    const preset: CustomFilterPreset = {
+      id: `custom-${Date.now()}`,
+      name,
+      filters: {
+        states: filterStates,
+        categories: filterCategories,
+        packageTypes: packageTypeFilter,
+        removals: filterRemovals,
+      },
+    };
+
+    setCustomPresets((current) => [preset, ...current].slice(0, 10));
+  };
+
+  const removeCustomPreset = (presetId: string) => {
+    setCustomPresets((current) => current.filter((preset) => preset.id !== presetId));
+    if (activePreset === presetId) {
+      setActivePreset("all");
+    }
+  };
+
   const clearAllFilters = () => {
-    setFilterState("all");
-    setFilterCategory("all");
-    setPackageTypeFilter("all");
-    setFilterRemoval("all");
+    setFilterStates(DEFAULT_STATES);
+    setFilterCategories(DEFAULT_CATEGORIES);
+    setPackageTypeFilter(DEFAULT_PACKAGE_TYPES);
+    setFilterRemovals(DEFAULT_REMOVALS);
     setFilterModelConfidence("all");
     setSearchQuery("");
     setActivePreset("all");
+  };
+
+  const handleSelectFiltered = () => {
+    filteredAndSortedPackages.forEach((pkg) => {
+      if (!pkg.selected) {
+        togglePackageSelection(pkg.name);
+      }
+    });
   };
 
   const toggleGroupCollapse = (group: string) => {
@@ -477,7 +646,7 @@ export function PackageList({
       // Ctrl/Cmd + A to select all (when not in input)
       if ((e.ctrlKey || e.metaKey) && e.key === "a" && document.activeElement?.tagName !== "INPUT") {
         e.preventDefault();
-        selectAllPackages();
+        handleSelectFiltered();
       }
       // Escape to clear selection
       if (e.key === "Escape") {
@@ -495,7 +664,7 @@ export function PackageList({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectAllPackages, clearSelection]);
+  }, [clearSelection, filteredAndSortedPackages]);
 
   // Color helpers
   const getStateColor = (state: string) => {
@@ -786,6 +955,35 @@ export function PackageList({
               {preset.id === "safe-remove" && <span className="bg-green-500/30 text-green-300 px-1.5 py-0.5 rounded text-xs">{packageCounts.recommended}</span>}
             </button>
           ))}
+          {customPresets.map((preset) => (
+            <div key={preset.id} className="flex items-center">
+              <button
+                onClick={() => applyCustomPreset(preset)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-l-xl text-sm font-medium whitespace-nowrap transition-all ${
+                  activePreset === preset.id
+                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+                    : "bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white"
+                }`}
+              >
+                <span>⭐</span>
+                <span>{preset.name}</span>
+              </button>
+              <button
+                onClick={() => removeCustomPreset(preset.id)}
+                className="px-2 py-2 rounded-r-xl bg-gray-700/50 hover:bg-red-600/60 text-gray-300 hover:text-white"
+                title="Delete preset"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={saveCurrentPreset}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30"
+          >
+            <span>+</span>
+            <span>Save Preset</span>
+          </button>
         </div>
 
         {/* Active Filters & View Controls */}
@@ -800,22 +998,22 @@ export function PackageList({
                     <button onClick={() => setSearchQuery("")} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
-                {filterState !== "all" && (
+                {filterStates.length !== DEFAULT_STATES.length && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
-                    State: {filterState}
-                    <button onClick={() => setFilterState("all")} className="ml-1 hover:text-white">×</button>
+                    State: {filterStates.join(", ")}
+                    <button onClick={() => setFilterStates(DEFAULT_STATES)} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
-                {filterCategory !== "all" && (
+                {filterCategories.length !== DEFAULT_CATEGORIES.length && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
-                    Category: {filterCategory}
-                    <button onClick={() => setFilterCategory("all")} className="ml-1 hover:text-white">×</button>
+                    Category: {filterCategories.join(", ")}
+                    <button onClick={() => setFilterCategories(DEFAULT_CATEGORIES)} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
-                {filterRemoval !== "all" && (
+                {filterRemovals.length !== DEFAULT_REMOVALS.length && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm">
-                    Removal: {filterRemoval}
-                    <button onClick={() => setFilterRemoval("all")} className="ml-1 hover:text-white">×</button>
+                    Safety: {filterRemovals.join(", ")}
+                    <button onClick={() => setFilterRemovals(DEFAULT_REMOVALS)} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
                 {filterModelConfidence !== "all" && (
@@ -824,10 +1022,10 @@ export function PackageList({
                     <button onClick={() => setFilterModelConfidence("all")} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
-                {packageTypeFilter !== "all" && (
+                {packageTypeFilter.length !== DEFAULT_PACKAGE_TYPES.length && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
-                    Type: {packageTypeFilter}
-                    <button onClick={() => setPackageTypeFilter("all")} className="ml-1 hover:text-white">×</button>
+                    Type: {packageTypeFilter.join(", ")}
+                    <button onClick={() => setPackageTypeFilter(DEFAULT_PACKAGE_TYPES)} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
                 <button
@@ -889,56 +1087,79 @@ export function PackageList({
         {showAdvancedFilters && (
           <div className="grid grid-cols-4 gap-3 p-4 bg-gray-700/30 rounded-xl border border-gray-600/50">
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">State</label>
-              <select
-                value={filterState}
-                onChange={(e) => { setFilterState(e.target.value as typeof filterState); setActivePreset("all"); }}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
-              >
-                <option value="all">All States</option>
-                <option value="enabled">Enabled</option>
-                <option value="disabled">Disabled</option>
-                <option value="uninstalled">Uninstalled</option>
-              </select>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">State (multi-select)</label>
+              <div className="space-y-1">
+                {DEFAULT_STATES.map((state) => (
+                  <label key={state} className="flex items-center gap-2 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={filterStates.includes(state)}
+                      onChange={() => {
+                        toggleMultiFilter(state, filterStates, setFilterStates);
+                        setActivePreset("all");
+                      }}
+                    />
+                    <span className="capitalize">{state}</span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Category</label>
-              <select
-                value={filterCategory}
-                onChange={(e) => { setFilterCategory(e.target.value as typeof filterCategory); setActivePreset("all"); }}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
-              >
-                <option value="all">All Categories</option>
-                <option value="BLOATWARE">Bloatware</option>
-                <option value="OPTIONAL">Optional</option>
-                <option value="ESSENTIAL">Essential</option>
-              </select>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Category (multi-select)</label>
+              <div className="space-y-1">
+                {DEFAULT_CATEGORIES.map((category) => (
+                  <label key={category} className="flex items-center gap-2 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={filterCategories.includes(category)}
+                      onChange={() => {
+                        toggleMultiFilter(category, filterCategories, setFilterCategories);
+                        setActivePreset("all");
+                      }}
+                    />
+                    <span>{category}</span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Package Type</label>
-              <select
-                value={packageTypeFilter}
-                onChange={(e) => { setPackageTypeFilter(e.target.value as typeof packageTypeFilter); setActivePreset("all"); }}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
-              >
-                <option value="all">All Types</option>
-                <option value="system">System</option>
-                <option value="user">User Apps</option>
-              </select>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Package Type (multi-select)</label>
+              <div className="space-y-1">
+                {DEFAULT_PACKAGE_TYPES.map((type) => (
+                  <label key={type} className="flex items-center gap-2 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={packageTypeFilter.includes(type)}
+                      onChange={() => {
+                        toggleMultiFilter(type, packageTypeFilter, setPackageTypeFilter);
+                        setActivePreset("all");
+                      }}
+                    />
+                    <span>{type === "system" ? "System apps" : "User apps"}</span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Removal Safety</label>
-              <select
-                value={filterRemoval}
-                onChange={(e) => { setFilterRemoval(e.target.value as typeof filterRemoval); setActivePreset("all"); }}
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white"
-              >
-                <option value="all">All</option>
-                <option value="RECOMMENDED">Recommended</option>
-                <option value="ADVANCED">Advanced</option>
-                <option value="EXPERT">Expert</option>
-                <option value="UNSAFE">Unsafe</option>
-              </select>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Removal Safety (multi-select)</label>
+              <div className="space-y-1">
+                {DEFAULT_REMOVALS.map((removal) => (
+                  <label key={removal} className="flex items-center gap-2 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={filterRemovals.includes(removal)}
+                      onChange={() => {
+                        toggleMultiFilter(removal, filterRemovals, setFilterRemovals);
+                        setActivePreset("all");
+                      }}
+                    />
+                    <span>
+                      {removal}
+                      {removal === "ADVANCED" ? " (review needed)" : ""}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">Sort By</label>
@@ -984,6 +1205,9 @@ export function PackageList({
                 <option value="removal">Removal Type</option>
               </select>
             </div>
+            <div className="col-span-4 text-xs text-gray-400 bg-gray-800/50 border border-gray-600/50 rounded-lg p-2">
+              <strong className="text-white">Removal levels:</strong> RECOMMENDED = usually safe, ADVANCED = needs review, EXPERT = risky/feature break possible, UNSAFE = do not remove.
+            </div>
           </div>
         )}
 
@@ -991,10 +1215,10 @@ export function PackageList({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => selectAllPackages()}
+              onClick={handleSelectFiltered}
               className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
             >
-              Select All
+              Select Filtered
             </button>
             <button
               onClick={() => selectAllByCategory("BLOATWARE")}

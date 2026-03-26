@@ -385,6 +385,153 @@ function applyModelPredictions(data: DebloatData): DebloatData {
   };
 }
 
+function fallbackConfidenceFromRemoval(
+  removal: DebloatPackage["removal"],
+): number {
+  switch (removal) {
+    case "RECOMMENDED":
+      return 0.78;
+    case "ADVANCED":
+      return 0.66;
+    case "EXPERT":
+      return 0.64;
+    case "UNSAFE":
+      return 0.86;
+    default:
+      return 0.6;
+  }
+}
+
+function inferHeuristicModelForUnknown(packageName: string): {
+  label: DebloatPackage["removal"];
+  confidence: number;
+  topFactors: string[];
+} {
+  const name = packageName.toLowerCase();
+
+  const criticalSignals = [
+    "securitycenter",
+    "finddevice",
+    "packageinstaller",
+    "updater",
+    "managedprovisioning",
+    "knox",
+    "lbe.security",
+  ];
+
+  if (criticalSignals.some((signal) => name.includes(signal))) {
+    return {
+      label: "UNSAFE",
+      confidence: 0.9,
+      topFactors: [
+        "critical system/security package pattern",
+        "high bootloop or lockout risk if removed",
+      ],
+    };
+  }
+
+  const bloatSignals = [
+    "analytics",
+    "msa",
+    "ads",
+    "facebook",
+    "netflix",
+    "booking",
+    "linkedin",
+    "appmanager",
+    "mipicks",
+  ];
+
+  if (bloatSignals.some((signal) => name.includes(signal))) {
+    return {
+      label: "RECOMMENDED",
+      confidence: 0.74,
+      topFactors: [
+        "common ad/analytics or preloaded bloat pattern",
+        "usually safe to remove for most users",
+      ],
+    };
+  }
+
+  if (name.startsWith("com.android.")) {
+    return {
+      label: "EXPERT",
+      confidence: 0.62,
+      topFactors: [
+        "android core namespace detected",
+        "manual review advised before removal",
+      ],
+    };
+  }
+
+  if (
+    name.startsWith("com.miui.") ||
+    name.startsWith("com.xiaomi.") ||
+    name.startsWith("com.samsung.") ||
+    name.startsWith("com.sec.") ||
+    name.startsWith("com.huawei.") ||
+    name.startsWith("com.oppo.") ||
+    name.startsWith("com.vivo.")
+  ) {
+    return {
+      label: "ADVANCED",
+      confidence: 0.59,
+      topFactors: [
+        "OEM system package pattern",
+        "feature impact unknown without device-specific testing",
+      ],
+    };
+  }
+
+  return {
+    label: "ADVANCED",
+    confidence: 0.52,
+    topFactors: [
+      "limited metadata available",
+      "default conservative score for unknown package",
+    ],
+  };
+}
+
+function resolveModelSignals(
+  packageName: string,
+  info: DebloatPackage | undefined,
+): {
+  modelLabel: DebloatPackage["removal"];
+  modelConfidence: number;
+  modelVersion: string;
+  modelTopFactors: string[];
+} {
+  if (info && info.modelLabel && typeof info.modelConfidence === "number") {
+    return {
+      modelLabel: info.modelLabel,
+      modelConfidence: info.modelConfidence,
+      modelVersion: info.modelVersion || "safety-model",
+      modelTopFactors: toStringArray(info.modelTopFactors),
+    };
+  }
+
+  if (info) {
+    return {
+      modelLabel: info.removal,
+      modelConfidence: fallbackConfidenceFromRemoval(info.removal),
+      modelVersion: "fallback-rule-v1",
+      modelTopFactors: [
+        "no direct model prediction for this package",
+        "fallback from curated removal category",
+      ],
+    };
+  }
+
+  const heuristic = inferHeuristicModelForUnknown(packageName);
+  return {
+    modelLabel: heuristic.label,
+    modelConfidence: heuristic.confidence,
+    modelVersion: "fallback-heuristic-v1",
+    modelTopFactors: heuristic.topFactors,
+  };
+}
+
 function normalizeAlternative(rawAlt: unknown): AlternativeApp | null {
   if (!rawAlt || typeof rawAlt !== "object") return null;
 
@@ -677,6 +824,7 @@ export function enrichPackages(
 
   return packages.map((pkg) => {
     const info = packageMap.get(pkg.name);
+    const modelSignals = resolveModelSignals(pkg.name, info);
 
     if (info) {
       return {
@@ -690,10 +838,10 @@ export function enrichPackages(
         neededBy: info.neededBy,
         labels: info.labels,
         alternatives: info.alternatives,
-        modelLabel: info.modelLabel,
-        modelConfidence: info.modelConfidence,
-        modelVersion: info.modelVersion,
-        modelTopFactors: info.modelTopFactors,
+        modelLabel: modelSignals.modelLabel,
+        modelConfidence: modelSignals.modelConfidence,
+        modelVersion: modelSignals.modelVersion,
+        modelTopFactors: modelSignals.modelTopFactors,
         oemOverrideApplied: info.oemOverrideApplied,
         oemOverrideReason: info.oemOverrideReason,
         isKnown: true,
@@ -712,6 +860,10 @@ export function enrichPackages(
       neededBy: [],
       labels: [],
       alternatives: [],
+      modelLabel: modelSignals.modelLabel,
+      modelConfidence: modelSignals.modelConfidence,
+      modelVersion: modelSignals.modelVersion,
+      modelTopFactors: modelSignals.modelTopFactors,
       isKnown: false,
     };
   });

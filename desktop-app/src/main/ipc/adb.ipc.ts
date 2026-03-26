@@ -265,22 +265,41 @@ export function registerAdbHandlers() {
       const packages = packageNames.map((name) => {
         const info = packageDataService.getPackageInfo(name);
 
+        const isCoreNamespace =
+          name.startsWith("com.android.") ||
+          name.startsWith("android.") ||
+          name.startsWith("com.miui.") ||
+          name.startsWith("com.xiaomi.") ||
+          name.startsWith("com.samsung.") ||
+          name.startsWith("com.sec.") ||
+          name.startsWith("com.huawei.") ||
+          name.startsWith("com.oppo.") ||
+          name.startsWith("com.vivo.") ||
+          name.startsWith("com.oneplus.");
+
         if (info) {
           const modelUnsafeGate =
             info.modelLabel === "UNSAFE" &&
             typeof info.modelConfidence === "number" &&
             info.modelConfidence >= 0.8;
 
+          const lowConfidenceGate =
+            typeof info.modelConfidence === "number" && info.modelConfidence < 0.55;
+
           const finalRemovalType =
             info.removal === "UNSAFE" || modelUnsafeGate
               ? "UNSAFE"
+              : lowConfidenceGate && info.removal === "RECOMMENDED"
+                ? "ADVANCED"
               : info.removal;
+
+          const canUninstall = finalRemovalType !== "UNSAFE" && !isCoreNamespace;
 
           return {
             package_name: name,
             safety: packageDataService.getSafetyColor(finalRemovalType),
             safety_description: info.description,
-            can_uninstall: finalRemovalType !== "UNSAFE",
+            can_uninstall: canUninstall,
             description: info.description,
             category: info.category,
             removal_type: finalRemovalType,
@@ -296,12 +315,14 @@ export function registerAdbHandlers() {
         // Unknown package
         return {
           package_name: name,
-          safety: "yellow" as const,
-          safety_description: "Unknown package - proceed with caution",
-          can_uninstall: true,
+          safety: isCoreNamespace ? ("red" as const) : ("yellow" as const),
+          safety_description: isCoreNamespace
+            ? "Unknown core/OEM package - uninstall blocked for safety"
+            : "Unknown package - proceed with caution",
+          can_uninstall: !isCoreNamespace,
           description: "",
           category: "UNKNOWN",
-          removal_type: "ADVANCED",
+          removal_type: isCoreNamespace ? "UNSAFE" : "ADVANCED",
           model_label: null,
           model_confidence: null,
           model_version: null,
@@ -632,6 +653,123 @@ export function registerAdbHandlers() {
         status: "unavailable",
         adb_available: false,
         mode: "local",
+      };
+    }
+  });
+
+  ipcMain.handle("adb:run-connection-diagnostics", async () => {
+    const timestamp = new Date().toISOString();
+
+    try {
+      const versionResult = await LocalAdb.executeAdbCommand("version", 10000);
+      const adbAvailable = versionResult.success;
+      const adbVersion = adbAvailable
+        ? versionResult.output.split("\n")[0] || versionResult.output
+        : null;
+
+      const devicesResult = await LocalAdb.executeAdbCommand("devices -l", 15000);
+      const devicesOutput = devicesResult.output || devicesResult.error || "";
+      const lines = devicesOutput
+        .split("\n")
+        .slice(1)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      const connected = lines.filter((line) => /\sdevice\b/.test(line)).length;
+      const unauthorized = lines.filter((line) => /\sunauthorized\b/.test(line)).length;
+      const offline = lines.filter((line) => /\soffline\b/.test(line)).length;
+
+      const checks = [
+        {
+          name: "ADB Installed",
+          ok: adbAvailable,
+          message: adbAvailable
+            ? "ADB command is available"
+            : "ADB command is not available in PATH",
+        },
+        {
+          name: "ADB Device Scan",
+          ok: devicesResult.success,
+          message: devicesResult.success
+            ? "ADB can list devices"
+            : devicesResult.error || "Failed to list devices",
+        },
+        {
+          name: "Authorized Device",
+          ok: connected > 0,
+          message:
+            connected > 0
+              ? `${connected} authorized device(s) connected`
+              : "No authorized devices found",
+        },
+      ];
+
+      const suggestions: string[] = [];
+
+      if (!adbAvailable) {
+        suggestions.push("Install Android Platform Tools and ensure `adb` is in PATH.");
+      }
+
+      if (unauthorized > 0) {
+        suggestions.push(
+          "Unlock phone and accept 'Allow USB debugging' prompt, then reconnect USB.",
+        );
+      }
+
+      if (offline > 0) {
+        suggestions.push(
+          "Run `adb kill-server && adb start-server`, reconnect cable, and refresh devices.",
+        );
+      }
+
+      if (connected === 0) {
+        suggestions.push(
+          "Enable Developer options + USB debugging, set USB mode to File Transfer, and try another data-capable cable.",
+        );
+        suggestions.push(
+          "For wireless debugging, ensure phone and PC are on same Wi-Fi and re-run Pair then Connect.",
+        );
+      }
+
+      const status: "healthy" | "warning" | "error" = !adbAvailable
+        ? "error"
+        : connected > 0
+          ? "healthy"
+          : "warning";
+
+      return {
+        timestamp,
+        status,
+        adb_available: adbAvailable,
+        adb_version: adbVersion,
+        connected_devices: connected,
+        unauthorized_devices: unauthorized,
+        offline_devices: offline,
+        raw_devices_output: devicesOutput,
+        checks,
+        suggestions,
+      };
+    } catch (error) {
+      return {
+        timestamp,
+        status: "error" as const,
+        adb_available: false,
+        adb_version: null,
+        connected_devices: 0,
+        unauthorized_devices: 0,
+        offline_devices: 0,
+        raw_devices_output: "",
+        checks: [
+          {
+            name: "Diagnostics Runner",
+            ok: false,
+            message: error instanceof Error ? error.message : "Unknown diagnostics error",
+          },
+        ],
+        suggestions: [
+          "Restart the app and run diagnostics again.",
+          "Verify Android Platform Tools are installed and `adb` is accessible.",
+        ],
       };
     }
   });

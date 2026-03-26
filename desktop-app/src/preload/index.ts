@@ -63,6 +63,8 @@ const electronAPI: ElectronAPI = {
         androidSdk,
       ),
     health: () => ipcRenderer.invoke("adb:health"),
+    runConnectionDiagnostics: () =>
+      ipcRenderer.invoke("adb:run-connection-diagnostics"),
     checkSafety: (packageNames: string[]) =>
       ipcRenderer.invoke("adb:check-safety", packageNames),
     wireless: {
