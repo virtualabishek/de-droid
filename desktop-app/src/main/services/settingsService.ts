@@ -9,7 +9,9 @@ export type SettingKey =
   | "backup_before_action"
   | "theme"
   | "default_user"
-  | "adb_path";
+  | "adb_path"
+  | "telemetry_opt_in"
+  | "telemetry_salt";
 
 /**
  * Get a setting value
@@ -99,5 +101,7 @@ export function resetSettings(): void {
     INSERT INTO settings (key, value) VALUES ('confirm_actions', 'true');
     INSERT INTO settings (key, value) VALUES ('backup_before_action', 'false');
     INSERT INTO settings (key, value) VALUES ('theme', 'dark');
+    INSERT INTO settings (key, value) VALUES ('telemetry_opt_in', 'false');
+    INSERT INTO settings (key, value) VALUES ('telemetry_salt', '');
   `);
 }

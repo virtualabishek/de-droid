@@ -9,6 +9,7 @@ import * as historyService from "../services/historyService";
 import * as backupService from "../services/backupService";
 import * as packageDataService from "../services/packageDataService";
 import * as fdroidService from "../services/fdroidService";
+import * as telemetryService from "../services/telemetryService";
 
 // Cache for device information to use in logging
 const deviceInfoCache: Map<string, { model: string; brand: string }> =
@@ -21,6 +22,37 @@ function getDeviceInfo(deviceId: string): { model: string; brand: string } {
   return (
     deviceInfoCache.get(deviceId) || { model: "Unknown", brand: "Unknown" }
   );
+}
+
+function recordTelemetryForAction(input: {
+  deviceId: string;
+  packageName: string;
+  action: "UNINSTALL" | "DISABLE" | "RESTORE" | "ENABLE";
+  success: boolean;
+  errorMessage?: string;
+  androidSdk?: number;
+}) {
+  const localInfo = packageDataService.getPackageInfo(input.packageName);
+  const deviceInfo = getDeviceInfo(input.deviceId);
+
+  telemetryService.recordActionOutcome({
+    deviceId: input.deviceId,
+    deviceBrand: deviceInfo.brand,
+    deviceModel: deviceInfo.model,
+    androidSdk: input.androidSdk,
+    packageName: input.packageName,
+    action: input.action,
+    success: input.success,
+    errorMessage: input.errorMessage,
+    modelLabel: localInfo?.modelLabel,
+    modelConfidence: localInfo?.modelConfidence,
+    modelGateApplied:
+      localInfo?.modelLabel === "UNSAFE" &&
+      typeof localInfo?.modelConfidence === "number" &&
+      localInfo.modelConfidence >= 0.8,
+    removalType: localInfo?.removal,
+    category: localInfo?.category,
+  });
 }
 
 function extractMatch(text: string, pattern: RegExp): string | undefined {
@@ -234,14 +266,28 @@ export function registerAdbHandlers() {
         const info = packageDataService.getPackageInfo(name);
 
         if (info) {
+          const modelUnsafeGate =
+            info.modelLabel === "UNSAFE" &&
+            typeof info.modelConfidence === "number" &&
+            info.modelConfidence >= 0.8;
+
+          const finalRemovalType =
+            info.removal === "UNSAFE" || modelUnsafeGate
+              ? "UNSAFE"
+              : info.removal;
+
           return {
             package_name: name,
-            safety: packageDataService.getSafetyColor(info.removal),
+            safety: packageDataService.getSafetyColor(finalRemovalType),
             safety_description: info.description,
-            can_uninstall: info.removal !== "UNSAFE",
+            can_uninstall: finalRemovalType !== "UNSAFE",
             description: info.description,
             category: info.category,
-            removal_type: info.removal,
+            removal_type: finalRemovalType,
+            model_label: info.modelLabel ?? null,
+            model_confidence: info.modelConfidence ?? null,
+            model_version: info.modelVersion ?? null,
+            model_gate_applied: modelUnsafeGate,
             dependencies: info.dependencies,
             alternatives: info.alternatives,
           };
@@ -256,6 +302,10 @@ export function registerAdbHandlers() {
           description: "",
           category: "UNKNOWN",
           removal_type: "ADVANCED",
+          model_label: null,
+          model_confidence: null,
+          model_version: null,
+          model_gate_applied: false,
           dependencies: [],
           alternatives: [],
         };
@@ -307,6 +357,15 @@ export function registerAdbHandlers() {
           androidUser: userId,
           success,
           errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        recordTelemetryForAction({
+          deviceId,
+          packageName,
+          action: "UNINSTALL",
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+          androidSdk,
         });
 
         return {
@@ -361,6 +420,15 @@ export function registerAdbHandlers() {
           errorMessage: success ? undefined : result.error || result.output,
         });
 
+        recordTelemetryForAction({
+          deviceId,
+          packageName,
+          action: "RESTORE",
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+          androidSdk,
+        });
+
         return {
           package_name: packageName,
           action: "restore",
@@ -406,6 +474,14 @@ export function registerAdbHandlers() {
           errorMessage: success ? undefined : result.error || result.output,
         });
 
+        recordTelemetryForAction({
+          deviceId,
+          packageName,
+          action: "DISABLE",
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
         return {
           package_name: packageName,
           action: "disable",
@@ -447,6 +523,14 @@ export function registerAdbHandlers() {
           packageName,
           action: "ENABLE",
           androidUser: userId,
+          success,
+          errorMessage: success ? undefined : result.error || result.output,
+        });
+
+        recordTelemetryForAction({
+          deviceId,
+          packageName,
+          action: "ENABLE",
           success,
           errorMessage: success ? undefined : result.error || result.output,
         });
@@ -508,6 +592,15 @@ export function registerAdbHandlers() {
             androidUser: userId,
             success,
             errorMessage: success ? undefined : result.error || result.output,
+          });
+
+          recordTelemetryForAction({
+            deviceId,
+            packageName: pkg,
+            action: "UNINSTALL",
+            success,
+            errorMessage: success ? undefined : result.error || result.output,
+            androidSdk,
           });
         }
 

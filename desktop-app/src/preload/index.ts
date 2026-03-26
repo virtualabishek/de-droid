@@ -205,6 +205,14 @@ const electronAPI: ElectronAPI = {
       ipcRenderer.invoke("history:mark-undone", actionId),
   },
 
+  // ============ TELEMETRY API (LOCAL SQLITE, OPT-IN) ============
+  telemetry: {
+    getSummary: (days?: number) =>
+      ipcRenderer.invoke("telemetry:get-summary", days),
+    getRetrainingSignals: (days?: number) =>
+      ipcRenderer.invoke("telemetry:get-retraining-signals", days),
+  },
+
   // ============ SAVED BACKUPS API (LOCAL SQLITE) ============
   savedBackups: {
     getAll: () => ipcRenderer.invoke("backups:get-all"),

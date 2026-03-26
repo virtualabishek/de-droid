@@ -20,6 +20,12 @@ interface Package {
   dependencies?: string[];
   neededBy?: string[];
   alternatives?: string[];
+  modelLabel?: string;
+  modelConfidence?: number;
+  modelVersion?: string;
+  modelTopFactors?: string[];
+  oemOverrideApplied?: boolean;
+  oemOverrideReason?: string;
 }
 
 interface AlternativeApp {

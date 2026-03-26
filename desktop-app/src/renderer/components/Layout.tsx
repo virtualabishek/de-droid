@@ -130,6 +130,33 @@ export function Layout() {
             </li>
             <li>
               <NavLink
+                to="/ai-insights"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-indigo-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
+                  }`
+                }
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9.75 3v1.5m4.5-1.5v1.5M4.5 9h15M6.75 21h10.5A2.25 2.25 0 0019.5 18.75V8.25A2.25 2.25 0 0017.25 6H6.75A2.25 2.25 0 004.5 8.25v10.5A2.25 2.25 0 006.75 21zM9 14.25l1.5 1.5 4.5-4.5"
+                  />
+                </svg>
+                AI / ML Insights
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="/device-health"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${

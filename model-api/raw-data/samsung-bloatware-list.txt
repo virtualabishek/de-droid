@@ -1,0 +1,91 @@
+ com.android.bookmarkprovider
+ com.samsung.android.game.gametools
+ com.samsung.android.game.gamehome
+ com.samsung.android.game.gos
+ com.google.android.syncadapters.calendar
+ com.google.android.syncadapters.contacts
+ com.samsung.android.app.spage
+ com.sec.android.app.billing
+ com.google.android.tts
+ com.sec.android.daemonapp
+ com.google.ar.core
+ com.samsung.android.samsungpassautofill
+ com.samsung.android.livestickers
+ com.samsung.android.app.cocktailbarservice
+ com.samsung.android.themestore
+ com.google.android.googlequicksearchbox
+ com.microsoft.appmanager  | link to windows
+ com.google.android.feedback
+ com.samsung.android.service.peoplestripe | people
+ com.samsung.android.app.taskedge
+ de.axelspringer.yana.zeropage | upday (news)
+ com.google.android.projection.gearhead | android auto
+com.samsung.android.mobileservice | group sharing
+com.google.android.apps.turbo | Device Health services
+com.sec.android.widgetapp.webmanual | User manual
+com.samsung.android.authfw | Samsung Authentication Framework
+com.samsung.android.forest | Digital Wellbeing
+com.samsung.android.themecenter |Galaxy themes services
+com.samsung.android.mdx | Link to Windows Service
+com.samsung.android.app.sharelive | Quick share
+com.samsung.android.aware.service | Quick share (service)
+com.samsung.android.app.settings.bixby | Settings Bixby
+samsung.android.beaconmanager | User tracking app (sensitive)
+com.sec.android.app.quicktool | Tools
+com.samsung.android.calendar | Calendar
+com.samsung.providers.calendar | Calendar Storage
+com.sec.android.easyMover.Agent | Smart switch Agent
+com.samsung.android.app.appsedge | Apps Edge panel
+com.sec.android.widgetapp.easymodecontactswidget | Favourite contacts
+com.samsung.android.app.galaxyfinder | Finder (notification menu next to setting )
+com.sec.samsung.android.widgetapp.samsungapps | Galaxy Essentials Widget
+com.samsung.android.mdx.quickboard | Media and Services - Edge panel
+com.samsung.android.app.reminder | Reminder
+com.osp.app.signin | Samsung account
+com.samsung.android.kgclient | Device Services (samsung pay garbage)
+com.samsung.android.da.daagent | Dual Messenger
+com.samsung.android.fmmm | Find my mobile (system)
+com.samsung.android.rubin.app | Customization Service (system ~ tracking ~bloat)
+com.samsung.android.allshare.service.mediashare | Nearby Service (system)
+com.samsung.android.game.gos
+com.sec.enterprise.knox.cloudmdm.smdms | Knox enrollment services
+com.samsung.android.knox.analytics.uploader | Knox analytics uploader
+com.android.dreams.phototable | Photo screensavers
+com.android.backupconfirm |restores google settings with google-backup restore fun
+com.android.dreams.basic | Support for screensaver mode in display settings
+com.android.egg | Android builds easter egg feature
+com.android.managedprovisioning | Work setup (corporate restrictions)
+com.android.providers.partnerbookmarks | Provides bookmarks,about,partners,inChrome
+com.samsung.android.app.simplesharing | link sharing
+com.samsung.android.privateshare | private share
+com.samsung.knox.securefolder | secure folder (garbage)
+com.samsung.android.scloud | Samsung Cloud
+com.samsung.android.game.gos
+com.facebook.appmanager
+com.facebook.services
+com.facebook.system
+com.facebook.katana
+com.microsoft.appmanager
+com.microsoft.skydrive
+com.samsung.android.bixby.agent
+com.samsung.android.bixby.service
+com.samsung.android.bixby.wakeup
+com.netflix.mediaclient
+com.android.chrome
+
+com.sec.android.app.kidshome
+com.samsung.android.voc
+com.samsung.android.voc.LauncherActivity
+com.samsung.android.aremoji
+com.sec.android.mimage.avatar.stickers
+com.sec.android.widgetapp.easymodecontactswidget
+com.samsung.android.game.gos
+com.android.hotwordenrollment.xgoogle
+com.android.hotwordenrollment.okgoogle
+com.samsung.android.kidsinstaller
+com.sec.android.easyMover
+
+
+EXTRA
+com.google.android.onetimeinitializer - Provides first time setup, safe to remove.
+com.google.android.setupwizard | first boot stuff configs

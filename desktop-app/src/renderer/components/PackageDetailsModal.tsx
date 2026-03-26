@@ -40,6 +40,12 @@ interface PackageDetails {
     neededBy: string[];
     labels: string[];
     alternatives: string[];
+    modelLabel?: string;
+    modelConfidence?: number;
+    modelVersion?: string;
+    modelTopFactors?: string[];
+    oemOverrideApplied?: boolean;
+    oemOverrideReason?: string;
   };
 }
 
@@ -236,6 +242,49 @@ export function PackageDetailsModal({
                     <div className="p-4 bg-gray-700/50 rounded-lg">
                       <h3 className="text-sm font-medium text-gray-400 mb-2">Description</h3>
                       <p className="text-white">{details.debloat_info.description}</p>
+                    </div>
+                  )}
+
+                  {details.debloat_info?.oemOverrideApplied && (
+                    <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                      <h3 className="text-sm font-medium text-orange-300 mb-1">OEM Safety Override Applied</h3>
+                      <p className="text-sm text-orange-200">
+                        {details.debloat_info.oemOverrideReason || 'OEM-specific safety rule was applied for this package.'}
+                      </p>
+                    </div>
+                  )}
+
+                  {typeof details.debloat_info?.modelConfidence === 'number' && (
+                    <div className="p-4 bg-gray-700/50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-medium text-gray-400">Model Confidence</h3>
+                        <span className="text-xs text-gray-300">
+                          {Math.round(details.debloat_info.modelConfidence * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
+                        <div
+                          className="h-full bg-primary-600"
+                          style={{ width: `${Math.round(details.debloat_info.modelConfidence * 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between mt-2 text-xs text-gray-400">
+                        <span>Model: {details.debloat_info.modelLabel || 'N/A'}</span>
+                        <span>{details.debloat_info.modelVersion || 'safety-model'}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {details.debloat_info?.modelTopFactors && details.debloat_info.modelTopFactors.length > 0 && (
+                    <div className="p-4 bg-gray-700/50 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-400 mb-2">Why this prediction</h3>
+                      <ul className="space-y-1">
+                        {details.debloat_info.modelTopFactors.map((factor, index) => (
+                          <li key={`${factor}-${index}`} className="text-sm text-gray-200">
+                            • {factor}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 

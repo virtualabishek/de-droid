@@ -130,6 +130,8 @@ function runMigrations(database: Database.Database): void {
         INSERT OR IGNORE INTO settings (key, value) VALUES ('confirm_actions', 'true');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('backup_before_action', 'false');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('theme', 'dark');
+        INSERT OR IGNORE INTO settings (key, value) VALUES ('telemetry_opt_in', 'false');
+        INSERT OR IGNORE INTO settings (key, value) VALUES ('telemetry_salt', '');
       `,
     },
     {
@@ -194,6 +196,39 @@ function runMigrations(database: Database.Database): void {
           UNIQUE(user_id, key)
         );
         CREATE INDEX IF NOT EXISTS idx_user_settings ON user_settings(user_id, key);
+      `,
+    },
+    {
+      name: "008_create_telemetry_events",
+      sql: `
+        CREATE TABLE IF NOT EXISTS telemetry_events (
+          id TEXT PRIMARY KEY,
+          event_type TEXT NOT NULL,
+          action TEXT,
+          success INTEGER NOT NULL DEFAULT 1,
+          error_bucket TEXT,
+          package_hash TEXT,
+          device_id_hash TEXT,
+          device_brand TEXT,
+          device_model TEXT,
+          android_sdk INTEGER,
+          model_label TEXT,
+          model_confidence REAL,
+          model_gate_applied INTEGER DEFAULT 0,
+          removal_type TEXT,
+          category TEXT,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE INDEX IF NOT EXISTS idx_telemetry_created ON telemetry_events(created_at DESC);
+        CREATE INDEX IF NOT EXISTS idx_telemetry_action ON telemetry_events(action);
+        CREATE INDEX IF NOT EXISTS idx_telemetry_success ON telemetry_events(success);
+      `,
+    },
+    {
+      name: "009_add_telemetry_settings_defaults",
+      sql: `
+        INSERT OR IGNORE INTO settings (key, value) VALUES ('telemetry_opt_in', 'false');
+        INSERT OR IGNORE INTO settings (key, value) VALUES ('telemetry_salt', '');
       `,
     },
   ];

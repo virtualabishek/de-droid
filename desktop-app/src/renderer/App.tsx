@@ -17,6 +17,7 @@ import Settings from "./pages/Settings";
 import History from "./pages/History";
 import Alternatives from "./pages/Alternatives";
 import Permissions from "./pages/Permissions";
+import AIInsights from "./pages/AIInsights";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useAuthStore } from "./store/authStore";
@@ -69,6 +70,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/device-health" element={<DeviceHealth />} />
           <Route path="/packages" element={<Packages />} />
+          <Route path="/ai-insights" element={<AIInsights />} />
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/alternatives" element={<Alternatives />} />
           <Route path="/settings" element={<Settings />} />

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { DeviceSelector } from "../components/DeviceSelector";
 import { DeviceIcon } from "../components/DeviceIcon";
 import { useDeviceStore } from "../store/deviceStore";
@@ -204,6 +205,24 @@ export default function Dashboard() {
     if (total <= 0) return 100;
     return Math.max(0, Math.min(100, Math.round((storageStats.freedSpace / total) * 100)));
   }, [storageStats.bloatwareSize, storageStats.freedSpace]);
+
+  const modelSummary = useMemo(() => {
+    const scored = packages.filter(
+      (pkg) => typeof pkg.modelConfidence === "number" || !!pkg.modelLabel,
+    );
+    const unsafe = scored.filter((pkg) => pkg.modelLabel === "UNSAFE").length;
+    const expert = scored.filter((pkg) => pkg.modelLabel === "EXPERT").length;
+    const highConfidence = scored.filter(
+      (pkg) => typeof pkg.modelConfidence === "number" && pkg.modelConfidence >= 0.8,
+    ).length;
+
+    return {
+      scored: scored.length,
+      unsafe,
+      expert,
+      highConfidence,
+    };
+  }, [packages]);
 
   const memoryUsagePercent = useMemo(() => {
     if (!liveHealth?.memory.totalMb || !liveHealth?.memory.usedMb) return undefined;
@@ -460,6 +479,42 @@ export default function Dashboard() {
                     <div className="w-16 h-16 rounded-full border-4 border-primary-400/40 flex items-center justify-center bg-primary-500/10">
                       <span className="text-sm font-semibold text-primary-300">{cleanScore}</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-gray-800 to-indigo-900/20 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">AI / ML Model Features</h2>
+                    <p className="text-sm text-gray-300 mt-1">
+                      View confidence scores, risky packages, and model reasoning in charts.
+                    </p>
+                  </div>
+                  <Link
+                    to="/ai-insights"
+                    className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors text-sm font-medium"
+                  >
+                    Open AI Insights
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-4 gap-3 mt-4 text-sm">
+                  <div className="rounded-lg border border-gray-700/70 bg-gray-800/70 p-3">
+                    <p className="text-gray-400">Scored Apps</p>
+                    <p className="text-2xl font-bold mt-1">{modelSummary.scored}</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-700/70 bg-red-500/10 p-3">
+                    <p className="text-red-300">Unsafe</p>
+                    <p className="text-2xl font-bold mt-1 text-red-200">{modelSummary.unsafe}</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-700/70 bg-orange-500/10 p-3">
+                    <p className="text-orange-300">Expert</p>
+                    <p className="text-2xl font-bold mt-1 text-orange-200">{modelSummary.expert}</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-700/70 bg-emerald-500/10 p-3">
+                    <p className="text-emerald-300">High Confidence</p>
+                    <p className="text-2xl font-bold mt-1 text-emerald-200">{modelSummary.highConfidence}</p>
                   </div>
                 </div>
               </div>
