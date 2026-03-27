@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import Fuse from "fuse.js";
+import { useLocation } from "react-router-dom";
 import { useDeviceStore } from "../store/deviceStore";
 import { PackageDetailsModal } from "./PackageDetailsModal";
 
@@ -85,6 +86,7 @@ function isSystemPackage(packageName: string): boolean {
 type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal" | "vendor" | "confidence";
 type ViewMode = "list" | "compact" | "grid";
 type GroupBy = "none" | "category" | "vendor" | "state" | "removal";
+type ModelLabelFilter = "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
 
 interface FilterPreset {
   id: string;
@@ -167,6 +169,7 @@ export function PackageList({
   onOpenPermissions,
   userId,
 }: PackageListProps) {
+  const location = useLocation();
   const {
     packages,
     togglePackageSelection,
@@ -191,6 +194,7 @@ export function PackageList({
     useState<Array<"system" | "user">>(DEFAULT_PACKAGE_TYPES);
   const [filterRemovals, setFilterRemovals] =
     useState<Array<"RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE">>(DEFAULT_REMOVALS);
+  const [deepLinkModelLabels, setDeepLinkModelLabels] = useState<ModelLabelFilter[] | null>(null);
   const [filterModelConfidence, setFilterModelConfidence] = useState<"all" | "high" | "medium" | "low" | "unknown">("all");
   const [activePreset, setActivePreset] = useState<string>("all");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -235,6 +239,40 @@ export function PackageList({
   };
 
   // Load recent searches from localStorage
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const source = params.get("source");
+    const modelLabelParam = params.get("modelLabel");
+    const packageParam = params.get("package");
+    const shouldOpenDetails = params.get("openDetails") === "1";
+
+    if (source !== "ai-insights") {
+      setDeepLinkModelLabels(null);
+      return;
+    }
+
+    if (modelLabelParam) {
+      const labels = modelLabelParam
+        .split(",")
+        .map((value) => value.trim().toUpperCase())
+        .filter((value): value is ModelLabelFilter =>
+          ["RECOMMENDED", "ADVANCED", "EXPERT", "UNSAFE"].includes(value),
+        );
+      setDeepLinkModelLabels(labels.length > 0 ? labels : null);
+    } else {
+      setDeepLinkModelLabels(null);
+    }
+
+    if (packageParam) {
+      setSearchQuery(packageParam);
+      setActivePreset("all");
+      if (shouldOpenDetails) {
+        setSelectedPackageForDetails(packageParam);
+        setShowDetailsModal(true);
+      }
+    }
+  }, [location.search]);
+
   useEffect(() => {
     const saved = localStorage.getItem(scopedStorageKey("recentPackageSearches"));
     if (saved) {
@@ -336,6 +374,10 @@ export function PackageList({
         (pkg.removal as "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE") ||
           "ADVANCED",
       );
+      const normalizedModelLabel = (pkg.modelLabel?.toUpperCase() as ModelLabelFilter) || null;
+      const matchesDeepLinkModelLabel =
+        !deepLinkModelLabels ||
+        (normalizedModelLabel !== null && deepLinkModelLabels.includes(normalizedModelLabel));
       const modelConfidence = pkg.modelConfidence;
 
       let matchesModelConfidence = true;
@@ -352,7 +394,14 @@ export function PackageList({
       const packageType = isSystemPackage(pkg.name) ? "system" : "user";
       const matchesPackageType = packageTypeFilter.includes(packageType);
 
-      return matchesState && matchesCategory && matchesPackageType && matchesRemoval && matchesModelConfidence;
+      return (
+        matchesState &&
+        matchesCategory &&
+        matchesPackageType &&
+        matchesRemoval &&
+        matchesModelConfidence &&
+        matchesDeepLinkModelLabel
+      );
     });
 
     // Sort
@@ -383,7 +432,7 @@ export function PackageList({
     });
 
     return filtered;
-  }, [packages, searchQuery, filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, sortBy, fuse]);
+  }, [packages, searchQuery, filterStates, filterCategories, packageTypeFilter, filterRemovals, deepLinkModelLabels, filterModelConfidence, sortBy, fuse]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(filteredAndSortedPackages.length / itemsPerPage)),
@@ -507,10 +556,11 @@ export function PackageList({
     if (filterCategories.length !== DEFAULT_CATEGORIES.length) count++;
     if (packageTypeFilter.length !== DEFAULT_PACKAGE_TYPES.length) count++;
     if (filterRemovals.length !== DEFAULT_REMOVALS.length) count++;
+    if (deepLinkModelLabels && deepLinkModelLabels.length > 0) count++;
     if (filterModelConfidence !== "all") count++;
     if (searchQuery) count++;
     return count;
-  }, [filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, searchQuery]);
+  }, [filterStates, filterCategories, packageTypeFilter, filterRemovals, deepLinkModelLabels, filterModelConfidence, searchQuery]);
 
   const toggleMultiFilter = <T extends string>(
     value: T,
@@ -1014,6 +1064,12 @@ export function PackageList({
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full text-sm">
                     Safety: {filterRemovals.join(", ")}
                     <button onClick={() => setFilterRemovals(DEFAULT_REMOVALS)} className="ml-1 hover:text-white">×</button>
+                  </span>
+                )}
+                {deepLinkModelLabels && deepLinkModelLabels.length > 0 && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm">
+                    AI Label: {deepLinkModelLabels.join(", ")}
+                    <button onClick={() => setDeepLinkModelLabels(null)} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
                 {filterModelConfidence !== "all" && (

@@ -253,6 +253,12 @@ interface TogglePermissionResult {
   message?: string;
 }
 
+interface EffectivePermissionState {
+  effectiveGranted: boolean;
+  runtimeGranted: boolean | null;
+  appOpMode: string | null;
+}
+
 function didCommandFail(result: {
   success: boolean;
   output?: string;
@@ -269,6 +275,8 @@ function didCommandFail(result: {
     combined.includes("not a changeable permission") ||
     combined.includes("operation not allowed") ||
     combined.includes("unknown operation") ||
+    combined.includes("bad mode") ||
+    combined.includes("illegalargumentexception") ||
     combined.includes("exception:") ||
     combined.includes("error:")
   );
@@ -284,7 +292,7 @@ async function setAppOpsMode(
   deviceId: string,
   packageName: string,
   appOp: string,
-  mode: "allow" | "deny",
+  mode: "allow" | "deny" | "ignore",
   userId: number,
 ): Promise<boolean> {
   const withUser = await executeAdbCommand(
@@ -298,6 +306,26 @@ async function setAppOpsMode(
     `-s ${deviceId} shell appops set ${packageName} ${appOp} ${mode}`,
   );
   return !didCommandFail(withoutUser);
+}
+
+async function setAppOpsModeWithFallback(
+  deviceId: string,
+  packageName: string,
+  appOp: string,
+  target: "allow" | "block",
+  userId: number,
+): Promise<{ success: boolean; appliedMode: "allow" | "deny" | "ignore" | null }> {
+  const modes: Array<"allow" | "deny" | "ignore"> =
+    target === "allow" ? ["allow"] : ["deny", "ignore"];
+
+  for (const mode of modes) {
+    const ok = await setAppOpsMode(deviceId, packageName, appOp, mode, userId);
+    if (ok) {
+      return { success: true, appliedMode: mode };
+    }
+  }
+
+  return { success: false, appliedMode: null };
 }
 
 /**
@@ -377,7 +405,7 @@ export async function grantPermission(
       console.log(
         `[Permissions] pm grant failed, trying appops for ${permission}`,
       );
-      const appOpsSuccess = await setAppOpsMode(
+      const appOpsResult = await setAppOpsModeWithFallback(
         deviceId,
         packageName,
         appOp,
@@ -385,7 +413,7 @@ export async function grantPermission(
         userId,
       );
 
-      if (!appOpsSuccess) {
+      if (!appOpsResult.success) {
         return {
           success: false,
           error: `Permission grant not supported on this device. Try granting from device Settings > Apps > ${packageName} > Permissions.`,
@@ -412,7 +440,7 @@ export async function grantPermission(
     return {
       success: true,
       message: usedAppOpsFallback
-        ? "Permission enabled via AppOps fallback."
+        ? `Permission enabled via AppOps fallback (${state.appOpMode || "allow"}).`
         : "Permission granted successfully.",
     };
   }
@@ -449,15 +477,15 @@ export async function revokePermission(
       console.log(
         `[Permissions] pm revoke failed, trying appops for ${permission}`,
       );
-      const appOpsSuccess = await setAppOpsMode(
+      const appOpsResult = await setAppOpsModeWithFallback(
         deviceId,
         packageName,
         appOp,
-        "deny",
+        "block",
         userId,
       );
 
-      if (!appOpsSuccess) {
+      if (!appOpsResult.success) {
         return {
           success: false,
           error: `Permission revocation not supported on this device. Try revoking from device Settings > Apps > ${packageName} > Permissions.`,
@@ -484,14 +512,23 @@ export async function revokePermission(
     return {
       success: true,
       message: usedAppOpsFallback
-        ? "Permission blocked via AppOps fallback."
+        ? `Permission blocked via AppOps fallback (${state.appOpMode || "blocked"}).`
         : "Permission revoked successfully.",
+    };
+  }
+
+  // Some Android builds keep runtime granted=true but still enforce appops blocking.
+  // If appops is explicitly blocking, treat this as effective revoke success.
+  if (isAppOpsBlocking(state.appOpMode)) {
+    return {
+      success: true,
+      message: `Permission blocked via AppOps (${state.appOpMode}).`,
     };
   }
 
   return {
     success: false,
-    error: `Permission still appears active after revoke. Android may enforce this permission for this app/version. Try revoking from Settings > Apps > ${packageName} > Permissions.`,
+    error: `Permission still appears active after revoke (runtime=${state.runtimeGranted ?? "unknown"}, appops=${state.appOpMode ?? "unknown"}). Android may enforce this permission for this app/version. Try revoking from Settings > Apps > ${packageName} > Permissions.`,
   };
 }
 
@@ -534,7 +571,7 @@ async function getEffectivePermissionState(
   packageName: string,
   permission: string,
   userId: number,
-): Promise<{ effectiveGranted: boolean }> {
+): Promise<EffectivePermissionState> {
   const dumpsysResult = await executeAdbCommand(
     `-s ${deviceId} shell dumpsys package ${packageName}`,
   );
@@ -563,22 +600,30 @@ async function getEffectivePermissionState(
   }
 
   if (appOpMode && appOpMode !== "default") {
-    return { effectiveGranted: isAppOpsAllowed(appOpMode) };
+    return {
+      effectiveGranted: isAppOpsAllowed(appOpMode),
+      runtimeGranted,
+      appOpMode,
+    };
   }
 
   if (isAppOpsBlocking(appOpMode)) {
-    return { effectiveGranted: false };
+    return { effectiveGranted: false, runtimeGranted, appOpMode };
   }
 
   if (runtimeGranted !== null) {
-    return { effectiveGranted: runtimeGranted };
+    return { effectiveGranted: runtimeGranted, runtimeGranted, appOpMode };
   }
 
   if (appOpMode) {
-    return { effectiveGranted: appOpMode === "allow" };
+    return {
+      effectiveGranted: appOpMode === "allow",
+      runtimeGranted,
+      appOpMode,
+    };
   }
 
-  return { effectiveGranted: false };
+  return { effectiveGranted: false, runtimeGranted, appOpMode };
 }
 
 async function getAppOpsModes(
@@ -610,7 +655,7 @@ async function getAppOpsModes(
 
   for (const line of lines) {
     const trimmed = line.trim();
-    const match = trimmed.match(/^([A-Z0-9_]+):\s*([a-z_]+)/i);
+    const match = trimmed.match(/^([A-Z0-9_]+):\s*(?:mode=)?([a-z_]+)/i);
     if (!match) continue;
 
     const appOp = match[1].toUpperCase();

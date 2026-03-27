@@ -7,6 +7,23 @@ type ModelLabel = "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
 
 const LABELS: ModelLabel[] = ["RECOMMENDED", "ADVANCED", "EXPERT", "UNSAFE"];
 
+function packagesLinkForLabel(label: ModelLabel): string {
+  const params = new URLSearchParams({
+    source: "ai-insights",
+    modelLabel: label,
+  });
+  return `/packages?${params.toString()}`;
+}
+
+function packagesLinkForPackage(packageName: string): string {
+  const params = new URLSearchParams({
+    source: "ai-insights",
+    package: packageName,
+    openDetails: "1",
+  });
+  return `/packages?${params.toString()}`;
+}
+
 function labelTone(label: ModelLabel): string {
   switch (label) {
     case "RECOMMENDED":
@@ -209,21 +226,23 @@ export default function AIInsights() {
                   const count = labelCounts[label];
                   const width = Math.round((count / maxLabelCount) * 100);
                   return (
-                    <div
+                    <Link
                       key={label}
+                      to={packagesLinkForLabel(label)}
                       className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20"
                     >
                       <div className={`inline-flex px-2 py-1 rounded-md border text-xs ${labelTone(label)}`}>
                         {label}
                       </div>
                       <p className="text-3xl font-bold mt-3">{count}</p>
+                      <p className="text-xs text-gray-400 mt-1">Open in Packages</p>
                       <div className="mt-3 h-2 w-full rounded-full bg-gray-700">
                         <div
                           className={`h-full rounded-full ${progressTone(label)}`}
                           style={{ width: `${width}%` }}
                         />
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -302,7 +321,7 @@ export default function AIInsights() {
                     {topRiskPackages.map((pkg) => (
                       <div
                         key={pkg.name}
-                        className="grid grid-cols-[1fr_auto_auto] items-center gap-3 p-3 rounded-lg bg-gray-800/70 border border-gray-700/70"
+                        className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 p-3 rounded-lg bg-gray-800/70 border border-gray-700/70"
                       >
                         <div>
                           <p className="text-sm font-medium text-white truncate">{pkg.name}</p>
@@ -324,6 +343,12 @@ export default function AIInsights() {
                             ? `${Math.round(pkg.modelConfidence * 100)}%`
                             : "-"}
                         </span>
+                        <Link
+                          to={packagesLinkForPackage(pkg.name)}
+                          className="text-xs px-2 py-1 rounded border border-gray-600 text-gray-200 hover:bg-gray-700"
+                        >
+                          View in Packages
+                        </Link>
                       </div>
                     ))}
                   </div>
