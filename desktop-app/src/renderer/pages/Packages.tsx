@@ -647,9 +647,6 @@ export default function Packages() {
         <div className="h-full overflow-hidden flex flex-col gap-4">
           {selectedDevice ? (
             <>
-              <div className="flex flex-wrap items-center justify-end gap-3 bg-gray-800/70 border border-gray-700 rounded-xl p-3">
-              </div>
-
               <div className="flex-1 overflow-hidden">
                 {isLoadingPackages && packages.length === 0 ? (
                   <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
