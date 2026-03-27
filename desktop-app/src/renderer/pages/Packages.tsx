@@ -181,7 +181,7 @@ export default function Packages() {
     type: "success" | "error" | "info";
     message: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<"packages" | "backup">("packages");
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [deviceNickname, setDeviceNickname] = useState<string | null>(null);
   const [showQuickDebloat, setShowQuickDebloat] = useState(false);
   const [permissionPackage, setPermissionPackage] = useState<string | null>(
@@ -475,26 +475,34 @@ export default function Packages() {
                 </button>
               )}
 
-              {activeTab === "packages" && (
-                <button
-                  onClick={isFocusMode ? exitFocusMode : enterFocusMode}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/90 hover:bg-gray-600 rounded-xl font-medium transition-colors border border-gray-600"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d={
-                        isFocusMode
-                          ? "M9 9L4 4m0 0h5M4 4v5m11 0l5-5m0 0v5m0-5h-5m-6 11l-5 5m0 0h5m-5 0v-5m11 5l5 5m0 0v-5m0 5h-5"
-                          : "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
-                      }
-                    />
-                  </svg>
-                  {isFocusMode ? "Exit Full Screen" : "Full Screen"}
-                </button>
-              )}
+              <button
+                onClick={() => setShowBackupModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-700/80 hover:bg-blue-600 rounded-xl font-medium transition-colors border border-blue-500/40"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-8-5v8m0-8l-3 3m3-3l3 3M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4" />
+                </svg>
+                Backup
+              </button>
+
+              <button
+                onClick={isFocusMode ? exitFocusMode : enterFocusMode}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/90 hover:bg-gray-600 rounded-xl font-medium transition-colors border border-gray-600"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      isFocusMode
+                        ? "M9 9L4 4m0 0h5M4 4v5m11 0l5-5m0 0v5m0-5h-5m-6 11l-5 5m0 0h5m-5 0v-5m11 5l5 5m0 0v-5m0 5h-5"
+                        : "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                    }
+                  />
+                </svg>
+                {isFocusMode ? "Exit Full Screen" : "Full Screen"}
+              </button>
 
               {/* Device Preview Icon */}
               <DeviceIcon
@@ -639,64 +647,24 @@ export default function Packages() {
         <div className="h-full overflow-hidden flex flex-col gap-4">
           {selectedDevice ? (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-800/70 border border-gray-700 rounded-xl p-3">
-                <div className="flex gap-1 bg-gray-900 rounded-lg p-1 border border-gray-700">
-                  <button
-                    onClick={() => setActiveTab("packages")}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === "packages"
-                        ? "bg-primary-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700"
-                    }`}
-                  >
-                    Packages
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("backup")}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === "backup"
-                        ? "bg-primary-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700"
-                    }`}
-                  >
-                    Backup
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs text-gray-300">
-                  <span className="px-2.5 py-1 rounded bg-gray-900 border border-gray-700">
-                    Total Actions: <span className="text-white">{stats?.total_actions || 0}</span>
-                  </span>
-                  <span className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">
-                    Removed: {stats?.uninstall_count || 0}
-                  </span>
-                  <span className="px-2.5 py-1 rounded bg-green-500/10 border border-green-500/30 text-green-300">
-                    Restored: {stats?.restore_count || 0}
-                  </span>
-                </div>
+              <div className="flex flex-wrap items-center justify-end gap-3 bg-gray-800/70 border border-gray-700 rounded-xl p-3">
               </div>
 
               <div className="flex-1 overflow-hidden">
-                {activeTab === "packages" ? (
-                  isLoadingPackages && packages.length === 0 ? (
-                    <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
-                      <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-                        <p className="text-gray-400">Loading packages...</p>
-                      </div>
+                {isLoadingPackages && packages.length === 0 ? (
+                  <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+                      <p className="text-gray-400">Loading packages...</p>
                     </div>
-                  ) : (
-                    <PackageList
-                      onAction={handleAction}
-                      isLoading={actionLoading}
-                      onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
-                      userId={user?.id}
-                    />
-                  )
-                ) : (
-                  <div className="h-full overflow-y-auto pr-1">
-                    <BackupPanel onRestorePackages={handleRestorePackages} />
                   </div>
+                ) : (
+                  <PackageList
+                    onAction={handleAction}
+                    isLoading={actionLoading}
+                    onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
+                    userId={user?.id}
+                  />
                 )}
               </div>
             </>
@@ -749,7 +717,29 @@ export default function Packages() {
         />
       )}
 
-      {isFocusMode && selectedDevice && activeTab === "packages" && (
+      {showBackupModal && (
+        <div className="fixed inset-0 z-[75] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl flex flex-col">
+            <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Backup & Compare</h3>
+                <p className="text-xs text-gray-400">Create backup snapshots, import JSON, and compare package states.</p>
+              </div>
+              <button
+                onClick={() => setShowBackupModal(false)}
+                className="px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm"
+              >
+                Close
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              <BackupPanel onRestorePackages={handleRestorePackages} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isFocusMode && selectedDevice && (
         <div className="fixed inset-0 z-[70] bg-gray-900 flex flex-col">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 bg-gray-800">
             <div>
