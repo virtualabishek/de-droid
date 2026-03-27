@@ -253,6 +253,14 @@ interface TogglePermissionResult {
   message?: string;
 }
 
+interface EffectivePermissionState {
+  effectiveGranted: boolean;
+  runtimeGranted: boolean | null;
+  appOpMode: string | null;
+}
+
+type AppOpsDecision = "allow" | "block" | "default" | "unknown";
+
 function didCommandFail(result: {
   success: boolean;
   output?: string;
@@ -269,6 +277,8 @@ function didCommandFail(result: {
     combined.includes("not a changeable permission") ||
     combined.includes("operation not allowed") ||
     combined.includes("unknown operation") ||
+    combined.includes("bad mode") ||
+    combined.includes("illegalargumentexception") ||
     combined.includes("exception:") ||
     combined.includes("error:")
   );
@@ -284,20 +294,171 @@ async function setAppOpsMode(
   deviceId: string,
   packageName: string,
   appOp: string,
-  mode: "allow" | "deny",
+  mode: "allow" | "deny" | "ignore",
   userId: number,
+  useUid = false,
 ): Promise<boolean> {
+  const uidFlag = useUid ? "--uid " : "";
   const withUser = await executeAdbCommand(
-    `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} ${mode}`,
+    `-s ${deviceId} shell appops set --user ${userId} ${uidFlag}${packageName} ${appOp} ${mode}`,
   );
   if (!didCommandFail(withUser)) {
     return true;
   }
 
   const withoutUser = await executeAdbCommand(
-    `-s ${deviceId} shell appops set ${packageName} ${appOp} ${mode}`,
+    `-s ${deviceId} shell appops set ${uidFlag}${packageName} ${appOp} ${mode}`,
   );
   return !didCommandFail(withoutUser);
+}
+
+async function getAppOpsOutput(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+  appOp?: string,
+): Promise<string | null> {
+  const opSuffix = appOp ? ` ${appOp}` : "";
+  const withUserResult = await executeAdbCommand(
+    `-s ${deviceId} shell appops get --user ${userId} ${packageName}${opSuffix}`,
+  );
+
+  if (!didCommandFail(withUserResult) && withUserResult.output) {
+    return withUserResult.output;
+  }
+
+  const withoutUserResult = await executeAdbCommand(
+    `-s ${deviceId} shell appops get ${packageName}${opSuffix}`,
+  );
+  if (!didCommandFail(withoutUserResult) && withoutUserResult.output) {
+    return withoutUserResult.output;
+  }
+
+  return null;
+}
+
+function parseAppOpModesFromOutput(
+  appOpsOutput: string,
+  appOp: string,
+): string[] {
+  const modes: string[] = [];
+  const opUpper = appOp.toUpperCase();
+  const lines = appOpsOutput.split("\n");
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    // Handles: "Uid mode: READ_CONTACTS: ignore"
+    const uidMatch = trimmed.match(/^Uid mode:\s*([A-Z0-9_]+):\s*([a-z_]+)/i);
+    if (uidMatch && uidMatch[1].toUpperCase() === opUpper) {
+      modes.push(uidMatch[2].toLowerCase());
+      continue;
+    }
+
+    // Handles: "READ_CONTACTS: allow; ..." and "READ_CONTACTS: mode=allow"
+    const opMatch = trimmed.match(/^([A-Z0-9_]+):\s*(?:mode=)?([a-z_]+)/i);
+    if (opMatch && opMatch[1].toUpperCase() === opUpper) {
+      modes.push(opMatch[2].toLowerCase());
+    }
+  }
+
+  return modes;
+}
+
+function decideAppOpMode(modes: string[]): {
+  decision: AppOpsDecision;
+  representativeMode: string | null;
+} {
+  if (modes.length === 0) {
+    return { decision: "unknown", representativeMode: null };
+  }
+
+  const normalized = modes.map((mode) => mode.toLowerCase());
+
+  // Most restrictive mode wins if multiple entries are present (uid + package rows).
+  const blocking = normalized.find((mode) => isAppOpsBlocking(mode));
+  if (blocking) {
+    return { decision: "block", representativeMode: blocking };
+  }
+
+  const allowing = normalized.find((mode) => isAppOpsAllowed(mode));
+  if (allowing) {
+    return { decision: "allow", representativeMode: allowing };
+  }
+
+  const hasDefault = normalized.includes("default");
+  if (hasDefault) {
+    return { decision: "default", representativeMode: "default" };
+  }
+
+  return { decision: "unknown", representativeMode: normalized[0] || null };
+}
+
+async function getAppOpsDecision(
+  deviceId: string,
+  packageName: string,
+  appOp: string,
+  userId: number,
+): Promise<{ decision: AppOpsDecision; mode: string | null }> {
+  const output = await getAppOpsOutput(deviceId, packageName, userId, appOp);
+  if (!output) {
+    return { decision: "unknown", mode: null };
+  }
+
+  const parsed = parseAppOpModesFromOutput(output, appOp);
+  const decided = decideAppOpMode(parsed);
+  return { decision: decided.decision, mode: decided.representativeMode };
+}
+
+async function setAppOpsModeWithFallback(
+  deviceId: string,
+  packageName: string,
+  appOp: string,
+  target: "allow" | "block",
+  userId: number,
+): Promise<{ success: boolean; appliedMode: "allow" | "deny" | "ignore" | null }> {
+  const attempts: Array<{ mode: "allow" | "deny" | "ignore"; useUid: boolean }> =
+    target === "allow"
+      ? [
+          { mode: "allow", useUid: false },
+          { mode: "allow", useUid: true },
+        ]
+      : [
+          { mode: "deny", useUid: false },
+          { mode: "ignore", useUid: false },
+          { mode: "deny", useUid: true },
+          { mode: "ignore", useUid: true },
+        ];
+
+  for (const attempt of attempts) {
+    const ok = await setAppOpsMode(
+      deviceId,
+      packageName,
+      appOp,
+      attempt.mode,
+      userId,
+      attempt.useUid,
+    );
+    if (!ok) {
+      continue;
+    }
+
+    const verification = await getAppOpsDecision(
+      deviceId,
+      packageName,
+      appOp,
+      userId,
+    );
+    if (
+      (target === "allow" && verification.decision === "allow") ||
+      (target === "block" && verification.decision === "block")
+    ) {
+      return { success: true, appliedMode: attempt.mode };
+    }
+  }
+
+  return { success: false, appliedMode: null };
 }
 
 /**
@@ -377,7 +538,7 @@ export async function grantPermission(
       console.log(
         `[Permissions] pm grant failed, trying appops for ${permission}`,
       );
-      const appOpsSuccess = await setAppOpsMode(
+      const appOpsResult = await setAppOpsModeWithFallback(
         deviceId,
         packageName,
         appOp,
@@ -385,7 +546,7 @@ export async function grantPermission(
         userId,
       );
 
-      if (!appOpsSuccess) {
+      if (!appOpsResult.success) {
         return {
           success: false,
           error: `Permission grant not supported on this device. Try granting from device Settings > Apps > ${packageName} > Permissions.`,
@@ -412,7 +573,7 @@ export async function grantPermission(
     return {
       success: true,
       message: usedAppOpsFallback
-        ? "Permission enabled via AppOps fallback."
+        ? `Permission enabled via AppOps fallback (${state.appOpMode || "allow"}).`
         : "Permission granted successfully.",
     };
   }
@@ -449,15 +610,15 @@ export async function revokePermission(
       console.log(
         `[Permissions] pm revoke failed, trying appops for ${permission}`,
       );
-      const appOpsSuccess = await setAppOpsMode(
+      const appOpsResult = await setAppOpsModeWithFallback(
         deviceId,
         packageName,
         appOp,
-        "deny",
+        "block",
         userId,
       );
 
-      if (!appOpsSuccess) {
+      if (!appOpsResult.success) {
         return {
           success: false,
           error: `Permission revocation not supported on this device. Try revoking from device Settings > Apps > ${packageName} > Permissions.`,
@@ -484,14 +645,23 @@ export async function revokePermission(
     return {
       success: true,
       message: usedAppOpsFallback
-        ? "Permission blocked via AppOps fallback."
+        ? `Permission blocked via AppOps fallback (${state.appOpMode || "blocked"}).`
         : "Permission revoked successfully.",
+    };
+  }
+
+  // Some Android builds keep runtime granted=true but still enforce appops blocking.
+  // If appops is explicitly blocking, treat this as effective revoke success.
+  if (isAppOpsBlocking(state.appOpMode)) {
+    return {
+      success: true,
+      message: `Permission blocked via AppOps (${state.appOpMode}).`,
     };
   }
 
   return {
     success: false,
-    error: `Permission still appears active after revoke. Android may enforce this permission for this app/version. Try revoking from Settings > Apps > ${packageName} > Permissions.`,
+    error: `Permission still appears active after revoke (runtime=${state.runtimeGranted ?? "unknown"}, appops=${state.appOpMode ?? "unknown"}). Android may enforce this permission for this app/version. Try revoking from Settings > Apps > ${packageName} > Permissions.`,
   };
 }
 
@@ -512,18 +682,6 @@ function parseRuntimeGranted(
   return match[1].toLowerCase() === "true";
 }
 
-function parseAppOpMode(appOpsOutput: string, appOp: string): string | null {
-  const opPattern = new RegExp(`${escapeRegex(appOp)}:\\s*([a-z_]+)`, "i");
-  const opMatch = appOpsOutput.match(opPattern);
-  if (opMatch?.[1]) return opMatch[1].toLowerCase();
-
-  const modePattern = /mode=([a-z_]+)/i;
-  const modeMatch = appOpsOutput.match(modePattern);
-  if (modeMatch?.[1]) return modeMatch[1].toLowerCase();
-
-  return null;
-}
-
 function isAppOpsBlocking(mode: string | null): boolean {
   if (!mode) return false;
   return ["deny", "ignore", "errored"].includes(mode.toLowerCase());
@@ -534,7 +692,7 @@ async function getEffectivePermissionState(
   packageName: string,
   permission: string,
   userId: number,
-): Promise<{ effectiveGranted: boolean }> {
+): Promise<EffectivePermissionState> {
   const dumpsysResult = await executeAdbCommand(
     `-s ${deviceId} shell dumpsys package ${packageName}`,
   );
@@ -547,38 +705,51 @@ async function getEffectivePermissionState(
   let appOpMode: string | null = null;
 
   if (appOp) {
-    const appOpsResultWithUser = await executeAdbCommand(
-      `-s ${deviceId} shell appops get --user ${userId} ${packageName} ${appOp}`,
+    const appOpsDecision = await getAppOpsDecision(
+      deviceId,
+      packageName,
+      appOp,
+      userId,
     );
-    if (!didCommandFail(appOpsResultWithUser)) {
-      appOpMode = parseAppOpMode(appOpsResultWithUser.output, appOp);
-    } else {
-      const appOpsResultWithoutUser = await executeAdbCommand(
-        `-s ${deviceId} shell appops get ${packageName} ${appOp}`,
-      );
-      if (!didCommandFail(appOpsResultWithoutUser)) {
-        appOpMode = parseAppOpMode(appOpsResultWithoutUser.output, appOp);
-      }
+    appOpMode = appOpsDecision.mode;
+
+    if (appOpsDecision.decision === "block") {
+      return { effectiveGranted: false, runtimeGranted, appOpMode };
+    }
+    if (appOpsDecision.decision === "allow") {
+      return {
+        effectiveGranted: true,
+        runtimeGranted,
+        appOpMode,
+      };
     }
   }
 
   if (appOpMode && appOpMode !== "default") {
-    return { effectiveGranted: isAppOpsAllowed(appOpMode) };
+    return {
+      effectiveGranted: isAppOpsAllowed(appOpMode),
+      runtimeGranted,
+      appOpMode,
+    };
   }
 
   if (isAppOpsBlocking(appOpMode)) {
-    return { effectiveGranted: false };
+    return { effectiveGranted: false, runtimeGranted, appOpMode };
   }
 
   if (runtimeGranted !== null) {
-    return { effectiveGranted: runtimeGranted };
+    return { effectiveGranted: runtimeGranted, runtimeGranted, appOpMode };
   }
 
   if (appOpMode) {
-    return { effectiveGranted: appOpMode === "allow" };
+    return {
+      effectiveGranted: appOpMode === "allow",
+      runtimeGranted,
+      appOpMode,
+    };
   }
 
-  return { effectiveGranted: false };
+  return { effectiveGranted: false, runtimeGranted, appOpMode };
 }
 
 async function getAppOpsModes(
@@ -586,20 +757,7 @@ async function getAppOpsModes(
   packageName: string,
   userId: number,
 ): Promise<Record<string, string>> {
-  const withUserResult = await executeAdbCommand(
-    `-s ${deviceId} shell appops get --user ${userId} ${packageName}`,
-  );
-
-  let output = withUserResult.output;
-  if (didCommandFail(withUserResult) || !output) {
-    const withoutUserResult = await executeAdbCommand(
-      `-s ${deviceId} shell appops get ${packageName}`,
-    );
-    if (didCommandFail(withoutUserResult) || !withoutUserResult.output) {
-      return {};
-    }
-    output = withoutUserResult.output;
-  }
+  const output = await getAppOpsOutput(deviceId, packageName, userId);
 
   if (!output) {
     return {};
@@ -610,12 +768,28 @@ async function getAppOpsModes(
 
   for (const line of lines) {
     const trimmed = line.trim();
-    const match = trimmed.match(/^([A-Z0-9_]+):\s*([a-z_]+)/i);
+    if (!trimmed) continue;
+
+    const uidMatch = trimmed.match(/^Uid mode:\s*([A-Z0-9_]+):\s*([a-z_]+)/i);
+    if (uidMatch) {
+      const appOp = uidMatch[1].toUpperCase();
+      const mode = uidMatch[2].toLowerCase();
+      const current = modes[appOp];
+      if (!current || isAppOpsBlocking(mode) || !isAppOpsBlocking(current)) {
+        modes[appOp] = mode;
+      }
+      continue;
+    }
+
+    const match = trimmed.match(/^([A-Z0-9_]+):\s*(?:mode=)?([a-z_]+)/i);
     if (!match) continue;
 
     const appOp = match[1].toUpperCase();
     const mode = match[2].toLowerCase();
-    modes[appOp] = mode;
+    const current = modes[appOp];
+    if (!current || isAppOpsBlocking(mode) || !isAppOpsBlocking(current)) {
+      modes[appOp] = mode;
+    }
   }
 
   return modes;

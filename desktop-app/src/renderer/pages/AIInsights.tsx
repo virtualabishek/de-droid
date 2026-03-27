@@ -1,11 +1,27 @@
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { DeviceSelector } from "../components/DeviceSelector";
 import { useDeviceStore } from "../store/deviceStore";
 
 type ModelLabel = "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
 
 const LABELS: ModelLabel[] = ["RECOMMENDED", "ADVANCED", "EXPERT", "UNSAFE"];
+
+function packagesLinkForLabel(label: ModelLabel): string {
+  const params = new URLSearchParams({
+    source: "ai-insights",
+    modelLabel: label,
+  });
+  return `/packages?${params.toString()}`;
+}
+
+function packagesLinkForPackage(packageName: string): string {
+  const params = new URLSearchParams({
+    source: "ai-insights",
+    package: packageName,
+    openDetails: "1",
+  });
+  return `/packages?${params.toString()}`;
+}
 
 function labelTone(label: ModelLabel): string {
   switch (label) {
@@ -155,75 +171,81 @@ export default function AIInsights() {
         </div>
       </header>
 
-      <div className="flex-1 flex gap-6 p-6 overflow-hidden">
-        <div className="w-80 flex-shrink-0 flex flex-col gap-4">
-          <DeviceSelector />
-
-          <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">Model Summary</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Scored Packages</span>
-                <span className="text-white">{isLoadingPackages ? "..." : totalModelPackages}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Unsafe Flags</span>
-                <span className="text-red-300">{labelCounts.UNSAFE}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Expert Caution</span>
-                <span className="text-orange-300">{labelCounts.EXPERT}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">OEM Overrides</span>
-                <span className="text-amber-300">{overrideCount}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-gray-800 to-indigo-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
-            <h3 className="text-sm font-medium text-gray-200 mb-2">How to Read This</h3>
-            <ul className="space-y-2 text-xs text-gray-300 list-disc pl-4">
-              <li>Higher confidence means the model is more certain about that package score.</li>
-              <li>UNSAFE and EXPERT packages should be reviewed before any uninstall action.</li>
-              <li>Top factors are model clues that influenced the score.</li>
-              <li>OEM overrides are extra safety rules for specific phone brands.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto pr-1">
+      <div className="flex-1 p-6 overflow-hidden">
+        <div className="h-full overflow-y-auto pr-1">
           {!selectedDevice ? (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-xl border border-gray-700">
               <div className="text-center max-w-md px-8">
                 <h3 className="text-2xl font-bold text-white mb-2">Select a Device</h3>
                 <p className="text-gray-400">
-                  Connect and select an Android device to view AI/ML model analysis for installed apps.
+                  Connect and select an Android device from Dashboard to view AI/ML model analysis for installed apps.
                 </p>
+                <Link
+                  to="/dashboard"
+                  className="inline-flex mt-4 px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 text-sm font-medium"
+                >
+                  Open Dashboard
+                </Link>
               </div>
             </div>
           ) : (
             <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+                  <h3 className="text-sm font-medium text-gray-300 mb-3">Model Summary</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Scored Packages</span>
+                      <span className="text-white">{isLoadingPackages ? "..." : totalModelPackages}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Unsafe Flags</span>
+                      <span className="text-red-300">{labelCounts.UNSAFE}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Expert Caution</span>
+                      <span className="text-orange-300">{labelCounts.EXPERT}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">OEM Overrides</span>
+                      <span className="text-amber-300">{overrideCount}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-gray-800 to-indigo-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+                  <h3 className="text-sm font-medium text-gray-200 mb-2">How to Read This</h3>
+                  <ul className="space-y-2 text-xs text-gray-300 list-disc pl-4">
+                    <li>Higher confidence means the model is more certain about that package score.</li>
+                    <li>UNSAFE and EXPERT packages should be reviewed before any uninstall action.</li>
+                    <li>Top factors are model clues that influenced the score.</li>
+                    <li>OEM overrides are extra safety rules for specific phone brands.</li>
+                  </ul>
+                </div>
+              </div>
+
               <div className="grid grid-cols-4 gap-4">
                 {LABELS.map((label) => {
                   const count = labelCounts[label];
                   const width = Math.round((count / maxLabelCount) * 100);
                   return (
-                    <div
+                    <Link
                       key={label}
+                      to={packagesLinkForLabel(label)}
                       className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20"
                     >
                       <div className={`inline-flex px-2 py-1 rounded-md border text-xs ${labelTone(label)}`}>
                         {label}
                       </div>
                       <p className="text-3xl font-bold mt-3">{count}</p>
+                      <p className="text-xs text-gray-400 mt-1">Open in Packages</p>
                       <div className="mt-3 h-2 w-full rounded-full bg-gray-700">
                         <div
                           className={`h-full rounded-full ${progressTone(label)}`}
                           style={{ width: `${width}%` }}
                         />
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
@@ -302,7 +324,7 @@ export default function AIInsights() {
                     {topRiskPackages.map((pkg) => (
                       <div
                         key={pkg.name}
-                        className="grid grid-cols-[1fr_auto_auto] items-center gap-3 p-3 rounded-lg bg-gray-800/70 border border-gray-700/70"
+                        className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-3 p-3 rounded-lg bg-gray-800/70 border border-gray-700/70"
                       >
                         <div>
                           <p className="text-sm font-medium text-white truncate">{pkg.name}</p>
@@ -324,6 +346,12 @@ export default function AIInsights() {
                             ? `${Math.round(pkg.modelConfidence * 100)}%`
                             : "-"}
                         </span>
+                        <Link
+                          to={packagesLinkForPackage(pkg.name)}
+                          className="text-xs px-2 py-1 rounded border border-gray-600 text-gray-200 hover:bg-gray-700"
+                        >
+                          View in Packages
+                        </Link>
                       </div>
                     ))}
                   </div>

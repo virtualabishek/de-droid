@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import { DeviceSelector } from "../components/DeviceSelector";
 import { PackageList } from "../components/PackageList";
 import { BackupPanel } from "../components/BackupPanel";
 import { DeviceIcon } from "../components/DeviceIcon";
@@ -182,7 +181,7 @@ export default function Packages() {
     type: "success" | "error" | "info";
     message: string;
   } | null>(null);
-  const [activeTab, setActiveTab] = useState<"packages" | "backup">("packages");
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [deviceNickname, setDeviceNickname] = useState<string | null>(null);
   const [showQuickDebloat, setShowQuickDebloat] = useState(false);
   const [permissionPackage, setPermissionPackage] = useState<string | null>(
@@ -476,26 +475,34 @@ export default function Packages() {
                 </button>
               )}
 
-              {activeTab === "packages" && (
-                <button
-                  onClick={isFocusMode ? exitFocusMode : enterFocusMode}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/90 hover:bg-gray-600 rounded-xl font-medium transition-colors border border-gray-600"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d={
-                        isFocusMode
-                          ? "M9 9L4 4m0 0h5M4 4v5m11 0l5-5m0 0v5m0-5h-5m-6 11l-5 5m0 0h5m-5 0v-5m11 5l5 5m0 0v-5m0 5h-5"
-                          : "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
-                      }
-                    />
-                  </svg>
-                  {isFocusMode ? "Exit Full Screen" : "Full Screen"}
-                </button>
-              )}
+              <button
+                onClick={() => setShowBackupModal(true)}
+                className="flex items-center gap-2 px-4 py-2.5 bg-blue-700/80 hover:bg-blue-600 rounded-xl font-medium transition-colors border border-blue-500/40"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-8-5v8m0-8l-3 3m3-3l3 3M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4" />
+                </svg>
+                Backup
+              </button>
+
+              <button
+                onClick={isFocusMode ? exitFocusMode : enterFocusMode}
+                className="flex items-center gap-2 px-4 py-2.5 bg-gray-700/90 hover:bg-gray-600 rounded-xl font-medium transition-colors border border-gray-600"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d={
+                      isFocusMode
+                        ? "M9 9L4 4m0 0h5M4 4v5m11 0l5-5m0 0v5m0-5h-5m-6 11l-5 5m0 0h5m-5 0v-5m11 5l5 5m0 0v-5m0 5h-5"
+                        : "M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
+                    }
+                  />
+                </svg>
+                {isFocusMode ? "Exit Full Screen" : "Full Screen"}
+              </button>
 
               {/* Device Preview Icon */}
               <DeviceIcon
@@ -635,117 +642,29 @@ export default function Packages() {
       )}
 
       {/* Main content */}
-      <div className={`flex-1 flex gap-6 p-6 overflow-hidden ${isFocusMode ? "hidden" : ""}`}>
-        {/* Device selector sidebar */}
-        <div className="w-80 flex-shrink-0 flex flex-col gap-4">
-          <DeviceSelector />
-
-          {/* Tab buttons */}
-          {selectedDevice && (
-            <div className="flex gap-1 bg-gray-800 rounded-lg p-1 border border-gray-700">
-              <button
-                onClick={() => setActiveTab("packages")}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "packages"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                📦 Packages
-              </button>
-              <button
-                onClick={() => setActiveTab("backup")}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "backup"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                💾 Backup
-              </button>
-            </div>
-          )}
-
-          {/* Backup Panel */}
-          {selectedDevice && activeTab === "backup" && (
-            <BackupPanel onRestorePackages={handleRestorePackages} />
-          )}
-
-          {/* Quick Stats in Sidebar */}
-          {selectedDevice && activeTab === "packages" && (
-            <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">
-                Session Stats
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Total Actions:</span>
-                  <span className="text-white font-medium">
-                    {stats?.total_actions || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Packages Removed:</span>
-                  <span className="text-red-400 font-medium">
-                    {stats?.uninstall_count || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Packages Restored:</span>
-                  <span className="text-green-400 font-medium">
-                    {stats?.restore_count || 0}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
+      <div className={`flex-1 p-6 overflow-hidden ${isFocusMode ? "hidden" : ""}`}>
         {/* Package list */}
-        <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-hidden flex flex-col gap-4">
           {selectedDevice ? (
-            activeTab === "packages" ? (
-              isLoadingPackages && packages.length === 0 ? (
-                <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading packages...</p>
+            <>
+              <div className="flex-1 overflow-hidden">
+                {isLoadingPackages && packages.length === 0 ? (
+                  <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+                      <p className="text-gray-400">Loading packages...</p>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <PackageList
-                  onAction={handleAction}
-                  isLoading={actionLoading}
-                  onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
-                  userId={user?.id}
-                />
-              )
-            ) : (
-              <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
-                <div className="text-center">
-                  <svg
-                    className="w-16 h-16 mx-auto text-gray-600 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                    />
-                  </svg>
-                  <h3 className="text-xl font-medium text-gray-300 mb-2">
-                    Backup & Restore
-                  </h3>
-                  <p className="text-gray-500">
-                    Use the backup panel on the left to create and compare
-                    backups
-                  </p>
-                </div>
+                ) : (
+                  <PackageList
+                    onAction={handleAction}
+                    isLoading={actionLoading}
+                    onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
+                    userId={user?.id}
+                  />
+                )}
               </div>
-            )
+            </>
           ) : (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
               <div className="text-center max-w-md">
@@ -768,8 +687,7 @@ export default function Packages() {
                   Connect Your Device
                 </h3>
                 <p className="text-gray-400 mb-6">
-                  Connect an Android device via USB or wireless ADB to start
-                  managing packages
+                  Connect and select your phone on Dashboard first, then manage packages here.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center text-sm">
                   <span className="px-3 py-1 bg-gray-700 rounded-full text-gray-300">
@@ -796,7 +714,29 @@ export default function Packages() {
         />
       )}
 
-      {isFocusMode && selectedDevice && activeTab === "packages" && (
+      {showBackupModal && (
+        <div className="fixed inset-0 z-[75] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl max-h-[90vh] overflow-hidden bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl flex flex-col">
+            <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Backup & Compare</h3>
+                <p className="text-xs text-gray-400">Create backup snapshots, import JSON, and compare package states.</p>
+              </div>
+              <button
+                onClick={() => setShowBackupModal(false)}
+                className="px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-sm"
+              >
+                Close
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              <BackupPanel onRestorePackages={handleRestorePackages} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isFocusMode && selectedDevice && (
         <div className="fixed inset-0 z-[70] bg-gray-900 flex flex-col">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700 bg-gray-800">
             <div>
