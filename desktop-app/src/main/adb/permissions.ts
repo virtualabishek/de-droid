@@ -259,6 +259,8 @@ interface EffectivePermissionState {
   appOpMode: string | null;
 }
 
+type AppOpsDecision = "allow" | "block" | "default" | "unknown";
+
 function didCommandFail(result: {
   success: boolean;
   output?: string;
@@ -294,18 +296,119 @@ async function setAppOpsMode(
   appOp: string,
   mode: "allow" | "deny" | "ignore",
   userId: number,
+  useUid = false,
 ): Promise<boolean> {
+  const uidFlag = useUid ? "--uid " : "";
   const withUser = await executeAdbCommand(
-    `-s ${deviceId} shell appops set --user ${userId} ${packageName} ${appOp} ${mode}`,
+    `-s ${deviceId} shell appops set --user ${userId} ${uidFlag}${packageName} ${appOp} ${mode}`,
   );
   if (!didCommandFail(withUser)) {
     return true;
   }
 
   const withoutUser = await executeAdbCommand(
-    `-s ${deviceId} shell appops set ${packageName} ${appOp} ${mode}`,
+    `-s ${deviceId} shell appops set ${uidFlag}${packageName} ${appOp} ${mode}`,
   );
   return !didCommandFail(withoutUser);
+}
+
+async function getAppOpsOutput(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+  appOp?: string,
+): Promise<string | null> {
+  const opSuffix = appOp ? ` ${appOp}` : "";
+  const withUserResult = await executeAdbCommand(
+    `-s ${deviceId} shell appops get --user ${userId} ${packageName}${opSuffix}`,
+  );
+
+  if (!didCommandFail(withUserResult) && withUserResult.output) {
+    return withUserResult.output;
+  }
+
+  const withoutUserResult = await executeAdbCommand(
+    `-s ${deviceId} shell appops get ${packageName}${opSuffix}`,
+  );
+  if (!didCommandFail(withoutUserResult) && withoutUserResult.output) {
+    return withoutUserResult.output;
+  }
+
+  return null;
+}
+
+function parseAppOpModesFromOutput(
+  appOpsOutput: string,
+  appOp: string,
+): string[] {
+  const modes: string[] = [];
+  const opUpper = appOp.toUpperCase();
+  const lines = appOpsOutput.split("\n");
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    // Handles: "Uid mode: READ_CONTACTS: ignore"
+    const uidMatch = trimmed.match(/^Uid mode:\s*([A-Z0-9_]+):\s*([a-z_]+)/i);
+    if (uidMatch && uidMatch[1].toUpperCase() === opUpper) {
+      modes.push(uidMatch[2].toLowerCase());
+      continue;
+    }
+
+    // Handles: "READ_CONTACTS: allow; ..." and "READ_CONTACTS: mode=allow"
+    const opMatch = trimmed.match(/^([A-Z0-9_]+):\s*(?:mode=)?([a-z_]+)/i);
+    if (opMatch && opMatch[1].toUpperCase() === opUpper) {
+      modes.push(opMatch[2].toLowerCase());
+    }
+  }
+
+  return modes;
+}
+
+function decideAppOpMode(modes: string[]): {
+  decision: AppOpsDecision;
+  representativeMode: string | null;
+} {
+  if (modes.length === 0) {
+    return { decision: "unknown", representativeMode: null };
+  }
+
+  const normalized = modes.map((mode) => mode.toLowerCase());
+
+  // Most restrictive mode wins if multiple entries are present (uid + package rows).
+  const blocking = normalized.find((mode) => isAppOpsBlocking(mode));
+  if (blocking) {
+    return { decision: "block", representativeMode: blocking };
+  }
+
+  const allowing = normalized.find((mode) => isAppOpsAllowed(mode));
+  if (allowing) {
+    return { decision: "allow", representativeMode: allowing };
+  }
+
+  const hasDefault = normalized.includes("default");
+  if (hasDefault) {
+    return { decision: "default", representativeMode: "default" };
+  }
+
+  return { decision: "unknown", representativeMode: normalized[0] || null };
+}
+
+async function getAppOpsDecision(
+  deviceId: string,
+  packageName: string,
+  appOp: string,
+  userId: number,
+): Promise<{ decision: AppOpsDecision; mode: string | null }> {
+  const output = await getAppOpsOutput(deviceId, packageName, userId, appOp);
+  if (!output) {
+    return { decision: "unknown", mode: null };
+  }
+
+  const parsed = parseAppOpModesFromOutput(output, appOp);
+  const decided = decideAppOpMode(parsed);
+  return { decision: decided.decision, mode: decided.representativeMode };
 }
 
 async function setAppOpsModeWithFallback(
@@ -315,13 +418,43 @@ async function setAppOpsModeWithFallback(
   target: "allow" | "block",
   userId: number,
 ): Promise<{ success: boolean; appliedMode: "allow" | "deny" | "ignore" | null }> {
-  const modes: Array<"allow" | "deny" | "ignore"> =
-    target === "allow" ? ["allow"] : ["deny", "ignore"];
+  const attempts: Array<{ mode: "allow" | "deny" | "ignore"; useUid: boolean }> =
+    target === "allow"
+      ? [
+          { mode: "allow", useUid: false },
+          { mode: "allow", useUid: true },
+        ]
+      : [
+          { mode: "deny", useUid: false },
+          { mode: "ignore", useUid: false },
+          { mode: "deny", useUid: true },
+          { mode: "ignore", useUid: true },
+        ];
 
-  for (const mode of modes) {
-    const ok = await setAppOpsMode(deviceId, packageName, appOp, mode, userId);
-    if (ok) {
-      return { success: true, appliedMode: mode };
+  for (const attempt of attempts) {
+    const ok = await setAppOpsMode(
+      deviceId,
+      packageName,
+      appOp,
+      attempt.mode,
+      userId,
+      attempt.useUid,
+    );
+    if (!ok) {
+      continue;
+    }
+
+    const verification = await getAppOpsDecision(
+      deviceId,
+      packageName,
+      appOp,
+      userId,
+    );
+    if (
+      (target === "allow" && verification.decision === "allow") ||
+      (target === "block" && verification.decision === "block")
+    ) {
+      return { success: true, appliedMode: attempt.mode };
     }
   }
 
@@ -549,18 +682,6 @@ function parseRuntimeGranted(
   return match[1].toLowerCase() === "true";
 }
 
-function parseAppOpMode(appOpsOutput: string, appOp: string): string | null {
-  const opPattern = new RegExp(`${escapeRegex(appOp)}:\\s*([a-z_]+)`, "i");
-  const opMatch = appOpsOutput.match(opPattern);
-  if (opMatch?.[1]) return opMatch[1].toLowerCase();
-
-  const modePattern = /mode=([a-z_]+)/i;
-  const modeMatch = appOpsOutput.match(modePattern);
-  if (modeMatch?.[1]) return modeMatch[1].toLowerCase();
-
-  return null;
-}
-
 function isAppOpsBlocking(mode: string | null): boolean {
   if (!mode) return false;
   return ["deny", "ignore", "errored"].includes(mode.toLowerCase());
@@ -584,18 +705,23 @@ async function getEffectivePermissionState(
   let appOpMode: string | null = null;
 
   if (appOp) {
-    const appOpsResultWithUser = await executeAdbCommand(
-      `-s ${deviceId} shell appops get --user ${userId} ${packageName} ${appOp}`,
+    const appOpsDecision = await getAppOpsDecision(
+      deviceId,
+      packageName,
+      appOp,
+      userId,
     );
-    if (!didCommandFail(appOpsResultWithUser)) {
-      appOpMode = parseAppOpMode(appOpsResultWithUser.output, appOp);
-    } else {
-      const appOpsResultWithoutUser = await executeAdbCommand(
-        `-s ${deviceId} shell appops get ${packageName} ${appOp}`,
-      );
-      if (!didCommandFail(appOpsResultWithoutUser)) {
-        appOpMode = parseAppOpMode(appOpsResultWithoutUser.output, appOp);
-      }
+    appOpMode = appOpsDecision.mode;
+
+    if (appOpsDecision.decision === "block") {
+      return { effectiveGranted: false, runtimeGranted, appOpMode };
+    }
+    if (appOpsDecision.decision === "allow") {
+      return {
+        effectiveGranted: true,
+        runtimeGranted,
+        appOpMode,
+      };
     }
   }
 
@@ -631,20 +757,7 @@ async function getAppOpsModes(
   packageName: string,
   userId: number,
 ): Promise<Record<string, string>> {
-  const withUserResult = await executeAdbCommand(
-    `-s ${deviceId} shell appops get --user ${userId} ${packageName}`,
-  );
-
-  let output = withUserResult.output;
-  if (didCommandFail(withUserResult) || !output) {
-    const withoutUserResult = await executeAdbCommand(
-      `-s ${deviceId} shell appops get ${packageName}`,
-    );
-    if (didCommandFail(withoutUserResult) || !withoutUserResult.output) {
-      return {};
-    }
-    output = withoutUserResult.output;
-  }
+  const output = await getAppOpsOutput(deviceId, packageName, userId);
 
   if (!output) {
     return {};
@@ -655,12 +768,28 @@ async function getAppOpsModes(
 
   for (const line of lines) {
     const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    const uidMatch = trimmed.match(/^Uid mode:\s*([A-Z0-9_]+):\s*([a-z_]+)/i);
+    if (uidMatch) {
+      const appOp = uidMatch[1].toUpperCase();
+      const mode = uidMatch[2].toLowerCase();
+      const current = modes[appOp];
+      if (!current || isAppOpsBlocking(mode) || !isAppOpsBlocking(current)) {
+        modes[appOp] = mode;
+      }
+      continue;
+    }
+
     const match = trimmed.match(/^([A-Z0-9_]+):\s*(?:mode=)?([a-z_]+)/i);
     if (!match) continue;
 
     const appOp = match[1].toUpperCase();
     const mode = match[2].toLowerCase();
-    modes[appOp] = mode;
+    const current = modes[appOp];
+    if (!current || isAppOpsBlocking(mode) || !isAppOpsBlocking(current)) {
+      modes[appOp] = mode;
+    }
   }
 
   return modes;
