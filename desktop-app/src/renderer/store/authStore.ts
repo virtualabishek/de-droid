@@ -35,6 +35,27 @@ interface AuthState {
   updateProfile: (data: { name?: string }) => Promise<AuthResult>;
 }
 
+function getAuthBridge() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const authApi = window.electronAPI?.auth;
+  if (!authApi) {
+    return null;
+  }
+
+  return authApi;
+}
+
+function missingBridgeResult(): AuthResult {
+  return {
+    success: false,
+    message:
+      "Desktop bridge not available. Please run the app via Electron (not browser-only), then restart the app.",
+  };
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -43,8 +64,13 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true,
 
       login: async (email: string, password: string) => {
+        const authApi = getAuthBridge();
+        if (!authApi) {
+          return missingBridgeResult();
+        }
+
         try {
-          const result = await window.electronAPI.auth.login(email, password);
+          const result = await authApi.login(email, password);
 
           if (result.success && result.user) {
             set({
@@ -64,8 +90,13 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (email: string, password: string, name?: string) => {
+        const authApi = getAuthBridge();
+        if (!authApi) {
+          return missingBridgeResult();
+        }
+
         try {
-          const result = await window.electronAPI.auth.register(
+          const result = await authApi.register(
             email,
             password,
             name,
@@ -91,10 +122,16 @@ export const useAuthStore = create<AuthState>()(
 
       checkSession: async () => {
         const { user } = get();
+        const authApi = getAuthBridge();
+
+        if (!authApi) {
+          set({ isLoading: false });
+          return;
+        }
 
         if (user?.id) {
           try {
-            const userData = await window.electronAPI.auth.getUser(user.id);
+            const userData = await authApi.getUser(user.id);
             if (userData) {
               set({
                 user: userData,
@@ -113,13 +150,18 @@ export const useAuthStore = create<AuthState>()(
 
       updateProfile: async (data: { name?: string }) => {
         const { user } = get();
+        const authApi = getAuthBridge();
+
+        if (!authApi) {
+          return missingBridgeResult();
+        }
 
         if (!user) {
           return { success: false, message: "Not logged in" };
         }
 
         try {
-          const result = await window.electronAPI.auth.updateProfile(
+          const result = await authApi.updateProfile(
             user.id,
             data,
           );

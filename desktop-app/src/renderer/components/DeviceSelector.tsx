@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useDeviceStore } from '../store/deviceStore';
 import type { ConnectionDiagnostics } from '../shared/electron-api';
 
-export function DeviceSelector() {
+interface DeviceSelectorProps {
+  showInlineConnectionHelp?: boolean;
+}
+
+export function DeviceSelector({ showInlineConnectionHelp = false }: DeviceSelectorProps) {
   const {
     devices,
     selectedDevice,
@@ -187,15 +191,17 @@ export function DeviceSelector() {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-medium text-gray-400">Connected Devices</h3>
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => setShowConnectionHelp(!showConnectionHelp)}
-            className="p-1 hover:bg-gray-700 rounded transition-colors"
-            title="Device connection help"
-          >
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.654 2.093-3 3.772-3 2.39 0 4.328 1.79 4.328 4 0 1.904-1.44 3.497-3.375 3.89M12 17h.01M12 13v-1" />
-            </svg>
-          </button>
+          {showInlineConnectionHelp && (
+            <button
+              onClick={() => setShowConnectionHelp(!showConnectionHelp)}
+              className="p-1 hover:bg-gray-700 rounded transition-colors"
+              title="Device connection help"
+            >
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.654 2.093-3 3.772-3 2.39 0 4.328 1.79 4.328 4 0 1.904-1.44 3.497-3.375 3.89M12 17h.01M12 13v-1" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={() => fetchDevices()}
             className="p-1 hover:bg-gray-700 rounded transition-colors"
@@ -231,12 +237,14 @@ export function DeviceSelector() {
           <p className="text-xs text-gray-500 mt-1">
             Connect via USB or wirelessly
           </p>
-          <button
-            onClick={() => setShowConnectionHelp(true)}
-            className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30"
-          >
-            Device not showing? Open setup guide
-          </button>
+          {showInlineConnectionHelp && (
+            <button
+              onClick={() => setShowConnectionHelp(true)}
+              className="mt-3 px-3 py-1.5 text-xs rounded-lg bg-primary-600/20 text-primary-300 border border-primary-500/30 hover:bg-primary-600/30"
+            >
+              Device not showing? Open setup guide
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-2">
@@ -297,21 +305,23 @@ export function DeviceSelector() {
         <span className="text-sm font-medium">Wireless ADB</span>
       </button>
 
-      <button
-        onClick={runConnectionDiagnostics}
-        disabled={isRunningDiagnostics}
-        className="w-full mt-2 flex items-center justify-center gap-2 p-3 rounded-lg transition-colors bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 text-amber-300 disabled:opacity-60"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1.5-1.5L6 20l-.75-3M4.5 10.5a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z" />
-        </svg>
-        <span className="text-sm font-medium">
-          {isRunningDiagnostics ? 'Running Diagnostics...' : 'Run Connection Diagnostics'}
-        </span>
-      </button>
+      {showInlineConnectionHelp && (
+        <button
+          onClick={runConnectionDiagnostics}
+          disabled={isRunningDiagnostics}
+          className="w-full mt-2 flex items-center justify-center gap-2 p-3 rounded-lg transition-colors bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 text-amber-300 disabled:opacity-60"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1.5-1.5L6 20l-.75-3M4.5 10.5a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z" />
+          </svg>
+          <span className="text-sm font-medium">
+            {isRunningDiagnostics ? 'Running Diagnostics...' : 'Run Connection Diagnostics'}
+          </span>
+        </button>
+      )}
 
       {/* Connection Help Panel */}
-      {showConnectionHelp && (
+      {showInlineConnectionHelp && showConnectionHelp && (
         <div className="mt-3 p-4 bg-gray-700/40 rounded-lg border border-gray-600">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold text-white">Device Connection Guide</h4>

@@ -53,6 +53,7 @@ export function Layout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [showSidebarHelp, setShowSidebarHelp] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
@@ -94,6 +95,26 @@ export function Layout() {
               <p className="text-sm text-gray-400 mt-1">Android Debloater</p>
             </div>
             <ThemeToggle />
+            <button
+              onClick={() => setShowSidebarHelp(true)}
+              className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+              title="Sidebar help"
+              aria-label="Sidebar help"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.654 2.093-3 3.772-3 2.39 0 4.328 1.79 4.328 4 0 1.904-1.44 3.497-3.375 3.89M12 17h.01M12 13v-1"
+                />
+              </svg>
+            </button>
             <button
               onClick={toggleSidebar}
               className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
@@ -425,6 +446,63 @@ export function Layout() {
       <main className="flex-1 h-full overflow-y-auto overflow-x-hidden">
         <Outlet />
       </main>
+
+      {showSidebarHelp && (
+        <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Help: Sidebar Sections</h2>
+                <p className="text-sm text-gray-400 mt-1">What each section does and when to use it.</p>
+              </div>
+              <button
+                onClick={() => setShowSidebarHelp(false)}
+                className="p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
+                aria-label="Close help"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6 max-h-[70vh] overflow-y-auto space-y-3 text-sm">
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Dashboard</p>
+                <p className="text-gray-300">Device overview, storage impact, package summary, and first-time connection guide.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Packages</p>
+                <p className="text-gray-300">Search, filter, inspect, and batch uninstall/disable/restore packages.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">AI / ML Insights</p>
+                <p className="text-gray-300">Model labels, confidence, risky app surfacing, and quick jump to Packages.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Device Health</p>
+                <p className="text-gray-300">Live battery, memory, storage, and performance snapshot.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">History</p>
+                <p className="text-gray-300">Track all actions and outcomes to audit changes.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Permissions</p>
+                <p className="text-gray-300">Inspect app permissions and grant/revoke where supported by Android.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Open Source Apps</p>
+                <p className="text-gray-300">Suggested open-source alternatives for replaceable apps.</p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Settings</p>
+                <p className="text-gray-300">Configure app behavior, preferences, and environment options.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

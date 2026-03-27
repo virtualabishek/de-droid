@@ -14,6 +14,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const bridgeAvailable = !!window.electronAPI?.auth;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +64,12 @@ export default function Login() {
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
           <h2 className="text-xl font-semibold mb-6">Sign In</h2>
 
+          {!bridgeAvailable && (
+            <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300 text-sm">
+              Desktop bridge not detected. Start this app through Electron (for dev use <span className="font-mono">npm run dev</span>), not browser-only Vite.
+            </div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -100,7 +107,7 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !bridgeAvailable}
               className="w-full bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg px-4 py-2 font-medium transition-colors"
             >
               {isLoading ? "Signing in..." : "Sign In"}

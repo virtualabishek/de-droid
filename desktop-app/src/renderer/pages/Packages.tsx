@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from "react";
-import { DeviceSelector } from "../components/DeviceSelector";
 import { PackageList } from "../components/PackageList";
 import { BackupPanel } from "../components/BackupPanel";
 import { DeviceIcon } from "../components/DeviceIcon";
@@ -635,117 +634,72 @@ export default function Packages() {
       )}
 
       {/* Main content */}
-      <div className={`flex-1 flex gap-6 p-6 overflow-hidden ${isFocusMode ? "hidden" : ""}`}>
-        {/* Device selector sidebar */}
-        <div className="w-80 flex-shrink-0 flex flex-col gap-4">
-          <DeviceSelector />
-
-          {/* Tab buttons */}
-          {selectedDevice && (
-            <div className="flex gap-1 bg-gray-800 rounded-lg p-1 border border-gray-700">
-              <button
-                onClick={() => setActiveTab("packages")}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "packages"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                📦 Packages
-              </button>
-              <button
-                onClick={() => setActiveTab("backup")}
-                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === "backup"
-                    ? "bg-primary-600 text-white"
-                    : "text-gray-300 hover:bg-gray-700"
-                }`}
-              >
-                💾 Backup
-              </button>
-            </div>
-          )}
-
-          {/* Backup Panel */}
-          {selectedDevice && activeTab === "backup" && (
-            <BackupPanel onRestorePackages={handleRestorePackages} />
-          )}
-
-          {/* Quick Stats in Sidebar */}
-          {selectedDevice && activeTab === "packages" && (
-            <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">
-                Session Stats
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Total Actions:</span>
-                  <span className="text-white font-medium">
-                    {stats?.total_actions || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Packages Removed:</span>
-                  <span className="text-red-400 font-medium">
-                    {stats?.uninstall_count || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Packages Restored:</span>
-                  <span className="text-green-400 font-medium">
-                    {stats?.restore_count || 0}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
+      <div className={`flex-1 p-6 overflow-hidden ${isFocusMode ? "hidden" : ""}`}>
         {/* Package list */}
-        <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-hidden flex flex-col gap-4">
           {selectedDevice ? (
-            activeTab === "packages" ? (
-              isLoadingPackages && packages.length === 0 ? (
-                <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
-                  <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Loading packages...</p>
-                  </div>
-                </div>
-              ) : (
-                <PackageList
-                  onAction={handleAction}
-                  isLoading={actionLoading}
-                  onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
-                  userId={user?.id}
-                />
-              )
-            ) : (
-              <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
-                <div className="text-center">
-                  <svg
-                    className="w-16 h-16 mx-auto text-gray-600 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-800/70 border border-gray-700 rounded-xl p-3">
+                <div className="flex gap-1 bg-gray-900 rounded-lg p-1 border border-gray-700">
+                  <button
+                    onClick={() => setActiveTab("packages")}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "packages"
+                        ? "bg-primary-600 text-white"
+                        : "text-gray-300 hover:bg-gray-700"
+                    }`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-                    />
-                  </svg>
-                  <h3 className="text-xl font-medium text-gray-300 mb-2">
-                    Backup & Restore
-                  </h3>
-                  <p className="text-gray-500">
-                    Use the backup panel on the left to create and compare
-                    backups
-                  </p>
+                    Packages
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("backup")}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "backup"
+                        ? "bg-primary-600 text-white"
+                        : "text-gray-300 hover:bg-gray-700"
+                    }`}
+                  >
+                    Backup
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs text-gray-300">
+                  <span className="px-2.5 py-1 rounded bg-gray-900 border border-gray-700">
+                    Total Actions: <span className="text-white">{stats?.total_actions || 0}</span>
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-red-500/10 border border-red-500/30 text-red-300">
+                    Removed: {stats?.uninstall_count || 0}
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-green-500/10 border border-green-500/30 text-green-300">
+                    Restored: {stats?.restore_count || 0}
+                  </span>
                 </div>
               </div>
-            )
+
+              <div className="flex-1 overflow-hidden">
+                {activeTab === "packages" ? (
+                  isLoadingPackages && packages.length === 0 ? (
+                    <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+                        <p className="text-gray-400">Loading packages...</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <PackageList
+                      onAction={handleAction}
+                      isLoading={actionLoading}
+                      onOpenPermissions={(pkg) => setPermissionPackage(pkg)}
+                      userId={user?.id}
+                    />
+                  )
+                ) : (
+                  <div className="h-full overflow-y-auto pr-1">
+                    <BackupPanel onRestorePackages={handleRestorePackages} />
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
               <div className="text-center max-w-md">
@@ -768,8 +722,7 @@ export default function Packages() {
                   Connect Your Device
                 </h3>
                 <p className="text-gray-400 mb-6">
-                  Connect an Android device via USB or wireless ADB to start
-                  managing packages
+                  Connect and select your phone on Dashboard first, then manage packages here.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center text-sm">
                   <span className="px-3 py-1 bg-gray-700 rounded-full text-gray-300">

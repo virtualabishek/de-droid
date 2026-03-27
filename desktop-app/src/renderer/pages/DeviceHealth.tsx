@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { DeviceSelector } from "../components/DeviceSelector";
 import { DeviceIcon } from "../components/DeviceIcon";
 import { useDeviceStore } from "../store/deviceStore";
 
@@ -99,62 +98,58 @@ export default function DeviceHealth() {
         </div>
       </header>
 
-      <div className="flex-1 flex gap-6 p-6 overflow-hidden">
-        <div className="w-80 flex-shrink-0 flex flex-col gap-4">
-          <DeviceSelector />
-
-          <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">Telemetry Mode</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Update Interval</span>
-                <span className="text-white">5 minutes</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Snapshot Type</span>
-                <span className="text-white">Current usage</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Last Collected</span>
-                <span className="text-white text-xs">
-                  {snapshot?.collectedAt
-                    ? new Date(snapshot.collectedAt).toLocaleTimeString()
-                    : "-"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {selectedDevice && (
-            <div className="bg-gradient-to-br from-gray-800 to-cyan-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
-              <div className="flex items-center gap-3">
-                <DeviceIcon
-                  brand={selectedDevice.brand}
-                  model={selectedDevice.model}
-                  size="sm"
-                />
-                <div>
-                  <p className="font-semibold text-sm">{selectedDevice.model}</p>
-                  <p className="text-xs text-gray-400">{selectedDevice.brand}</p>
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-3 break-all">{selectedDevice.adb_id}</p>
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 p-6 overflow-hidden">
+        <div className="h-full overflow-y-auto">
           {!selectedDevice ? (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-xl border border-gray-700">
               <div className="text-center max-w-md">
                 <h3 className="text-2xl font-bold text-white mb-2">Select a Device</h3>
                 <p className="text-gray-400">
-                  Pick a connected Android device from the sidebar to view battery, RAM, storage, CPU usage and thermal state.
+                  Pick a connected Android device from Dashboard to view battery, RAM, storage, CPU usage and thermal state.
                 </p>
               </div>
             </div>
           ) : (
             <div className="space-y-6 pr-1">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+                  <h3 className="text-sm font-medium text-gray-300 mb-3">Telemetry Mode</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Update Interval</span>
+                      <span className="text-white">5 minutes</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Snapshot Type</span>
+                      <span className="text-white">Current usage</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Last Collected</span>
+                      <span className="text-white text-xs">
+                        {snapshot?.collectedAt
+                          ? new Date(snapshot.collectedAt).toLocaleTimeString()
+                          : "-"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-gray-800 to-cyan-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+                  <div className="flex items-center gap-3">
+                    <DeviceIcon
+                      brand={selectedDevice.brand}
+                      model={selectedDevice.model}
+                      size="sm"
+                    />
+                    <div>
+                      <p className="font-semibold text-sm">{selectedDevice.model}</p>
+                      <p className="text-xs text-gray-400">{selectedDevice.brand}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3 break-all">{selectedDevice.adb_id}</p>
+                </div>
+              </div>
+
               {error ? (
                 <div className="p-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 text-yellow-300 text-sm">
                   {error}

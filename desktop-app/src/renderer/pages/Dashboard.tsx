@@ -5,8 +5,13 @@ import { DeviceIcon } from "../components/DeviceIcon";
 import { useDeviceStore } from "../store/deviceStore";
 import { useHistoryStore } from "../store/historyStore";
 
+const DASHBOARD_CONNECTION_GUIDE_SEEN_KEY = "de-droid.dashboard.connection-guide.seen";
+
 type LiveHealth = Awaited<
   ReturnType<typeof window.electronAPI.adb.getDeviceHealthSnapshot>
+>;
+type ConnectionDiagnostics = Awaited<
+  ReturnType<typeof window.electronAPI.adb.runConnectionDiagnostics>
 >;
 
 function estimatePackageSize(packageName: string): number {
@@ -88,6 +93,21 @@ export default function Dashboard() {
   const [liveHealth, setLiveHealth] = useState<LiveHealth | null>(null);
   const [isHealthLoading, setIsHealthLoading] = useState(false);
   const [healthError, setHealthError] = useState<string | null>(null);
+  const [connectionGuideSeen, setConnectionGuideSeen] = useState(false);
+  const [guideTab, setGuideTab] = useState<"usb" | "wireless" | "advanced">("usb");
+  const [isRunningConnectionDiagnostics, setIsRunningConnectionDiagnostics] =
+    useState(false);
+  const [connectionDiagnostics, setConnectionDiagnostics] =
+    useState<ConnectionDiagnostics | null>(null);
+  const [connectionGuideError, setConnectionGuideError] = useState<string | null>(
+    null,
+  );
+
+  useEffect(() => {
+    setConnectionGuideSeen(
+      localStorage.getItem(DASHBOARD_CONNECTION_GUIDE_SEEN_KEY) === "true",
+    );
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -100,8 +120,28 @@ export default function Dashboard() {
       return;
     }
 
+    localStorage.setItem(DASHBOARD_CONNECTION_GUIDE_SEEN_KEY, "true");
+    setConnectionGuideSeen(true);
+
     fetchPackages(true).then(() => setLastSyncedAt(new Date()));
   }, [selectedDevice, selectedUser, fetchPackages]);
+
+  const runConnectionDiagnostics = async () => {
+    setIsRunningConnectionDiagnostics(true);
+    setConnectionGuideError(null);
+
+    try {
+      const result = await window.electronAPI.adb.runConnectionDiagnostics();
+      setConnectionDiagnostics(result);
+      setGuideTab("advanced");
+    } catch (error) {
+      setConnectionGuideError(
+        error instanceof Error ? error.message : "Failed to run connection diagnostics",
+      );
+    } finally {
+      setIsRunningConnectionDiagnostics(false);
+    }
+  };
 
   useEffect(() => {
     if (!selectedDevice) return;
@@ -655,30 +695,166 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div className="h-full flex items-center justify-center bg-gray-800 rounded-xl border border-gray-700">
-              <div className="text-center max-w-md">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                  <svg
-                    className="w-10 h-10 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    />
-                  </svg>
+            <div className="h-full overflow-y-auto bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl border border-gray-700 p-6">
+              <div className="max-w-3xl mx-auto space-y-5">
+                <div className="text-center bg-gray-900/40 border border-gray-700 rounded-2xl p-8">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-900/40">
+                    <svg
+                      className="w-10 h-10 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Connect Your Device
+                  </h3>
+                  <p className="text-gray-300 max-w-xl mx-auto">
+                    Select a connected Android phone from the sidebar to see phone
+                    details and package health summary.
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-3 mt-6 text-left">
+                    <div className="rounded-xl border border-gray-700 bg-gray-800/70 p-3">
+                      <p className="text-xs text-gray-400">Step 1</p>
+                      <p className="text-sm text-white mt-1">Enable USB debugging</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-700 bg-gray-800/70 p-3">
+                      <p className="text-xs text-gray-400">Step 2</p>
+                      <p className="text-sm text-white mt-1">Connect phone or pair wireless ADB</p>
+                    </div>
+                    <div className="rounded-xl border border-gray-700 bg-gray-800/70 p-3">
+                      <p className="text-xs text-gray-400">Step 3</p>
+                      <p className="text-sm text-white mt-1">Select device and start debloating</p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Connect Your Device
-                </h3>
-                <p className="text-gray-400">
-                  Select a connected Android phone from the sidebar to see phone
-                  details and package health summary.
-                </p>
+
+                {!connectionGuideSeen && (
+                  <div className="bg-gray-900/60 rounded-xl border border-gray-700 p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-semibold text-white">Device Connection Guide</h4>
+                      <button
+                        onClick={runConnectionDiagnostics}
+                        disabled={isRunningConnectionDiagnostics}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-600/20 hover:bg-amber-600/30 border border-amber-500/30 text-amber-300 disabled:opacity-60"
+                      >
+                        {isRunningConnectionDiagnostics
+                          ? "Running Diagnostics..."
+                          : "Run Connection Diagnostics"}
+                      </button>
+                    </div>
+
+                    <div className="flex gap-1 mb-3 bg-gray-800 rounded-lg p-1">
+                      <button
+                        onClick={() => setGuideTab("usb")}
+                        className={`flex-1 px-3 py-2 rounded text-xs font-medium ${
+                          guideTab === "usb"
+                            ? "bg-primary-600 text-white"
+                            : "text-gray-300 hover:text-white"
+                        }`}
+                      >
+                        USB Setup
+                      </button>
+                      <button
+                        onClick={() => setGuideTab("wireless")}
+                        className={`flex-1 px-3 py-2 rounded text-xs font-medium ${
+                          guideTab === "wireless"
+                            ? "bg-primary-600 text-white"
+                            : "text-gray-300 hover:text-white"
+                        }`}
+                      >
+                        Wireless
+                      </button>
+                      <button
+                        onClick={() => setGuideTab("advanced")}
+                        className={`flex-1 px-3 py-2 rounded text-xs font-medium ${
+                          guideTab === "advanced"
+                            ? "bg-primary-600 text-white"
+                            : "text-gray-300 hover:text-white"
+                        }`}
+                      >
+                        Advanced Fix
+                      </button>
+                    </div>
+
+                    {guideTab === "usb" && (
+                      <div className="space-y-2 text-sm text-gray-300">
+                        <p className="font-medium text-gray-100">If your device is not detected via USB:</p>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          <li>On phone: Settings to About phone, then tap Build number 7 times.</li>
+                          <li>Open Developer options and enable USB debugging.</li>
+                          <li>Reconnect cable and choose File Transfer mode.</li>
+                          <li>Accept the Allow USB debugging prompt on phone.</li>
+                          <li>Press refresh on the Connected Devices panel.</li>
+                        </ol>
+                      </div>
+                    )}
+
+                    {guideTab === "wireless" && (
+                      <div className="space-y-2 text-sm text-gray-300">
+                        <p className="font-medium text-gray-100">Wireless Debugging (Android 11+):</p>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          <li>Enable Developer options and Wireless debugging.</li>
+                          <li>Keep phone and computer on the same Wi-Fi network.</li>
+                          <li>Use Wireless ADB in the sidebar to Pair first, then Connect.</li>
+                          <li>Refresh Connected Devices once pairing is complete.</li>
+                        </ol>
+                      </div>
+                    )}
+
+                    {guideTab === "advanced" && (
+                      <div className="space-y-2 text-sm text-gray-300">
+                        <p className="font-medium text-gray-100">Advanced troubleshooting:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Revoke USB debugging authorizations and reconnect.</li>
+                          <li>Disable and re-enable USB/Wireless debugging.</li>
+                          <li>Try another USB port or cable and keep phone unlocked.</li>
+                          <li>Restart ADB server: adb kill-server && adb start-server.</li>
+                        </ul>
+                        {connectionGuideError && (
+                          <p className="text-sm text-red-300">{connectionGuideError}</p>
+                        )}
+                        {connectionDiagnostics && (
+                          <div className="mt-2 rounded-lg border border-gray-700 bg-gray-800/70 p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-xs font-semibold text-white">Latest Diagnostics</p>
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-full ${
+                                  connectionDiagnostics.status === "healthy"
+                                    ? "bg-green-500/20 text-green-300"
+                                    : connectionDiagnostics.status === "warning"
+                                      ? "bg-yellow-500/20 text-yellow-300"
+                                      : "bg-red-500/20 text-red-300"
+                                }`}
+                              >
+                                {connectionDiagnostics.status.toUpperCase()}
+                              </span>
+                            </div>
+                            <div className="space-y-1">
+                              {connectionDiagnostics.checks.map((check: {
+                                name: string;
+                                ok: boolean;
+                                message: string;
+                              }) => (
+                                <p key={check.name} className="text-xs text-gray-300">
+                                  {check.ok ? "OK" : "ISSUE"}: {check.name} - {check.message}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
