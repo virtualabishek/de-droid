@@ -49,6 +49,19 @@ interface PackageDetails {
   };
 }
 
+interface BackgroundRestrictionStatus {
+  packageName: string;
+  userId: number;
+  packageUid: number | null;
+  standbyBucket: string | null;
+  runInBackgroundMode: string | null;
+  runAnyInBackgroundMode: string | null;
+  wakeLockMode: string | null;
+  networkRestricted: boolean | null;
+  controlsActive: string[];
+  warnings: string[];
+}
+
 interface PackageDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -66,6 +79,10 @@ export function PackageDetailsModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'info' | 'permissions' | 'dangerous'>('info');
+  const [backgroundStatus, setBackgroundStatus] = useState<BackgroundRestrictionStatus | null>(null);
+  const [isLoadingBackground, setIsLoadingBackground] = useState(false);
+  const [isUpdatingBackground, setIsUpdatingBackground] = useState(false);
+  const [backgroundMessage, setBackgroundMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen && packageName && deviceId) {
@@ -76,6 +93,7 @@ export function PackageDetailsModal({
   const loadPackageDetails = async () => {
     setIsLoading(true);
     setError(null);
+    setBackgroundMessage(null);
     try {
       const api = window?.electronAPI?.adb;
       if (!api) {
@@ -83,11 +101,70 @@ export function PackageDetailsModal({
       }
       const data = await api.getPackageDetails(deviceId, packageName);
       setDetails(data);
+      await loadBackgroundStatus();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load package details');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const loadBackgroundStatus = async () => {
+    setIsLoadingBackground(true);
+    try {
+      const api = window?.electronAPI?.adb;
+      if (!api?.getBackgroundRestrictionStatus) {
+        setBackgroundStatus(null);
+        return;
+      }
+
+      const status = await api.getBackgroundRestrictionStatus(deviceId, packageName, 0);
+      setBackgroundStatus(status);
+    } catch (err) {
+      console.warn('Failed to load background status:', err);
+      setBackgroundStatus(null);
+    } finally {
+      setIsLoadingBackground(false);
+    }
+  };
+
+  const applyBackgroundMode = async (mode: 'restrict' | 'relax') => {
+    setIsUpdatingBackground(true);
+    setBackgroundMessage(null);
+    try {
+      const api = window?.electronAPI?.adb;
+      if (!api?.optimizeBackgroundRestriction) {
+        throw new Error('Background optimizer API unavailable');
+      }
+
+      const result = await api.optimizeBackgroundRestriction(
+        deviceId,
+        packageName,
+        mode,
+        0,
+      );
+
+      setBackgroundStatus(result.status);
+      if (result.success) {
+        setBackgroundMessage(result.message);
+      } else {
+        const fallback = result.failedSteps.length
+          ? `Could not apply: ${result.failedSteps.join(', ')}`
+          : result.message;
+        setBackgroundMessage(fallback);
+      }
+    } catch (err) {
+      setBackgroundMessage(
+        err instanceof Error ? err.message : 'Failed to update background controls',
+      );
+    } finally {
+      setIsUpdatingBackground(false);
+    }
+  };
+
+  const formatBucket = (bucket?: string | null) => {
+    if (!bucket) return 'Unknown';
+    return bucket.replace(/_/g, ' ');
   };
 
   if (!isOpen) return null;
@@ -287,6 +364,87 @@ export function PackageDetailsModal({
                       </ul>
                     </div>
                   )}
+
+                  <div className="p-4 bg-gray-700/50 rounded-lg border border-gray-600/60">
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <h3 className="text-sm font-medium text-gray-300">Background Control Optimizer</h3>
+                      <button
+                        onClick={loadBackgroundStatus}
+                        className="px-2 py-1 text-xs bg-gray-600 hover:bg-gray-500 rounded transition-colors"
+                        disabled={isLoadingBackground || isUpdatingBackground}
+                      >
+                        Refresh
+                      </button>
+                    </div>
+
+                    {isLoadingBackground ? (
+                      <p className="text-sm text-gray-400">Loading background control status...</p>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                          <div className="bg-gray-800/70 border border-gray-600 rounded px-2 py-1.5">
+                            <span className="text-gray-400">Standby bucket: </span>
+                            <span className="text-white capitalize">{formatBucket(backgroundStatus?.standbyBucket)}</span>
+                          </div>
+                          <div className="bg-gray-800/70 border border-gray-600 rounded px-2 py-1.5">
+                            <span className="text-gray-400">RUN_IN_BACKGROUND: </span>
+                            <span className="text-white">{backgroundStatus?.runInBackgroundMode || 'Unknown'}</span>
+                          </div>
+                          <div className="bg-gray-800/70 border border-gray-600 rounded px-2 py-1.5">
+                            <span className="text-gray-400">RUN_ANY_IN_BACKGROUND: </span>
+                            <span className="text-white">{backgroundStatus?.runAnyInBackgroundMode || 'Unknown'}</span>
+                          </div>
+                          <div className="bg-gray-800/70 border border-gray-600 rounded px-2 py-1.5">
+                            <span className="text-gray-400">Network restricted: </span>
+                            <span className="text-white">
+                              {backgroundStatus?.networkRestricted === null
+                                ? 'Unknown'
+                                : backgroundStatus.networkRestricted
+                                  ? 'Yes'
+                                  : 'No'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {backgroundStatus?.controlsActive?.length ? (
+                          <p className="text-xs text-emerald-300 mb-3">
+                            Active controls: {backgroundStatus.controlsActive.join(', ')}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-gray-400 mb-3">No explicit background controls detected yet.</p>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => applyBackgroundMode('restrict')}
+                            disabled={isUpdatingBackground}
+                            className="px-3 py-2 text-xs font-medium bg-violet-600 hover:bg-violet-500 disabled:opacity-50 rounded-lg transition-colors"
+                          >
+                            Restrict background
+                          </button>
+                          <button
+                            onClick={() => applyBackgroundMode('relax')}
+                            disabled={isUpdatingBackground}
+                            className="px-3 py-2 text-xs font-medium bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 rounded-lg transition-colors"
+                          >
+                            Relax restrictions
+                          </button>
+                        </div>
+
+                        {backgroundMessage && (
+                          <p className="text-xs text-gray-300 mt-3">{backgroundMessage}</p>
+                        )}
+
+                        {backgroundStatus?.warnings?.length ? (
+                          <ul className="mt-2 space-y-1">
+                            {backgroundStatus.warnings.map((warning, idx) => (
+                              <li key={`${warning}-${idx}`} className="text-xs text-yellow-300">• {warning}</li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
 
                   {/* Package Info Grid */}
                   <div className="grid grid-cols-2 gap-4">

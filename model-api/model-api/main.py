@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -17,6 +18,12 @@ from uuid import uuid4
 import joblib
 import numpy as np
 from scipy.sparse import hstack
+
+CURRENT_DIR = Path(__file__).resolve().parent
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.append(str(CURRENT_DIR))
+
+from risk_graph import DependencyRiskScorer
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,6 +58,8 @@ PROJECT_MODEL_API_DIR = Path(__file__).resolve().parent.parent
 FEEDBACK_DIR = PROJECT_MODEL_API_DIR / "feedback"
 FEEDBACK_EVENTS_PATH = FEEDBACK_DIR / "events.jsonl"
 FEEDBACK_VARIANTS_PATH = PROJECT_MODEL_API_DIR / "raw-data" / "variants_user_feedback.json"
+TRAINING_DATASET_PATH = PROJECT_MODEL_API_DIR / "processed" / "training_dataset.json"
+COOCCURRENCE_STATE_PATH = PROJECT_MODEL_API_DIR / "processed" / "cooccurrence_graph_state.json"
 PACKAGE_ID_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+$")
 
 # Fallback to parent model-api dir
@@ -63,6 +72,7 @@ if not PREDICTIONS_PATH.exists():
 _predictions_cache: dict[str, Any] = {}
 _model_artifact: dict[str, Any] | None = None
 _model_version: str = "unknown"
+_risk_scorer: DependencyRiskScorer | None = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -147,8 +157,12 @@ COHORT_PREFIXES: dict[str, tuple[str, ...]] = {
     "XIAOMI": ("com.xiaomi.", "com.miui.", "com.mi.", "com.redmi."),
     "ONEPLUS": ("com.oneplus.", "net.oneplus.", "cn.oneplus."),
     "HUAWEI": ("com.huawei.", "com.hicloud.", "com.hisi."),
-    "OPPO": ("com.oppo.", "com.coloros.", "com.heytap."),
+    "OPPO": ("com.oppo.", "com.coloros.", "com.heytap.", "com.oplus.", "com.nearme."),
+    "REALME": ("com.realme.", "com.oplus.", "com.nearme.", "com.heytap.", "com.coloros."),
     "VIVO": ("com.vivo.", "com.bbk.", "com.iqoo."),
+    "INFINIX": ("com.infinix.", "com.transsion.", "com.xos.", "com.xclub."),
+    "TECNO": ("com.tecno.", "com.transsion.", "com.hios."),
+    "ITEL": ("com.itel.", "com.transsion.", "com.palmstore."),
     "GOOGLE": ("com.google.",),
     "ANDROID": ("com.android.",),
 }
@@ -187,6 +201,8 @@ class PackageSafety(BaseModel):
     safety_gate: list[str] | None = None
     oem_cohort: str | None = None
     is_bloatware: bool = False
+    graph_risk_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    graph_risk_reasons: list[str] | None = None
 
 
 class PackageCheckResponse(BaseModel):
@@ -201,6 +217,8 @@ class HealthResponse(BaseModel):
     model_version: str
     predictions_loaded: int
     model_loaded: bool
+    graph_enabled: bool
+    graph_observed_pairs: int
 
 
 FeedbackAction = Literal["UNINSTALL", "DISABLE", "RESTORE", "ENABLE", "UNDO"]
@@ -293,6 +311,18 @@ class RetrainExportResponse(BaseModel):
     package_count: int
 
 
+# Resolve forward references for dynamic import contexts.
+for _model in (
+    PackageSafety,
+    PackageCheckResponse,
+    FeedbackSummaryResponse,
+    LabelProposal,
+    RetrainSignalsResponse,
+    RetrainExportResponse,
+):
+    _model.model_rebuild()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Inference helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -332,6 +362,31 @@ def apply_safety_gates(
         return "ADVANCED", confidence, gate_reasons
 
     return predicted_label, confidence, gate_reasons
+
+
+def apply_graph_risk_gate(
+    current_label: str,
+    current_confidence: float,
+    graph_risk_score: float,
+) -> tuple[str, float, list[str]]:
+    """Upgrade risk labels when graph evidence suggests removal breakage risk."""
+    if graph_risk_score >= 0.88:
+        target_label = "UNSAFE"
+        gate_reason = "graph_breakage_cluster_high"
+    elif graph_risk_score >= 0.72:
+        target_label = "EXPERT"
+        gate_reason = "graph_dependency_risk_high"
+    elif graph_risk_score >= 0.55:
+        target_label = "ADVANCED"
+        gate_reason = "graph_cooccurrence_risk"
+    else:
+        return current_label, current_confidence, []
+
+    if RISK_ORDER.get(target_label, 0) <= RISK_ORDER.get(current_label, 0):
+        return current_label, current_confidence, []
+
+    upgraded_confidence = max(current_confidence, min(0.99, graph_risk_score))
+    return target_label, upgraded_confidence, [gate_reason]
 
 
 def is_likely_bloatware(package_id: str) -> bool:
@@ -716,7 +771,7 @@ def resolve_feedback_export_path(out_path: str | None) -> Path:
 
 @app.on_event("startup")
 async def load_models():
-    global _predictions_cache, _model_artifact, _model_version
+    global _predictions_cache, _model_artifact, _model_version, _risk_scorer
     
     # Load precomputed predictions
     if PREDICTIONS_PATH.exists():
@@ -738,6 +793,27 @@ async def load_models():
     else:
         print(f"⚠️ No model file found at {MODEL_PATH}")
 
+    # Load graph-based runtime scorer (dependency + co-occurrence + breakage history)
+    if TRAINING_DATASET_PATH.exists():
+        try:
+            _risk_scorer = DependencyRiskScorer(
+                dataset_path=TRAINING_DATASET_PATH,
+                state_path=COOCCURRENCE_STATE_PATH,
+                feedback_events_path=FEEDBACK_EVENTS_PATH,
+                critical_packages=CRITICAL_SYSTEM_PACKAGES,
+            )
+            _risk_scorer.initialize()
+            graph_stats = _risk_scorer.stats()
+            print(
+                "✅ Loaded dependency risk scorer "
+                f"(nodes={graph_stats['known_packages']}, pairs={graph_stats['observed_pairs']})"
+            )
+        except Exception as e:
+            _risk_scorer = None
+            print(f"⚠️ Could not initialize dependency risk scorer: {e}")
+    else:
+        print(f"⚠️ No training dataset found for dependency graph at {TRAINING_DATASET_PATH}")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # API Endpoints
@@ -746,11 +822,14 @@ async def load_models():
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint."""
+    graph_stats = _risk_scorer.stats() if _risk_scorer is not None else {"observed_pairs": 0}
     return HealthResponse(
         status="ok",
         model_version=_model_version,
         predictions_loaded=len(_predictions_cache),
         model_loaded=_model_artifact is not None,
+        graph_enabled=_risk_scorer is not None,
+        graph_observed_pairs=int(graph_stats.get("observed_pairs", 0)),
     )
 
 
@@ -764,11 +843,14 @@ async def check_packages(request: PackageCheckRequest):
     """
     # Clean package IDs (strip "package:" prefix if present)
     cleaned = []
+    seen: set[str] = set()
     for pkg in request.packages:
         clean = pkg.strip()
         if clean.startswith("package:"):
             clean = clean[8:]
-        if clean:
+        clean = clean.lower()
+        if clean and clean not in seen:
+            seen.add(clean)
             cleaned.append(clean)
     
     if not cleaned:
@@ -781,6 +863,10 @@ async def check_packages(request: PackageCheckRequest):
         "EXPERT": 0,
         "UNSAFE": 0,
     }
+
+    package_set = set(cleaned)
+    if _risk_scorer is not None:
+        _risk_scorer.ingest_snapshot(cleaned)
     
     for pkg_id in cleaned:
         # Check precomputed predictions first
@@ -809,6 +895,30 @@ async def check_packages(request: PackageCheckRequest):
         else:
             # Unknown package → use heuristic classifier
             entry = classify_unknown_package(pkg_id)
+
+        if _risk_scorer is not None:
+            graph_score, graph_reasons = _risk_scorer.score(
+                pkg_id,
+                package_set,
+                predicted_label=entry.label,
+                label_lookup=get_current_label,
+            )
+            entry.graph_risk_score = graph_score
+
+            if graph_reasons:
+                entry.graph_risk_reasons = graph_reasons
+                entry.top_factors = [*(entry.top_factors or []), *graph_reasons[:2]][:6]
+
+            graph_label, graph_confidence, graph_gates = apply_graph_risk_gate(
+                entry.label,
+                entry.confidence,
+                graph_score,
+            )
+            if graph_gates:
+                entry.label = graph_label
+                entry.confidence = graph_confidence
+                merged_gates = [*(entry.safety_gate or []), *graph_gates]
+                entry.safety_gate = list(dict.fromkeys(merged_gates))
         
         summary[entry.label] = summary.get(entry.label, 0) + 1
         results.append(entry)
@@ -860,6 +970,21 @@ async def model_stats():
         "label_distribution": label_counts,
         "oem_distribution": oem_counts,
         "critical_packages_count": len(CRITICAL_SYSTEM_PACKAGES),
+    }
+
+
+@app.get("/api/graph/stats")
+async def dependency_graph_stats():
+    """Return dependency/co-occurrence graph health and size metrics."""
+    if _risk_scorer is None:
+        return {
+            "status": "disabled",
+            "message": "Dependency risk scorer is not initialized.",
+        }
+
+    return {
+        "status": "ok",
+        **_risk_scorer.stats(),
     }
 
 
@@ -923,6 +1048,9 @@ async def ingest_feedback_event(event: FeedbackEventIn):
         created_at=utc_now_iso(),
     )
     append_feedback_record(record)
+
+    if _risk_scorer is not None:
+        _risk_scorer.refresh_feedback(force=True)
 
     return {
         "status": "ok",

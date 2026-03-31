@@ -1,0 +1,1465 @@
+{
+  "meta": {
+    "oem": "OPPO",
+    "count": 81,
+    "generated_at": "2026-03-31T15:26:06.593714+00:00",
+    "source": "uad-online",
+    "threshold": 0.7,
+    "evidence_summary": {
+      "keyword:coloros": 12,
+      "keyword:heytap": 7,
+      "keyword:nearme": 1,
+      "keyword:oplus": 1,
+      "keyword:oppo": 24,
+      "prefix-match": 81
+    },
+    "source_ref": "https://raw.githubusercontent.com/0x192/universal-android-debloater/main/resources/assets/uad_lists.json"
+  },
+  "packages": [
+    {
+      "id": "com.coloros.activation",
+      "list": "OPPO",
+      "description": "E-warranty card\nLets you check if your registered phone is still under warranty (will send your IMEI to esa-reg-eup.myoppo.com. Has a lot of permissions and run at boot\n\nPithus analysis: https://beta.pithus.org/report/2a1dc5caedd2347fa009563e9b4d1c11b1cb42726f9046151934c456fdd77d88",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.appmanager",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.assistantscreen",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.backuprestore",
+      "list": "OPPO",
+      "description": "Most likely Oppo backup/restore feature",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.childrenspace",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.cloud",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.compass2",
+      "list": "OPPO",
+      "description": "ColorOS default compass app\nKeep in mind that by using this app you give your location to the weather Oppo servers.\nPithus analysis: https://beta.pithus.org/report/9a965f5587fa6ee21c526612f3d72c50ef3cc53679b741260298387c44f5a3dc",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.directui",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.filemanager",
+      "list": "OPPO",
+      "description": "ColorOS File Manager",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.findmyphone",
+      "list": "OPPO",
+      "description": "Find my phone service",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.gamespace",
+      "list": "OPPO",
+      "description": "Game Space\nHub for your Games + some performance optimizations\nhttps://community.coloros.com/thread-9962-1-1.html",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.gamespaceui",
+      "list": "OPPO",
+      "description": "GameSpace\nGaming utility aiming at 'optimizing your gaming experience'. Has a lot of permissions. For instance, it has internet access, will scans all the apps you have on your phones (to find games), can performs Bluetooth scan and has access to the metadata of your media files (e.g the place where you took a picture).",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.healthcheck",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.mcs",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.ocrscanner",
+      "list": "OPPO",
+      "description": "ColorOS Optical character recognition scanner",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.onekeylockscreen",
+      "list": "OPPO",
+      "description": "Lock your phone if you click on the app icon. Completely useless unless your physical power button is damaged.\nThis app still has the permission to list all the apps installed on the phone.\n\nPithus analysis: https://beta.pithus.org/report/ece4088357c0a47dffd96bdc46a7b535d448c1a3619d995f7032df3be6cb0a38",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.oppomultiapp",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.oshare",
+      "list": "OPPO",
+      "description": "Oppo Share\nFile sharing app to transfer data from/to Oppo devices only. Seems to use weak crypto (AES ECB mode) and has weird permissions (such as `READ_CONTACTS`).\nWARNING: removing this app will break the functionality to share photos directly from ColorOS Photos app and break the 'share with' prompt after taking a screenshot.\n\nPithus analysis: https://beta.pithus.org/report/170f4a14be24a2e2135cd956a038aae9e2f78c845f3161b84c5545dbec03fad9",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.phonemanager",
+      "list": "OPPO",
+      "description": "Phone Manager\nProvides so called 'optimization tools' and various security scanning services.\nThese virus scanning services may have privacy implications.\n\nPithus analysis: https://beta.pithus.org/report/6b7d9e117ffb600b852f3785ede4f3773385fc291376e94a061bf7ed787dec48",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.phonenoareainquire",
+      "list": "OPPO",
+      "description": "Number Origin",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.pictorial",
+      "list": "OPPO",
+      "description": "LockscreenMagazine\nRemoval will result in no longer being able to access Lockscreen settings.",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.securepay",
+      "list": "OPPO",
+      "description": "Payment system from Oppo allowing you to pay with your phone\n\nPithus analysis: https://beta.pithus.org/report/65246664d3795a5ac1b402d28456903e1b3bd76176de8298b3ea96c6c592ae9a",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.securitypermission",
+      "list": "OPPO",
+      "description": "Handles app permission management. DO NOT REMOVE THIS",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.smartdrive",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.soundrecorder",
+      "list": "OPPO",
+      "description": "ColorOS Sound Recorder",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.speechassist",
+      "list": "OPPO",
+      "description": "ColorOS Speech Assistant",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.systemclone",
+      "list": "OPPO",
+      "description": "System Cloner\nCreates multiple users on device",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.coloros.video",
+      "list": "OPPO",
+      "description": "Video Player\nDefault Oppo video player with too much permissions (21) for a video player! \nNote: using inbuilt screen recorder you won't be able to open the recorded video from the notification view.\n\nPithus analysis: https://beta.pithus.org/report/4ceb96c23ad0e26ee8eceab293d251f8b1bddaf4a901741ee467e0bb867db6e9",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.wallet",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.weather.service",
+      "list": "OPPO",
+      "description": "colorOS weather service. Removal seems to trigger a bootloop on some phones.\nSee: https://github.com/0x192/universal-android-debloater/issues/211",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.weather2",
+      "list": "OPPO",
+      "description": "ColorOS weather app. Removal seems to trigger a bootloop on some phones. You should try, several users removed this app without any trouble on Oppo/Realme device with Android 11+\nSee: https://github.com/0x192/universal-android-debloater/issues/211",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.coloros.widget.smallweather",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.heytap.accessory",
+      "list": "OPPO",
+      "description": "Accessory Framework\nQuick device connect feature. Can be disabled via hidden setting (Settings -> Search 'App Enhancement Services' -> Quick device connect) if not wanted.\nAllows you to search for nearby devices and connect to them without having to go through the Bluetooth or WiFi Direct settings' Ghosh! 32 permissions just for this?\n\nPithus analysis: https://beta.pithus.org/report/cc0ba95f0d0867ba6d883275cd2f6c4aa252ebc874f15f1ee240bb5bac330578",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.heytap.mcs"
+      ],
+      "neededBy": [
+        "com.oplus.synergy"
+      ],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.heytap.browser",
+      "list": "OPPO",
+      "description": "Oppo Browser\nRebranded HeyTap browser for Oppo. Full of ads and spams you in notifications. You should never use this browser\nHeyTap terrible privacy policy: https://brand.heytap.com/eu/privacy.html",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:heytap",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.cloud",
+      "list": "OPPO",
+      "description": "HeyTap Cloud\nBad privacy policy: https://muc.heytap.com/document/heytap/oversea/privacyPolicy/privacyPolicy_en-US.html\nWhy does the app need `REQUEST_INSTALL_PACKAGES` (can install packages)?\nPithus analysis: https://beta.pithus.org/report/dbf265db47f8632453bb83ef51ea1d921413c02a8d24c989345896de83704a75",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.heytap.mcs"
+      ],
+      "neededBy": [],
+      "labels": [
+        "keyword:heytap",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.habit.analysis",
+      "list": "OPPO",
+      "description": "Most likely used to track your habits from IoT HeyTap devices [TO BE CONFIRMED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:heytap",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.market",
+      "list": "OPPO",
+      "description": "Heytap/Oppo app store.There is no benefit of using this app store and you should not keep a privileged app with as many permissions.\n\nhttps://developers.oppomobile.com/newservice/capability?pagename=app_store\nPithus analysis: https://beta.pithus.org/report/3a2a10af9310411d814fd6dd252adec1ab0c06adf32a675b7534c3edc0e534bf",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.heytap.mcs"
+      ],
+      "neededBy": [],
+      "labels": [
+        "keyword:heytap",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.mcs",
+      "list": "OPPO",
+      "description": "System messages\n. Mobile Cloud Service? Message Controler System?.\nMy understanding is that this packages implements the communication logic of the Heytap services. It provides a MQTT client (and Firebase Cloud Manager for users outside of China) which frequently talks to heytapmobile.com. You can safely remove this package if you don't have a Heytap account.\nRuns constantly in the background\nPithus analysis: https://beta.pithus.org/report/8920395af63782fca8dfce18715a10ca5a2d8236d525208ea347eff8f738731e",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.heytap.cloud",
+        "com.heytap.market",
+        "com.oplus.synergy",
+        "com.heytap.accessory"
+      ],
+      "labels": [
+        "keyword:heytap",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.95
+    },
+    {
+      "id": "com.heytap.music",
+      "list": "OPPO",
+      "description": "Default Oppo Music App with insecure WebView Implementation (execution of user controlled code in WebView is an important security hole.\nHas also weird permissions (QUERY_ALL_PACKAGES and BLUETOOTH ?)\n\nhttps://beta.pithus.org/report/befa0ec0616c553632379f069453b0ca74ee29fd1428b9fce19c1657e6f97d8b",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.pictorial",
+      "list": "OPPO",
+      "description": "Lock Screen Magazine which can display ads depending on your ColorOS version",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.heytap.themestore",
+      "list": "OPPO",
+      "description": "Theme Store with 73 permissions! (including CAMERA, CALL_PHONE, READ_CONTACTS, REQUEST_INSTALL_PACKAGES...) and 2 trackers.\n\nPithus analysis: https://beta.pithus.org/report/e8c4fc2bae420cf5f094ce914f25accdede5152f9d801db6eb32a4020a7726b2",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.heytap.usercenter",
+      "list": "OPPO",
+      "description": "Login service for various HeyTap related services like HeyTap Cloud etc.\nNeeded if you want to join Early Access Testing for new ColorOS/RealmeUI\n\n[APK NEEDED]",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "keyword:heytap",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.nearme.atlas",
+      "list": "OPPO",
+      "description": "Secure payment",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.nearme.browser",
+      "list": "OPPO",
+      "description": "Default web browser",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.nearme.deamon",
+      "list": "OPPO",
+      "description": "Package needed by com.nearme.statistics.rom to run service in background at every boot even though the app has been uninstalled",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.nearme.statistics.rom"
+      ],
+      "labels": [
+        "keyword:nearme",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.nearme.instant.platform",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.nearme.statistics.rom",
+      "list": "OPPO",
+      "description": "User Experience Program\n Collect user data and sends them to Oppo. Intrusive and starts at boot\nSee https://support.oppo.com/uk/answer/?aid=neu105\n\nNote: removing it may break the search feature in the settings on some ColorOS versions.\n\nPithus analysis: https://beta.pithus.org/report/5e06191ac6f8aefd39642f6341ee4897039815f5059dbe093a7bd2fe1e20c038",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:coloros",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.nearme.themestore",
+      "list": "OPPO",
+      "description": "Themes store",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.appplatform",
+      "list": "OPPO",
+      "description": "App Services\nMight be renamed package of com.heytap.appplatform which is related to Oppo's Heytap account services. Provides a RomUpdateService. Probably not safe to remove.\n\nPithus analysis: https://beta.pithus.org/report/2025ceb69d9379a01771de71ff00051eb0f0c7f44226a72c2066db9649b6dcd2",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:heytap",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.athena",
+      "list": "OPPO",
+      "description": "OnePlus background process manager. Removing it will solve the notification delay you can have but will disable the virtual ram expansion feature (swap RAM to disk) and the 'close all' button in the 'recent apps' page.\nRemoving this app may deteriorate battery performance.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.atlas",
+      "list": "OPPO",
+      "description": "Atlas Service\nSeems to be a Sound provider. Performs a lot of actions upon audio related events. Still not clear if it is really necessary. Runs at boot and stay in background. Pithus analysis: https://beta.pithus.org/report/6d0f9433431cd34a8e9aaef99b329b3623118a1699033be36032f64653dab3d0",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.cosa",
+      "list": "OPPO",
+      "description": "App Enhancement Services\nIf enabled, connects to OPPO servers (icosa-service-eu.allawnos.com) every time a new app is installed. Seems to be mostly focused on gaming performance optimisation according to the settings description:\n'[...] a service that optimises phone performance for specific apps and game scenarios. [...] frame rates, battery usage, touch sensitivity, network connection, vibration and gameplay assistance features.'\n\nCan be disabled via hidden setting (Settings -> Search 'App Enhancement Services' -> App Enhancement Services).\nNote: removing this package prevents the OnePlus Game Center to detect games.\n\nPithus analysis: https://beta.pithus.org/report/f55e935357865f4647e59c98afb5a3a46aba22a48844d80d2819d122781e3fde.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.oneplus.gamespace"
+      ],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.crashbox",
+      "list": "OPPO",
+      "description": "Sends system failure data to developers. Automatically runs at boot.\n\nPithus analysis: https://beta.pithus.org/report/6031048af7434e9cfe3435244dd105ac70e3bfe1f25ecdcca9b2a40b356590a2",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.exsystemservice",
+      "list": "OPPO",
+      "description": "[NEED MORE INFO / APK NEEDED] Lots of permissions. The screenshot function will stop working when the app is disabled.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.games",
+      "list": "OPPO",
+      "description": "Games (https://play.google.com/store/apps/details?id=com.oplus.games)\nOccasionally runs in the background as part of the system.\nAllows you to launch your game library, check game stats(such as playtime), activate game overlay features and performance settings to tweak game/battery performance during gaming.\nThis is the only way to access the recording buffer functionality (records the last X seconds into RAM and saves them when you tap save), so keep enabled if you need that or any of the other features.Note: new package name of com.oneplus.gamespace (since the merge between Oppo and OnePlus. Oplus = Oppo+OnePlus",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oplus",
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.kekepay",
+      "list": "OPPO",
+      "description": "Chinese pay service? Safe to remove but no documentation found online\n[APK NEEDED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.lfeh",
+      "list": "OPPO",
+      "description": "Seems to be related to the the logging suite.\n\nPithus analysis: https://beta.pithus.org/report/0542dbdbe10fd3a868ea497ec92670619670f574bbce37d949975dc109cd316f",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.logkit",
+      "list": "OPPO",
+      "description": "Logs service and bug reporting app\nSafe to remove if you don't report bugs to OEM",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.multiapp",
+      "list": "OPPO",
+      "description": "App Cloner. Allows to clone an app. Have access to all installed apps. Is bundled with OnePlus analytics\n\nPithus analysis: https://beta.pithus.org/report/8a1d0783debb405ebadb3fc52507de5f69ecb55f499732b7331dac74ad69ffd7",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.ocar",
+      "list": "OPPO",
+      "description": "Car+\n Related to Oppo's car app [APK NEEDED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.pay",
+      "list": "OPPO",
+      "description": "Secure Payment\nLets you pay with your phone. Privacy issue aside, you should probably not trust their security: https://www.bitdefender.com/blog/hotforsecurity/hackers-attack-oneplus-again-this-time-stealing-customer-details",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.securitykeyboard",
+      "list": "OPPO",
+      "description": "Secure Keyboard\nKeyboard that appears only when typing a password on apps and webpages, if enabled on Keyboard and Input settings",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.sos",
+      "list": "OPPO",
+      "description": "Emergency Alert service by clicking power button 5 times. It will automatically call contacts (and/or send a SMS) you designated as emergency contacts",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.statistics.rom",
+      "list": "OPPO",
+      "description": "User Experience Program\nIntrusive telemetry. Runs at boot and constantly stays in background\n\nPithus analysis: https://beta.pithus.org/report/7720549a5b4bc305a15e19b3e17ba6857a52e6e12db94006677c59f2fad84331",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.stdid",
+      "list": "OPPO",
+      "description": "StdID\nNeeded for tracking battery usage on per app basis. Dependency for GameSpace\n\n [MORE INFO NEEDED / APK NEEDED]",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.oneplus.gamespace",
+        "com.coloros.gamespace"
+      ],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.synergy",
+      "list": "OPPO",
+      "description": "HeySynergy\nProvides the screencasting feature and OPPO's PC Connect (https://connect.oppo.com/). Don't bother downloading 'PC Connect Desktop' if the 'Phone Connect' Quick Settings tile isn't available on your phone.\n\nPithus analysis: https://beta.pithus.org/report/16d9ea536683291fbffe46dedd3c655379b5fcfdb473ec1cab5290cf5af27fba",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.heytap.mcs",
+        "com.heytap.accessory"
+      ],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.wifibackuprestore",
+      "list": "OPPO",
+      "description": "Lets you backup your wifi credentials to the cloud. This app has obviously access to your wifi credential and have the INTERNET permission.\n\nPithus analysis: https://beta.pithus.org/report/76e43cf4dc55452f39d9b6117074f4072189d3c8ad9cb295a86e49438545f7aa",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.fingerprints.fingerprintsensortest",
+      "list": "OPPO",
+      "description": "Fingerprint sensort test",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.freefallingmonitor",
+      "list": "OPPO",
+      "description": "Provides protection for camera slider in the event of a fall. \nBest described here: https://www.gizchina.com/2018/06/20/oppo-find-x-slide-up-camera-has-anti-fall-feature-guarantees-5-years-usage/",
+      "removal": "UNSAFE",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oppo.logkit",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.logkitservice",
+      "list": "OPPO",
+      "description": "Probably same as \"com.oem.oemlogkit\", which is a shady logging package on Oneplus devices.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.market",
+      "list": "OPPO",
+      "description": "Oppo App Market",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oppo.music",
+      "list": "OPPO",
+      "description": "Oppo Music app",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oppo.operationmanual",
+      "list": "OPPO",
+      "description": "Oppo User Manual",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oppo.oppopowermonitor",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.ovoicemanager",
+      "list": "OPPO",
+      "description": "Community OEM candidate for OPPO",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.partnerbrowsercustomizations",
+      "list": "OPPO",
+      "description": "Oppo Bookmarks\nOppo default browser customization. Injects Oppo bookmarks",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oppo.quicksearchbox",
+      "list": "OPPO",
+      "description": "Single swipe from top to bottom search that has lots of Chinese in it",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.securepay",
+      "list": "OPPO",
+      "description": "Payment Protection",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.sos",
+      "list": "OPPO",
+      "description": "Emergency Alert service by clicking power button 5 times. It will automatically call contacts (and/or send a SMS) you designated as emergency contacts",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oppo.webview",
+      "list": "OPPO",
+      "description": "Oppo Webview\nA WebView is a system component for the Android operating system (OS) that allows Android apps to display content \nfrom the web directly inside an application. It's based on Chrome.\nWARNING: Make to have another Webview before uninstalling it or some apps may not work properly\nOn open-source privacy oriented Webview is Bromite (https://www.bromite.org/system_web_view)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oppo",
+        "oppo",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    }
+  ]
+}
