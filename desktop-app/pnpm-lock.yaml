@@ -23,9 +23,6 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
-      nodemailer:
-        specifier: ^7.0.13
-        version: 7.0.13
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -48,9 +45,6 @@ importers:
       '@types/node':
         specifier: ^20.10.6
         version: 20.19.27
-      '@types/nodemailer':
-        specifier: ^7.0.9
-        version: 7.0.9
       '@types/react':
         specifier: ^18.2.46
         version: 18.3.27
@@ -654,9 +648,6 @@ packages:
   '@types/node@20.19.27':
     resolution: {integrity: sha512-N2clP5pJhB2YnZJ3PIHFk5RkygRX5WO/5f0WC08tp0wd+sv0rsJk3MqWn3CbNmT2J505a5336jaQj4ph1AdMug==}
 
-  '@types/nodemailer@7.0.9':
-    resolution: {integrity: sha512-vI8oF1M+8JvQhsId0Pc38BdUP2evenIIys7c7p+9OZXSPOH5c1dyINP1jT8xQ2xPuBUXmIC87s+91IZMDjH8Ow==}
-
   '@types/plist@3.0.5':
     resolution: {integrity: sha512-E6OCaRmAe4WDmWNsL/9RMqdkkzDCY1etutkflWk4c+AcjDU07Pcz1fQwTX0TQz+Pxqn9i4L1TU3UFpjnrcDgxA==}
 
@@ -695,6 +686,7 @@ packages:
   '@xmldom/xmldom@0.8.11':
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -1924,10 +1916,6 @@ packages:
 
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
-
-  nodemailer@7.0.13:
-    resolution: {integrity: sha512-PNDFSJdP+KFgdsG3ZzMXCgquO7I6McjY2vlqILjtJd0hy8wEvtugS9xKRF2NWlPNGxvLCXlTNIae4serI7dinw==}
-    engines: {node: '>=6.0.0'}
 
   nopt@6.0.0:
     resolution: {integrity: sha512-ZwLpbTgdhuZUnZzjd7nb1ZV+4DoiC6/sfiVKok72ym/4Tlf+DFdlHYmT2JPmcNNWV6Pi3SDf1kT+A4r9RTuT9g==}
@@ -3169,10 +3157,6 @@ snapshots:
   '@types/node@20.19.27':
     dependencies:
       undici-types: 6.21.0
-
-  '@types/nodemailer@7.0.9':
-    dependencies:
-      '@types/node': 20.19.27
 
   '@types/plist@3.0.5':
     dependencies:
@@ -4640,8 +4624,6 @@ snapshots:
       - supports-color
 
   node-releases@2.0.27: {}
-
-  nodemailer@7.0.13: {}
 
   nopt@6.0.0:
     dependencies:
