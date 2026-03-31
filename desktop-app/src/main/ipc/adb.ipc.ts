@@ -10,6 +10,7 @@ import * as backupService from "../services/backupService";
 import * as packageDataService from "../services/packageDataService";
 import * as fdroidService from "../services/fdroidService";
 import * as telemetryService from "../services/telemetryService";
+import * as modelFeedbackService from "../services/modelFeedbackService";
 
 // Cache for device information to use in logging
 const deviceInfoCache: Map<string, { model: string; brand: string }> =
@@ -52,6 +53,15 @@ function recordTelemetryForAction(input: {
       localInfo.modelConfidence >= 0.8,
     removalType: localInfo?.removal,
     category: localInfo?.category,
+  });
+
+  modelFeedbackService.uploadActionFeedback({
+    packageName: input.packageName,
+    action: input.action,
+    success: input.success,
+    modelLabel: localInfo?.modelLabel,
+    modelConfidence: localInfo?.modelConfidence,
+    deviceBrand: deviceInfo.brand,
   });
 }
 

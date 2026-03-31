@@ -24,3 +24,7 @@ model-api/models/*.onnx
 model-api/processed/*.tmp
 model-api/processed/*.cache
 model-api/processed/*.bak
+
+
+/docs
+docs
