@@ -1,108 +1,91 @@
-# De-Droid - Universal Android Debloater
+# De-Droid
 
-A comprehensive cross-platform application for removing bloatware and managing packages on non-rooted Android devices. Built with Electron, React, TypeScript frontend and FastAPI backend, featuring wireless pairing, advanced backup management, and detailed package information.
+De-Droid is a desktop app that helps you remove Android bloatware safely on non-rooted devices.
 
+It uses local ADB commands for real actions, and an optional ML safety model for smarter guidance.
 
----
+## What it can do
 
-## 🏗️ Architecture
+- Connect to Android phones over USB or wireless ADB.
+- Scan installed packages and show current state.
+- Uninstall, disable, enable, and restore packages.
+- Show package safety labels with confidence (`RECOMMENDED`, `ADVANCED`, `EXPERT`, `UNSAFE`).
+- Block dangerous removals with safety gates.
+- Save backup snapshots and compare before/after changes.
+- Keep history and telemetry logs locally.
+- Show open-source alternatives for many apps.
+- Show device health and package permission details.
 
-**New Hybrid Architecture (v2.0)**: Local ADB Execution + Remote Intelligence
+## New architecture (model-first, local execution)
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           CLIENT LAYER (Electron)                            │
-│                      React + TypeScript + Local ADB                          │
-│                                                                               │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                    LOCAL ADB EXECUTION ENGINE                          │  │
-│  │  • Runs adb shell pm list packages locally (Node.js child_process)    │  │
-│  │  • Executes uninstall/restore/disable/enable commands instantly       │  │
-│  │  • Device detection and management (no network latency)               │  │
-│  │  • Works OFFLINE - ADB commands execute without server connection     │  │
-│  └───────────────────────────┬───────────────────────────────────────────┘  │
-│                              │                                                │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │  Dashboard   │  │   Device     │  │   Package    │  │   Backup &   │    │
-│  │  & Status    │  │   Manager    │  │   Manager    │  │   Restore    │    │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘    │
-│         │                 │                 │                 │             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │    Login &   │  │  Wireless    │  │   Settings   │  │   History    │    │
-│  │   Register   │  │   Pairing    │  │   & Prefs    │  │   & Logs     │    │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘    │
-│         └────────────────┬─────────────────┬────────────────┬──────────┘    │
-│                    IPC Communication                                         │
-└────────────────────────┬────────────────────────────────────────────────────┘
-                         │
-                    HTTP/REST (Optional)
-                         │
-       ┌─────────────────┴──────────────────┐
-       │                                    │
-       ▼                                    ▼
-┌──────────────────────────────────┐  ┌──────────────────────────────────┐
-│   INTELLIGENCE LAYER             │  │   DATA LAYER                     │
-│   (Python FastAPI)               │  │   (SQLite/PostgreSQL)            │
-│   Port: 8000 (Optional)          │  │                                  │
-│                                  │  │  ┌──────────────────────────┐   │
-│  ┌────────────────────────────┐  │  │  │  Users & Sessions        │   │
-│  │  Authentication & JWT      │  │  │  ├──────────────────────────┤   │
-│  ├────────────────────────────┤  │  │  │  Package Safety Database │   │
-│  │  Package Safety Checker    │  │  │  │  - Red (Critical/Unsafe) │   │
-│  │  - Accepts package list    │  │  │  │  - Yellow (Caution)      │   │
-│  │  - Returns safety ratings  │  │  │  │  - Green (Safe)          │   │
-│  │  - Red/Yellow/Green flags  │  │  │  ├──────────────────────────┤   │
-│  ├────────────────────────────┤  │  │  │  Action History & Logs   │   │
-│  │  Debloat Database Lookup   │  │  │  ├──────────────────────────┤   │
-│  │  - Package descriptions    │  │  │  │  Package Metadata        │   │
-│  │  - Community ratings       │  │  │  ├──────────────────────────┤   │
-│  │  - Alternative suggestions │  │  │  │  Backup Snapshots        │   │
-│  ├────────────────────────────┤  │  │  └──────────────────────────┘   │
-│  │  Event Logging Service     │  │  │                                  │
-│  │  - Receives action logs    │  │  │                                  │
-│  │  - Tracks user operations  │  │  │                                  │
-│  │  - Audit trail             │  │  │                                  │
-│  └────────────────────────────┘  │  │                                  │
-│                                  │  │                                  │
-└──────────────────────────────────┘  └──────────────────────────────────┘
+De-Droid follows a local-first architecture:
 
-                 ↓ NO SERVER NEEDED ↓
-                      
-           ┌────────────────────────┐
-           │  Android Device        │
-           │  (USB or Wireless)     │
-           │  ← Direct ADB Commands │
-           └────────────────────────┘
+- **Local execution (Electron main process):** runs ADB commands directly on your machine.
+- **Optional intelligence layer (FastAPI):** provides model-based safety scoring and explanations.
+- **Local data layer (JSON + SQLite):** stores package metadata, predictions, backups, history, and settings.
+
+Full details are in `ARCHITECTURE.md`.
+
+## Repository structure
+
+```text
+de-droid/
+  desktop-app/          # Electron + React + TypeScript app
+  model-api/            # ML training pipeline + FastAPI service
+  ARCHITECTURE.md       # High-level system architecture
+  LICENSE               # Open-source license
+  README.md
 ```
 
-### Key Architecture Improvements
+## Quick start
 
-**1. Local ADB Execution (Muscle)**
-- ✅ Electron runs `adb shell pm list packages` locally using Node.js
-- ✅ Gets raw list of 200+ packages instantly
-- ✅ Executes uninstall/restore commands without server round-trip
-- ✅ **Works offline** - No internet required for ADB operations
+### Requirements
 
-**2. Python as Intelligence Layer (Brain)**
-- ✅ Receives package list from Electron
-- ✅ Checks safety database for each package
-- ✅ Returns:
-  - 🔴 **Red (Critical)**: DO NOT REMOVE - Will brick your phone
-  - 🟡 **Yellow (Caution)**: Proceed with caution
-  - 🟢 **Green (Safe)**: Safe to remove
-- ✅ Provides package descriptions and alternative apps
+- Node.js 18+
+- pnpm
+- Python 3.11+
+- ADB in PATH
 
-**3. Smart Uninstall Flow**
-1. User clicks "Uninstall" on package (e.g., Facebook)
-2. Electron checks safety metadata from previous API call
-3. If **Red**: Block action → "This will brick your phone"
-4. If **Yellow**: Show warning → User confirms
-5. If **Green**: Proceed immediately
-6. Electron executes `adb shell pm uninstall -k --user 0 com.facebook` locally
-7. On success, sends log event to Python backend (non-blocking)
+### Run desktop app
 
-**4. Offline Support**
-- ADB commands work even if Python server is down
-- Safety checks return "Unknown" in offline mode
-- User can still uninstall with caution
-- Event logging queued and sent when connection restored
+```bash
+cd desktop-app
+pnpm install
+pnpm run dev
+```
+
+### Run model API (optional)
+
+```bash
+python -m venv model-api/env
+source model-api/env/bin/activate
+pip install -r model-api/requirements.txt
+uvicorn main:app --app-dir model-api/model-api --host 0.0.0.0 --port 8000 --reload
+```
+
+### Train and export model predictions (optional)
+
+```bash
+python model-api/scripts/build_training_dataset.py
+python model-api/scripts/train_safety_model.py --predictions-out-desktop desktop-app/src/data/safety_predictions.json
+```
+
+## Safety labels
+
+- `RECOMMENDED`: usually safe to remove for most users.
+- `ADVANCED`: can be removed, but check your use case first.
+- `EXPERT`: can affect system features; remove only if you understand the impact.
+- `UNSAFE`: do not remove.
+
+## Model API endpoints
+
+- `GET /health`
+- `POST /api/check-packages`
+- `POST /api/check-single`
+- `GET /api/stats`
+- `GET /api/critical-packages`
+- `GET /api/search/{query}`
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE`.
