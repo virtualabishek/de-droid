@@ -8,12 +8,22 @@ from __future__ import annotations
 
 import json
 import re
+import sys
+from collections import Counter
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
+from uuid import uuid4
 
 import joblib
 import numpy as np
 from scipy.sparse import hstack
+
+CURRENT_DIR = Path(__file__).resolve().parent
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.append(str(CURRENT_DIR))
+
+from risk_graph import DependencyRiskScorer
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,6 +54,13 @@ app.add_middleware(
 MODEL_DIR = Path(__file__).resolve().parent / "models"
 PREDICTIONS_PATH = MODEL_DIR / "safety_predictions.json"
 MODEL_PATH = MODEL_DIR / "safety_baseline.joblib"
+PROJECT_MODEL_API_DIR = Path(__file__).resolve().parent.parent
+FEEDBACK_DIR = PROJECT_MODEL_API_DIR / "feedback"
+FEEDBACK_EVENTS_PATH = FEEDBACK_DIR / "events.jsonl"
+FEEDBACK_VARIANTS_PATH = PROJECT_MODEL_API_DIR / "raw-data" / "variants_user_feedback.json"
+TRAINING_DATASET_PATH = PROJECT_MODEL_API_DIR / "processed" / "training_dataset.json"
+COOCCURRENCE_STATE_PATH = PROJECT_MODEL_API_DIR / "processed" / "cooccurrence_graph_state.json"
+PACKAGE_ID_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)+$")
 
 # Fallback to parent model-api dir
 if not MODEL_PATH.exists():
@@ -55,6 +72,7 @@ if not PREDICTIONS_PATH.exists():
 _predictions_cache: dict[str, Any] = {}
 _model_artifact: dict[str, Any] | None = None
 _model_version: str = "unknown"
+_risk_scorer: DependencyRiskScorer | None = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -139,10 +157,22 @@ COHORT_PREFIXES: dict[str, tuple[str, ...]] = {
     "XIAOMI": ("com.xiaomi.", "com.miui.", "com.mi.", "com.redmi."),
     "ONEPLUS": ("com.oneplus.", "net.oneplus.", "cn.oneplus."),
     "HUAWEI": ("com.huawei.", "com.hicloud.", "com.hisi."),
-    "OPPO": ("com.oppo.", "com.coloros.", "com.heytap."),
+    "OPPO": ("com.oppo.", "com.coloros.", "com.heytap.", "com.oplus.", "com.nearme."),
+    "REALME": ("com.realme.", "com.oplus.", "com.nearme.", "com.heytap.", "com.coloros."),
     "VIVO": ("com.vivo.", "com.bbk.", "com.iqoo."),
+    "INFINIX": ("com.infinix.", "com.transsion.", "com.xos.", "com.xclub."),
+    "TECNO": ("com.tecno.", "com.transsion.", "com.hios."),
+    "ITEL": ("com.itel.", "com.transsion.", "com.palmstore."),
     "GOOGLE": ("com.google.",),
     "ANDROID": ("com.android.",),
+}
+
+CANONICAL_LABELS = ("RECOMMENDED", "ADVANCED", "EXPERT", "UNSAFE")
+RISK_ORDER = {
+    "RECOMMENDED": 0,
+    "ADVANCED": 1,
+    "EXPERT": 2,
+    "UNSAFE": 3,
 }
 
 
@@ -171,6 +201,8 @@ class PackageSafety(BaseModel):
     safety_gate: list[str] | None = None
     oem_cohort: str | None = None
     is_bloatware: bool = False
+    graph_risk_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    graph_risk_reasons: list[str] | None = None
 
 
 class PackageCheckResponse(BaseModel):
@@ -185,6 +217,110 @@ class HealthResponse(BaseModel):
     model_version: str
     predictions_loaded: int
     model_loaded: bool
+    graph_enabled: bool
+    graph_observed_pairs: int
+
+
+FeedbackAction = Literal["UNINSTALL", "DISABLE", "RESTORE", "ENABLE", "UNDO"]
+FeedbackOutcome = Literal["SUCCESS", "FAILURE"]
+
+
+class FeedbackEventIn(BaseModel):
+    package_id: str = Field(
+        ...,
+        description="Android package ID",
+        min_length=3,
+        max_length=255,
+    )
+    action: FeedbackAction = Field(
+        ...,
+        description="User action done in app",
+    )
+    outcome: FeedbackOutcome = Field(
+        ...,
+        description="Result of that action",
+    )
+    model_label: str | None = Field(
+        None,
+        description="Model label shown when action was made",
+    )
+    model_confidence: float | None = Field(
+        None,
+        ge=0.0,
+        le=1.0,
+        description="Model confidence shown when action was made",
+    )
+    device_brand: str | None = Field(
+        None,
+        max_length=64,
+        description="Optional device brand",
+    )
+    app_version: str | None = Field(
+        None,
+        max_length=64,
+        description="Optional app version for traceability",
+    )
+    notes: str | None = Field(
+        None,
+        max_length=300,
+        description="Optional short notes",
+    )
+
+
+class FeedbackRecord(BaseModel):
+    id: str
+    package_id: str
+    action: FeedbackAction
+    outcome: FeedbackOutcome
+    model_label: str | None = None
+    model_confidence: float | None = None
+    device_brand: str | None = None
+    app_version: str | None = None
+    notes: str | None = None
+    created_at: str
+
+
+class FeedbackSummaryResponse(BaseModel):
+    total_events: int
+    window_days: int
+    by_action: dict[str, int]
+    by_outcome: dict[str, int]
+    top_packages: list[dict[str, Any]]
+
+
+class LabelProposal(BaseModel):
+    package_id: str
+    current_label: str | None = None
+    proposed_label: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    reasons: list[str]
+    sample_size: int
+    source: str = "user_feedback"
+
+
+class RetrainSignalsResponse(BaseModel):
+    generated_at: str
+    min_events: int
+    proposed_rows_count: int
+    proposals: list[LabelProposal]
+
+
+class RetrainExportResponse(BaseModel):
+    generated_at: str
+    output_path: str
+    package_count: int
+
+
+# Resolve forward references for dynamic import contexts.
+for _model in (
+    PackageSafety,
+    PackageCheckResponse,
+    FeedbackSummaryResponse,
+    LabelProposal,
+    RetrainSignalsResponse,
+    RetrainExportResponse,
+):
+    _model.model_rebuild()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -226,6 +362,31 @@ def apply_safety_gates(
         return "ADVANCED", confidence, gate_reasons
 
     return predicted_label, confidence, gate_reasons
+
+
+def apply_graph_risk_gate(
+    current_label: str,
+    current_confidence: float,
+    graph_risk_score: float,
+) -> tuple[str, float, list[str]]:
+    """Upgrade risk labels when graph evidence suggests removal breakage risk."""
+    if graph_risk_score >= 0.88:
+        target_label = "UNSAFE"
+        gate_reason = "graph_breakage_cluster_high"
+    elif graph_risk_score >= 0.72:
+        target_label = "EXPERT"
+        gate_reason = "graph_dependency_risk_high"
+    elif graph_risk_score >= 0.55:
+        target_label = "ADVANCED"
+        gate_reason = "graph_cooccurrence_risk"
+    else:
+        return current_label, current_confidence, []
+
+    if RISK_ORDER.get(target_label, 0) <= RISK_ORDER.get(current_label, 0):
+        return current_label, current_confidence, []
+
+    upgraded_confidence = max(current_confidence, min(0.99, graph_risk_score))
+    return target_label, upgraded_confidence, [gate_reason]
 
 
 def is_likely_bloatware(package_id: str) -> bool:
@@ -321,13 +482,296 @@ def classify_unknown_package(package_id: str) -> PackageSafety:
     )
 
 
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def normalize_package_id(value: str) -> str:
+    package_id = value.strip()
+    if package_id.startswith("package:"):
+        package_id = package_id[8:]
+    package_id = package_id.lower().strip()
+
+    if not package_id:
+        raise HTTPException(status_code=422, detail="package_id must not be empty")
+
+    if not PACKAGE_ID_PATTERN.match(package_id):
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Invalid package_id format. Expected Android package ID "
+                "like 'com.vendor.app'."
+            ),
+        )
+
+    return package_id
+
+
+def normalize_label(value: str | None) -> str | None:
+    if value is None:
+        return None
+    normalized = value.strip().upper()
+    return normalized if normalized in CANONICAL_LABELS else None
+
+
+def parse_iso_datetime(value: str) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+
+    return parsed.astimezone(timezone.utc)
+
+
+def ensure_feedback_dir() -> None:
+    FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def append_feedback_record(record: FeedbackRecord) -> None:
+    ensure_feedback_dir()
+    with FEEDBACK_EVENTS_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(record.model_dump(), ensure_ascii=False) + "\n")
+
+
+def load_feedback_records(window_days: int | None = None) -> list[FeedbackRecord]:
+    if not FEEDBACK_EVENTS_PATH.exists():
+        return []
+
+    cutoff: datetime | None = None
+    if window_days is not None:
+        safe_days = max(1, min(window_days, 3650))
+        cutoff = datetime.now(timezone.utc) - timedelta(days=safe_days)
+
+    records: list[FeedbackRecord] = []
+
+    with FEEDBACK_EVENTS_PATH.open("r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line:
+                continue
+
+            try:
+                payload = json.loads(line)
+                event = FeedbackRecord.model_validate(payload)
+            except Exception:
+                continue
+
+            if cutoff is not None:
+                created_at = parse_iso_datetime(event.created_at)
+                if created_at is None or created_at < cutoff:
+                    continue
+
+            records.append(event)
+
+    return records
+
+
+def feedback_signal(event: FeedbackRecord) -> tuple[float, float]:
+    safe_signal = 0.0
+    unsafe_signal = 0.0
+
+    if event.action in ("UNINSTALL", "DISABLE"):
+        if event.outcome == "SUCCESS":
+            safe_signal += 1.0
+        else:
+            unsafe_signal += 1.0
+    elif event.action in ("RESTORE", "ENABLE", "UNDO"):
+        if event.outcome == "SUCCESS":
+            unsafe_signal += 1.0
+
+    return safe_signal, unsafe_signal
+
+
+def infer_feedback_label(
+    safe_signal: float,
+    unsafe_signal: float,
+    sample_size: int,
+) -> tuple[str, float, list[str]]:
+    total_signal = safe_signal + unsafe_signal
+    if total_signal <= 0:
+        return "ADVANCED", 0.5, ["insufficient_direct_signals"]
+
+    safe_rate = safe_signal / total_signal
+    unsafe_rate = unsafe_signal / total_signal
+
+    reasons = [
+        f"safe_signal_rate={safe_rate:.2f}",
+        f"unsafe_signal_rate={unsafe_rate:.2f}",
+    ]
+
+    if unsafe_rate >= 0.70:
+        confidence = min(0.98, 0.55 + unsafe_rate * 0.4)
+        reasons.append("rollback_or_failed_removal_dominant")
+        return "UNSAFE", confidence, reasons
+
+    if safe_rate >= 0.85 and sample_size >= 5:
+        confidence = min(0.97, 0.5 + safe_rate * 0.4)
+        reasons.append("successful_removal_dominant")
+        return "RECOMMENDED", confidence, reasons
+
+    if safe_rate >= 0.60:
+        confidence = min(0.90, 0.45 + safe_rate * 0.35)
+        reasons.append("mixed_feedback_but_safe_leaning")
+        return "ADVANCED", confidence, reasons
+
+    confidence = min(0.88, 0.45 + unsafe_rate * 0.25)
+    reasons.append("mixed_or_uncertain_feedback")
+    return "EXPERT", confidence, reasons
+
+
+def get_current_label(package_id: str) -> str | None:
+    raw = (_predictions_cache.get(package_id) or {}).get("label")
+    if not isinstance(raw, str):
+        return None
+    return normalize_label(raw)
+
+
+def build_feedback_proposals(
+    *,
+    window_days: int,
+    min_events: int,
+    include_same: bool,
+) -> list[LabelProposal]:
+    safe_days = max(1, min(window_days, 3650))
+    safe_min_events = max(1, min(min_events, 200))
+
+    records = load_feedback_records(window_days=safe_days)
+    aggregates: dict[str, dict[str, Any]] = {}
+
+    for event in records:
+        package_id = event.package_id
+        aggregate = aggregates.setdefault(
+            package_id,
+            {
+                "events": 0,
+                "safe_signal": 0.0,
+                "unsafe_signal": 0.0,
+                "actions": Counter(),
+                "outcomes": Counter(),
+            },
+        )
+
+        safe_signal, unsafe_signal = feedback_signal(event)
+        aggregate["events"] += 1
+        aggregate["safe_signal"] += safe_signal
+        aggregate["unsafe_signal"] += unsafe_signal
+        aggregate["actions"][event.action] += 1
+        aggregate["outcomes"][event.outcome] += 1
+
+    proposals: list[LabelProposal] = []
+
+    for package_id, aggregate in aggregates.items():
+        sample_size = int(aggregate["events"])
+        if sample_size < safe_min_events:
+            continue
+
+        proposed_label, confidence, reasons = infer_feedback_label(
+            safe_signal=float(aggregate["safe_signal"]),
+            unsafe_signal=float(aggregate["unsafe_signal"]),
+            sample_size=sample_size,
+        )
+
+        if package_id in CRITICAL_SYSTEM_PACKAGES:
+            proposed_label = "UNSAFE"
+            confidence = 1.0
+            reasons = [
+                "critical_system_denylist",
+                *reasons,
+            ]
+
+        current_label = get_current_label(package_id)
+        if not include_same and current_label == proposed_label:
+            continue
+
+        top_action = aggregate["actions"].most_common(1)
+        top_action_value = top_action[0][0] if top_action else "UNKNOWN"
+
+        reasons = [
+            f"events={sample_size}",
+            f"safe_signals={int(aggregate['safe_signal'])}",
+            f"unsafe_signals={int(aggregate['unsafe_signal'])}",
+            f"top_action={top_action_value}",
+            *reasons,
+        ]
+
+        proposals.append(
+            LabelProposal(
+                package_id=package_id,
+                current_label=current_label,
+                proposed_label=proposed_label,
+                confidence=round(confidence, 6),
+                reasons=reasons,
+                sample_size=sample_size,
+            )
+        )
+
+    proposals.sort(
+        key=lambda p: (-p.confidence, -p.sample_size, p.package_id),
+    )
+    return proposals
+
+
+def feedback_proposal_to_variant_row(proposal: LabelProposal) -> dict[str, Any]:
+    oem = detect_oem_cohort(proposal.package_id) or "UNKNOWN"
+
+    if proposal.proposed_label in ("RECOMMENDED", "ADVANCED"):
+        category = "BLOATWARE"
+    elif proposal.proposed_label == "UNSAFE":
+        category = "ESSENTIAL"
+    else:
+        category = "OPTIONAL"
+
+    labels = [
+        "user-feedback",
+        f"proposed:{proposal.proposed_label.lower()}",
+        f"sample-size:{proposal.sample_size}",
+    ]
+
+    return {
+        "id": proposal.package_id,
+        "list": oem,
+        "description": "Learned from De-Droid user action feedback",
+        "removal": proposal.proposed_label,
+        "category": category,
+        "dependencies": [],
+        "neededBy": [],
+        "labels": labels,
+        "alternatives": [],
+        "source": "variant:user_feedback",
+    }
+
+
+def resolve_feedback_export_path(out_path: str | None) -> Path:
+    if not out_path:
+        return FEEDBACK_VARIANTS_PATH
+
+    requested = Path(out_path)
+    resolved = (
+        requested.resolve()
+        if requested.is_absolute()
+        else (PROJECT_MODEL_API_DIR.parent / requested).resolve()
+    )
+
+    allowed_root = PROJECT_MODEL_API_DIR.resolve()
+    if not (resolved == allowed_root or allowed_root in resolved.parents):
+        raise HTTPException(
+            status_code=400,
+            detail=f"out_path must be inside {allowed_root}",
+        )
+
+    return resolved
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Startup
 # ─────────────────────────────────────────────────────────────────────────────
 
 @app.on_event("startup")
 async def load_models():
-    global _predictions_cache, _model_artifact, _model_version
+    global _predictions_cache, _model_artifact, _model_version, _risk_scorer
     
     # Load precomputed predictions
     if PREDICTIONS_PATH.exists():
@@ -349,6 +793,27 @@ async def load_models():
     else:
         print(f"⚠️ No model file found at {MODEL_PATH}")
 
+    # Load graph-based runtime scorer (dependency + co-occurrence + breakage history)
+    if TRAINING_DATASET_PATH.exists():
+        try:
+            _risk_scorer = DependencyRiskScorer(
+                dataset_path=TRAINING_DATASET_PATH,
+                state_path=COOCCURRENCE_STATE_PATH,
+                feedback_events_path=FEEDBACK_EVENTS_PATH,
+                critical_packages=CRITICAL_SYSTEM_PACKAGES,
+            )
+            _risk_scorer.initialize()
+            graph_stats = _risk_scorer.stats()
+            print(
+                "✅ Loaded dependency risk scorer "
+                f"(nodes={graph_stats['known_packages']}, pairs={graph_stats['observed_pairs']})"
+            )
+        except Exception as e:
+            _risk_scorer = None
+            print(f"⚠️ Could not initialize dependency risk scorer: {e}")
+    else:
+        print(f"⚠️ No training dataset found for dependency graph at {TRAINING_DATASET_PATH}")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # API Endpoints
@@ -357,11 +822,14 @@ async def load_models():
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
     """Health check endpoint."""
+    graph_stats = _risk_scorer.stats() if _risk_scorer is not None else {"observed_pairs": 0}
     return HealthResponse(
         status="ok",
         model_version=_model_version,
         predictions_loaded=len(_predictions_cache),
         model_loaded=_model_artifact is not None,
+        graph_enabled=_risk_scorer is not None,
+        graph_observed_pairs=int(graph_stats.get("observed_pairs", 0)),
     )
 
 
@@ -375,11 +843,14 @@ async def check_packages(request: PackageCheckRequest):
     """
     # Clean package IDs (strip "package:" prefix if present)
     cleaned = []
+    seen: set[str] = set()
     for pkg in request.packages:
         clean = pkg.strip()
         if clean.startswith("package:"):
             clean = clean[8:]
-        if clean:
+        clean = clean.lower()
+        if clean and clean not in seen:
+            seen.add(clean)
             cleaned.append(clean)
     
     if not cleaned:
@@ -392,6 +863,10 @@ async def check_packages(request: PackageCheckRequest):
         "EXPERT": 0,
         "UNSAFE": 0,
     }
+
+    package_set = set(cleaned)
+    if _risk_scorer is not None:
+        _risk_scorer.ingest_snapshot(cleaned)
     
     for pkg_id in cleaned:
         # Check precomputed predictions first
@@ -420,6 +895,30 @@ async def check_packages(request: PackageCheckRequest):
         else:
             # Unknown package → use heuristic classifier
             entry = classify_unknown_package(pkg_id)
+
+        if _risk_scorer is not None:
+            graph_score, graph_reasons = _risk_scorer.score(
+                pkg_id,
+                package_set,
+                predicted_label=entry.label,
+                label_lookup=get_current_label,
+            )
+            entry.graph_risk_score = graph_score
+
+            if graph_reasons:
+                entry.graph_risk_reasons = graph_reasons
+                entry.top_factors = [*(entry.top_factors or []), *graph_reasons[:2]][:6]
+
+            graph_label, graph_confidence, graph_gates = apply_graph_risk_gate(
+                entry.label,
+                entry.confidence,
+                graph_score,
+            )
+            if graph_gates:
+                entry.label = graph_label
+                entry.confidence = graph_confidence
+                merged_gates = [*(entry.safety_gate or []), *graph_gates]
+                entry.safety_gate = list(dict.fromkeys(merged_gates))
         
         summary[entry.label] = summary.get(entry.label, 0) + 1
         results.append(entry)
@@ -474,6 +973,21 @@ async def model_stats():
     }
 
 
+@app.get("/api/graph/stats")
+async def dependency_graph_stats():
+    """Return dependency/co-occurrence graph health and size metrics."""
+    if _risk_scorer is None:
+        return {
+            "status": "disabled",
+            "message": "Dependency risk scorer is not initialized.",
+        }
+
+    return {
+        "status": "ok",
+        **_risk_scorer.stats(),
+    }
+
+
 @app.get("/api/critical-packages")
 async def get_critical_packages():
     """Return the list of critical system packages that should never be removed."""
@@ -506,4 +1020,166 @@ async def search_packages(query: str):
         "query": query,
         "total_matches": len(matches),
         "results": matches[:100],  # Cap at 100
+    }
+
+
+@app.post("/api/feedback/events")
+async def ingest_feedback_event(event: FeedbackEventIn):
+    """
+    Record a user action outcome for future model retraining.
+
+    This endpoint is designed for app-side telemetry ingestion where
+    package uninstall/disable/restore outcomes can be transformed into
+    weak supervision signals.
+    """
+    normalized_package_id = normalize_package_id(event.package_id)
+    normalized_label = normalize_label(event.model_label)
+
+    record = FeedbackRecord(
+        id=f"fbk_{uuid4().hex}",
+        package_id=normalized_package_id,
+        action=event.action,
+        outcome=event.outcome,
+        model_label=normalized_label,
+        model_confidence=event.model_confidence,
+        device_brand=event.device_brand.strip().upper() if event.device_brand else None,
+        app_version=event.app_version,
+        notes=event.notes,
+        created_at=utc_now_iso(),
+    )
+    append_feedback_record(record)
+
+    if _risk_scorer is not None:
+        _risk_scorer.refresh_feedback(force=True)
+
+    return {
+        "status": "ok",
+        "message": "feedback event recorded",
+        "event_id": record.id,
+        "recorded_at": record.created_at,
+    }
+
+
+@app.get("/api/feedback/summary", response_model=FeedbackSummaryResponse)
+async def feedback_summary(days: int = 30, top: int = 20):
+    """Return aggregate stats for feedback events."""
+    window_days = max(1, min(days, 3650))
+    top_k = max(1, min(top, 200))
+
+    records = load_feedback_records(window_days=window_days)
+    by_action = Counter(record.action for record in records)
+    by_outcome = Counter(record.outcome for record in records)
+    by_package = Counter(record.package_id for record in records)
+
+    top_packages = [
+        {"package_id": package_id, "events": count}
+        for package_id, count in by_package.most_common(top_k)
+    ]
+
+    return FeedbackSummaryResponse(
+        total_events=len(records),
+        window_days=window_days,
+        by_action=dict(by_action),
+        by_outcome=dict(by_outcome),
+        top_packages=top_packages,
+    )
+
+
+@app.get("/api/retrain/signals", response_model=RetrainSignalsResponse)
+async def retrain_signals(
+    days: int = 90,
+    min_events: int = 3,
+    include_same: bool = False,
+    limit: int = 500,
+):
+    """
+    Build candidate package-label updates from user feedback events.
+
+    This does not retrain the model itself; it generates reviewable
+    label proposals that can be merged into the dataset pipeline.
+    """
+    proposals = build_feedback_proposals(
+        window_days=days,
+        min_events=min_events,
+        include_same=include_same,
+    )
+    safe_limit = max(1, min(limit, 5000))
+    trimmed = proposals[:safe_limit]
+
+    return RetrainSignalsResponse(
+        generated_at=utc_now_iso(),
+        min_events=max(1, min(min_events, 200)),
+        proposed_rows_count=len(trimmed),
+        proposals=trimmed,
+    )
+
+
+@app.post("/api/retrain/export-variant", response_model=RetrainExportResponse)
+async def retrain_export_variant(
+    days: int = 90,
+    min_events: int = 3,
+    include_same: bool = False,
+    out_path: str | None = None,
+):
+    """
+    Export feedback-driven proposals as a variant dataset JSON.
+
+    Output can be consumed by:
+      `build_training_dataset.py --variants <generated_file>`
+    """
+    proposals = build_feedback_proposals(
+        window_days=days,
+        min_events=min_events,
+        include_same=include_same,
+    )
+
+    output_path = resolve_feedback_export_path(out_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    payload = {
+        "meta": {
+            "source": "user_feedback",
+            "generated_at": utc_now_iso(),
+            "window_days": max(1, min(days, 3650)),
+            "min_events": max(1, min(min_events, 200)),
+            "count": len(proposals),
+        },
+        "packages": [feedback_proposal_to_variant_row(proposal) for proposal in proposals],
+    }
+
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+    return RetrainExportResponse(
+        generated_at=payload["meta"]["generated_at"],
+        output_path=str(output_path),
+        package_count=len(proposals),
+    )
+
+
+@app.get("/api/retrain/commands")
+async def retrain_commands(
+    variant_path: str | None = None,
+):
+    """Return helper shell commands for feedback-based retraining."""
+    resolved_path = resolve_feedback_export_path(variant_path)
+    rel_path = resolved_path.relative_to(PROJECT_MODEL_API_DIR.parent)
+
+    return {
+        "variant_file": str(rel_path),
+        "commands": {
+            "build_dataset": (
+                "python3 model-api/scripts/build_training_dataset.py "
+                f"--variants model-api/raw-data/variants_samsung.json model-api/raw-data/variants_redmi.json {rel_path}"
+            ),
+            "train_model": (
+                "python3 model-api/scripts/train_safety_model.py "
+                "--dataset model-api/processed/training_dataset.json"
+            ),
+            "run_api": (
+                "python3 -m uvicorn main:app --app-dir model-api/model-api "
+                "--host 0.0.0.0 --port 8000 --reload"
+            ),
+        },
+        "note": "Run commands from repository root.",
     }

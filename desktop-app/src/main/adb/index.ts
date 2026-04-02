@@ -62,6 +62,33 @@ export interface DeviceHealthSnapshot {
   errors: string[];
 }
 
+export type BackgroundRestrictionMode = "restrict" | "relax";
+
+export interface BackgroundRestrictionStatus {
+  packageName: string;
+  userId: number;
+  packageUid: number | null;
+  standbyBucket: string | null;
+  runInBackgroundMode: string | null;
+  runAnyInBackgroundMode: string | null;
+  wakeLockMode: string | null;
+  networkRestricted: boolean | null;
+  controlsActive: string[];
+  warnings: string[];
+}
+
+export interface BackgroundOptimizationResult {
+  success: boolean;
+  packageName: string;
+  mode: BackgroundRestrictionMode;
+  userId: number;
+  message: string;
+  appliedSteps: string[];
+  failedSteps: string[];
+  warnings: string[];
+  status: BackgroundRestrictionStatus;
+}
+
 function parseInteger(text: string, regex: RegExp): number | undefined {
   const value = text.match(regex)?.[1]?.replace(/,/g, "");
   if (!value) return undefined;
@@ -211,6 +238,245 @@ async function executeAdb(
       error: error.stderr?.trim() || error.message || "Unknown error",
     };
   }
+}
+
+function runShellCommand(
+  deviceId: string,
+  shellCommand: string,
+  timeout = 30000,
+): Promise<AdbCommandResult> {
+  return executeAdb(`-s ${deviceId} shell ${shellCommand}`, timeout);
+}
+
+function isUnsupportedCommandError(text?: string): boolean {
+  const value = (text || "").toLowerCase();
+  if (!value) return false;
+  return (
+    value.includes("unknown command") ||
+    value.includes("not found") ||
+    value.includes("unknown option") ||
+    value.includes("unsupported") ||
+    value.includes("no shell command implementation") ||
+    value.includes("can't find service")
+  );
+}
+
+function isPermissionDeniedError(text?: string): boolean {
+  const value = (text || "").toLowerCase();
+  if (!value) return false;
+  return value.includes("permission denied") || value.includes("securityexception");
+}
+
+function parseStandbyBucket(output: string): string | null {
+  const normalized = output.toLowerCase();
+  const namedMatch = normalized.match(
+    /\b(active|working_set|frequent|rare|restricted|exempted|never)\b/,
+  );
+  if (namedMatch) return namedMatch[1];
+
+  const numericMatch = normalized.match(/\b(\d{2})\b/);
+  if (!numericMatch) return null;
+
+  switch (numericMatch[1]) {
+    case "10":
+      return "active";
+    case "20":
+      return "working_set";
+    case "30":
+      return "frequent";
+    case "40":
+      return "rare";
+    case "45":
+    case "50":
+      return "restricted";
+    default:
+      return null;
+  }
+}
+
+function parseAppOpsMode(output: string): string | null {
+  const normalized = output.toLowerCase();
+  if (normalized.includes("no operations")) return "default";
+  const modeMatch = normalized.match(
+    /\b(allow|ignore|deny|default|foreground|errored)\b/,
+  );
+  return modeMatch ? modeMatch[1] : null;
+}
+
+async function resolvePackageUid(
+  deviceId: string,
+  packageName: string,
+): Promise<number | null> {
+  const dumpsysResult = await runShellCommand(
+    deviceId,
+    `dumpsys package ${packageName}`,
+    20000,
+  );
+
+  if (dumpsysResult.success) {
+    const uidMatch = dumpsysResult.output.match(/\buserId=(\d+)\b/);
+    if (uidMatch) {
+      const parsed = Number.parseInt(uidMatch[1], 10);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+
+  const listResult = await runShellCommand(
+    deviceId,
+    `cmd package list packages -U ${packageName}`,
+    15000,
+  );
+  if (!listResult.success) return null;
+
+  const uidMatch = listResult.output.match(/\buid:(\d+)\b/);
+  if (!uidMatch) return null;
+
+  const parsed = Number.parseInt(uidMatch[1], 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+async function getStandbyBucket(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+): Promise<string | null> {
+  const withUser = await runShellCommand(
+    deviceId,
+    `am get-standby-bucket --user ${userId} ${packageName}`,
+    12000,
+  );
+  if (withUser.success && withUser.output) {
+    return parseStandbyBucket(withUser.output);
+  }
+
+  const withoutUser = await runShellCommand(
+    deviceId,
+    `am get-standby-bucket ${packageName}`,
+    12000,
+  );
+  if (!withoutUser.success || !withoutUser.output) return null;
+
+  return parseStandbyBucket(withoutUser.output);
+}
+
+async function setStandbyBucket(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+  bucket: "restricted" | "active",
+): Promise<AdbCommandResult> {
+  const withUser = await runShellCommand(
+    deviceId,
+    `am set-standby-bucket --user ${userId} ${packageName} ${bucket}`,
+    15000,
+  );
+  if (withUser.success) return withUser;
+
+  return runShellCommand(
+    deviceId,
+    `am set-standby-bucket ${packageName} ${bucket}`,
+    15000,
+  );
+}
+
+async function getAppOpMode(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+  opName: "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND" | "WAKE_LOCK",
+): Promise<string | null> {
+  const withUser = await runShellCommand(
+    deviceId,
+    `cmd appops get --user ${userId} ${packageName} ${opName}`,
+    12000,
+  );
+  if (withUser.success && withUser.output) {
+    return parseAppOpsMode(withUser.output);
+  }
+
+  const withoutUser = await runShellCommand(
+    deviceId,
+    `cmd appops get ${packageName} ${opName}`,
+    12000,
+  );
+  if (!withoutUser.success || !withoutUser.output) return null;
+
+  return parseAppOpsMode(withoutUser.output);
+}
+
+async function setAppOpMode(
+  deviceId: string,
+  packageName: string,
+  userId: number,
+  opName: "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND" | "WAKE_LOCK",
+  mode: "allow" | "ignore",
+): Promise<AdbCommandResult> {
+  const withUser = await runShellCommand(
+    deviceId,
+    `cmd appops set --user ${userId} ${packageName} ${opName} ${mode}`,
+    12000,
+  );
+  if (withUser.success) return withUser;
+
+  return runShellCommand(
+    deviceId,
+    `cmd appops set ${packageName} ${opName} ${mode}`,
+    12000,
+  );
+}
+
+async function isUidInRestrictBackgroundBlacklist(
+  deviceId: string,
+  uid: number,
+): Promise<boolean | null> {
+  const result = await runShellCommand(
+    deviceId,
+    "cmd netpolicy list restrict-background-blacklist",
+    12000,
+  );
+  if (!result.success) return null;
+
+  return new RegExp(`\\b${uid}\\b`).test(result.output);
+}
+
+async function updateRestrictBackgroundBlacklist(
+  deviceId: string,
+  uid: number,
+  mode: BackgroundRestrictionMode,
+): Promise<AdbCommandResult> {
+  const command =
+    mode === "restrict"
+      ? `cmd netpolicy add restrict-background-blacklist ${uid}`
+      : `cmd netpolicy remove restrict-background-blacklist ${uid}`;
+  return runShellCommand(deviceId, command, 12000);
+}
+
+function buildRestrictionControls(status: {
+  standbyBucket: string | null;
+  runInBackgroundMode: string | null;
+  runAnyInBackgroundMode: string | null;
+  wakeLockMode: string | null;
+  networkRestricted: boolean | null;
+}): string[] {
+  const controls: string[] = [];
+  if (status.standbyBucket === "restricted") controls.push("standby_bucket");
+  if (
+    status.runInBackgroundMode === "ignore" ||
+    status.runInBackgroundMode === "deny"
+  ) {
+    controls.push("run_in_background");
+  }
+  if (
+    status.runAnyInBackgroundMode === "ignore" ||
+    status.runAnyInBackgroundMode === "deny"
+  ) {
+    controls.push("run_any_in_background");
+  }
+  if (status.wakeLockMode === "ignore" || status.wakeLockMode === "deny") {
+    controls.push("wake_lock");
+  }
+  if (status.networkRestricted === true) controls.push("network_background_data");
+  return controls;
 }
 
 /**
@@ -496,6 +762,180 @@ export async function enablePackage(
 ): Promise<AdbCommandResult> {
   const command = `-s ${deviceId} shell pm enable --user ${userId} ${packageName}`;
   return await executeAdb(command);
+}
+
+/**
+ * Read current background restriction controls for one package.
+ */
+export async function getBackgroundRestrictionStatus(
+  deviceId: string,
+  packageName: string,
+  userId = 0,
+): Promise<BackgroundRestrictionStatus> {
+  const warnings: string[] = [];
+
+  const [standbyBucket, runInBackgroundMode, runAnyInBackgroundMode, wakeLockMode, packageUid] =
+    await Promise.all([
+      getStandbyBucket(deviceId, packageName, userId),
+      getAppOpMode(deviceId, packageName, userId, "RUN_IN_BACKGROUND"),
+      getAppOpMode(deviceId, packageName, userId, "RUN_ANY_IN_BACKGROUND"),
+      getAppOpMode(deviceId, packageName, userId, "WAKE_LOCK"),
+      resolvePackageUid(deviceId, packageName),
+    ]);
+
+  let networkRestricted: boolean | null = null;
+  if (packageUid !== null) {
+    networkRestricted = await isUidInRestrictBackgroundBlacklist(deviceId, packageUid);
+  } else {
+    warnings.push("Could not resolve package UID; network policy status unavailable.");
+  }
+
+  const controlsActive = buildRestrictionControls({
+    standbyBucket,
+    runInBackgroundMode,
+    runAnyInBackgroundMode,
+    wakeLockMode,
+    networkRestricted,
+  });
+
+  return {
+    packageName,
+    userId,
+    packageUid,
+    standbyBucket,
+    runInBackgroundMode,
+    runAnyInBackgroundMode,
+    wakeLockMode,
+    networkRestricted,
+    controlsActive,
+    warnings,
+  };
+}
+
+/**
+ * Apply or relax background restriction controls for one package.
+ */
+export async function optimizeBackgroundRestriction(
+  deviceId: string,
+  packageName: string,
+  mode: BackgroundRestrictionMode = "restrict",
+  userId = 0,
+): Promise<BackgroundOptimizationResult> {
+  const warnings: string[] = [];
+  const appliedSteps: string[] = [];
+  const failedSteps: string[] = [];
+
+  const applyStep = async (
+    label: string,
+    work: () => Promise<AdbCommandResult>,
+    optional = true,
+  ) => {
+    const result = await work();
+    if (result.success) {
+      appliedSteps.push(label);
+      return;
+    }
+
+    const failureDetails = `${result.error || result.output || "unknown error"}`;
+    if (isUnsupportedCommandError(failureDetails)) {
+      warnings.push(`${label} is not supported on this device/Android build.`);
+      return;
+    }
+
+    if (isPermissionDeniedError(failureDetails)) {
+      warnings.push(`${label} was denied by device policy.`);
+      if (!optional) failedSteps.push(label);
+      return;
+    }
+
+    if (optional) {
+      warnings.push(`${label} could not be applied (${failureDetails}).`);
+      return;
+    }
+
+    failedSteps.push(label);
+  };
+
+  await applyStep(
+    "Force stop app",
+    () => runShellCommand(deviceId, `am force-stop ${packageName}`, 10000),
+  );
+
+  await applyStep(
+    mode === "restrict" ? "Set standby bucket restricted" : "Set standby bucket active",
+    () =>
+      setStandbyBucket(
+        deviceId,
+        packageName,
+        userId,
+        mode === "restrict" ? "restricted" : "active",
+      ),
+  );
+
+  await applyStep(
+    `Set RUN_IN_BACKGROUND ${mode === "restrict" ? "ignore" : "allow"}`,
+    () =>
+      setAppOpMode(
+        deviceId,
+        packageName,
+        userId,
+        "RUN_IN_BACKGROUND",
+        mode === "restrict" ? "ignore" : "allow",
+      ),
+  );
+
+  await applyStep(
+    `Set RUN_ANY_IN_BACKGROUND ${mode === "restrict" ? "ignore" : "allow"}`,
+    () =>
+      setAppOpMode(
+        deviceId,
+        packageName,
+        userId,
+        "RUN_ANY_IN_BACKGROUND",
+        mode === "restrict" ? "ignore" : "allow",
+      ),
+  );
+
+  await applyStep(
+    `Set WAKE_LOCK ${mode === "restrict" ? "ignore" : "allow"}`,
+    () =>
+      setAppOpMode(
+        deviceId,
+        packageName,
+        userId,
+        "WAKE_LOCK",
+        mode === "restrict" ? "ignore" : "allow",
+      ),
+  );
+
+  const uid = await resolvePackageUid(deviceId, packageName);
+  if (uid === null) {
+    warnings.push("Could not resolve package UID; skipped background network policy.");
+  } else {
+    await applyStep(
+      mode === "restrict"
+        ? "Restrict background network data"
+        : "Allow background network data",
+      () => updateRestrictBackgroundBlacklist(deviceId, uid, mode),
+    );
+  }
+
+  const status = await getBackgroundRestrictionStatus(deviceId, packageName, userId);
+  const success = appliedSteps.length > 0 && failedSteps.length === 0;
+
+  return {
+    success,
+    packageName,
+    mode,
+    userId,
+    message: success
+      ? `${mode === "restrict" ? "Background restricted" : "Background limits relaxed"} for ${packageName}`
+      : `${mode === "restrict" ? "Partial restriction" : "Partial relaxation"} applied for ${packageName}`,
+    appliedSteps,
+    failedSteps,
+    warnings: [...warnings, ...status.warnings],
+    status,
+  };
 }
 
 /**

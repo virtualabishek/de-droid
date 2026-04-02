@@ -53,16 +53,41 @@ COHORT_PREFIXES: dict[str, tuple[str, ...]] = {
         "com.oppo.",
         "com.coloros.",
         "com.heytap.",
+        "com.oplus.",
+        "com.nearme.",
+    ),
+    "REALME": (
+        "com.realme.",
+        "com.oplus.",
+        "com.nearme.",
+        "com.heytap.",
+        "com.coloros.",
     ),
     "VIVO": (
         "com.vivo.",
         "com.bbk.",
         "com.iqoo.",
     ),
+    "INFINIX": (
+        "com.infinix.",
+        "com.transsion.",
+        "com.xos.",
+        "com.xclub.",
+    ),
+    "TECNO": (
+        "com.tecno.",
+        "com.transsion.",
+        "com.hios.",
+    ),
+    "ITEL": (
+        "com.itel.",
+        "com.transsion.",
+        "com.palmstore.",
+    ),
 }
 
 BASELINE_OEMS = ["SAMSUNG", "XIAOMI"]
-EXPANSION_OEMS = ["ONEPLUS", "HUAWEI", "OPPO", "VIVO"]
+EXPANSION_OEMS = ["ONEPLUS", "HUAWEI", "OPPO", "REALME", "VIVO", "INFINIX", "TECNO", "ITEL"]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -165,8 +190,12 @@ def extract_package_features(package_id: str) -> list[float]:
         1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("XIAOMI", ())) else 0.0,
         1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("HUAWEI", ())) else 0.0,
         1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("OPPO", ())) else 0.0,
+        1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("REALME", ())) else 0.0,
         1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("VIVO", ())) else 0.0,
         1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("ONEPLUS", ())) else 0.0,
+        1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("INFINIX", ())) else 0.0,
+        1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("TECNO", ())) else 0.0,
+        1.0 if any(pkg.startswith(p) for p in COHORT_PREFIXES.get("ITEL", ())) else 0.0,
         # Carrier indicators
         1.0 if any(t in pkg for t in ["carrier", "sprint", "verizon", "tmobile", "att"]) else 0.0,
         # Bloatware keyword match count
@@ -196,8 +225,12 @@ PACKAGE_FEATURE_NAMES = [
     "pkg:is_xiaomi",
     "pkg:is_huawei",
     "pkg:is_oppo",
+    "pkg:is_realme",
     "pkg:is_vivo",
     "pkg:is_oneplus",
+    "pkg:is_infinix",
+    "pkg:is_tecno",
+    "pkg:is_itel",
     "pkg:is_carrier",
     "pkg:bloatware_kw_count",
     "pkg:system_kw_count",
@@ -321,8 +354,12 @@ def humanize_factor(feature_name: str) -> str:
             "pkg:is_xiaomi": "Xiaomi package",
             "pkg:is_huawei": "Huawei package",
             "pkg:is_oppo": "OPPO package",
+            "pkg:is_realme": "Realme package",
             "pkg:is_vivo": "Vivo package",
             "pkg:is_oneplus": "OnePlus package",
+            "pkg:is_infinix": "Infinix package",
+            "pkg:is_tecno": "Tecno package",
+            "pkg:is_itel": "Itel package",
             "pkg:is_carrier": "carrier-installed package",
             "pkg:bloatware_kw_count": "matches bloatware keywords",
             "pkg:system_kw_count": "matches system-critical keywords",
@@ -883,44 +920,21 @@ def main() -> None:
     )
     sgd_model.fit(X_train, y_train, sample_weight=sample_weights[train_idx])
 
-    # ── Model 2: Logistic Regression (regularized, multiclass) ──
-    print("Training Logistic Regression model...")
-    lr_model = LogisticRegression(
-        max_iter=3000,
+    # Dedicated linear explainer model (fast coefficients for top factors)
+    print("Training linear explainer model...")
+    explainer_model = SGDClassifier(
+        loss="log_loss",
         class_weight="balanced",
-        C=1.0,
-        solver="saga",
+        max_iter=2000,
         random_state=42,
+        alpha=1e-4,
     )
-    lr_model.fit(X_train, y_train, sample_weight=sample_weights[train_idx])
+    explainer_model.fit(X_train, y_train, sample_weight=sample_weights[train_idx])
 
-    # ── Soft voting ensemble ──
-    # Since both models are already fitted, we'll use the better one
-    # and combine predictions manually
-    sgd_pred = sgd_model.predict(X_test)
-    sgd_prob = sgd_model.predict_proba(X_test)
-    lr_pred = lr_model.predict(X_test)
-    lr_prob = lr_model.predict_proba(X_test)
-
-    # Weighted average of probabilities (SGD 0.4, LR 0.6)
-    # Ensure both have same class order
-    sgd_classes = list(sgd_model.classes_)
-    lr_classes = list(lr_model.classes_)
-    
-    all_classes = sorted(set(sgd_classes) | set(lr_classes))
-    
-    def align_probs(probs, model_classes, target_classes):
-        aligned = np.zeros((probs.shape[0], len(target_classes)))
-        for i, cls in enumerate(target_classes):
-            if cls in model_classes:
-                aligned[:, i] = probs[:, model_classes.index(cls)]
-        return aligned
-    
-    sgd_aligned = align_probs(sgd_prob, sgd_classes, all_classes)
-    lr_aligned = align_probs(lr_prob, lr_classes, all_classes)
-    
-    combined_prob = 0.4 * sgd_aligned + 0.6 * lr_aligned
-    y_pred_raw = np.array([all_classes[i] for i in np.argmax(combined_prob, axis=1)])
+    # Calibrated SGD probabilities are used as final scores.
+    all_classes = list(sgd_model.classes_)
+    combined_prob = sgd_model.predict_proba(X_test)
+    y_pred_raw = sgd_model.predict(X_test)
 
     # ── Apply safety gates ──
     y_pred = y_pred_raw.copy()
@@ -949,9 +963,9 @@ def main() -> None:
     args.model_out.parent.mkdir(parents=True, exist_ok=True)
     args.report_out.parent.mkdir(parents=True, exist_ok=True)
 
-    # Use LR as primary (it has coef_ for explainability)
     artifact = {
-        "model": lr_model,
+        "model": sgd_model,
+        "explainer_model": explainer_model,
         "sgd_model": sgd_model,
         "text_vectorizer": text_vectorizer,
         "char_vectorizer": char_vectorizer,
@@ -1041,14 +1055,8 @@ def main() -> None:
         fit=False,
     )
 
-    all_sgd_prob = sgd_model.predict_proba(X_all)
-    all_lr_prob = lr_model.predict_proba(X_all)
-    
-    all_sgd_aligned = align_probs(all_sgd_prob, sgd_classes, all_classes)
-    all_lr_aligned = align_probs(all_lr_prob, lr_classes, all_classes)
-    all_combined_prob = 0.4 * all_sgd_aligned + 0.6 * all_lr_aligned
-    
-    all_pred_labels = np.array([all_classes[i] for i in np.argmax(all_combined_prob, axis=1)])
+    all_combined_prob = sgd_model.predict_proba(X_all)
+    all_pred_labels = sgd_model.predict(X_all)
 
     feature_names = build_feature_names(text_vectorizer, char_vectorizer, oem_encoder)
 
@@ -1073,7 +1081,7 @@ def main() -> None:
         top_factors = top_factors_for_row(
             X_all[index],
             final_label,
-            lr_model,
+            explainer_model,
             feature_names,
         )
         

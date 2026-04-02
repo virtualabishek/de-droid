@@ -10,10 +10,48 @@ import * as backupService from "../services/backupService";
 import * as packageDataService from "../services/packageDataService";
 import * as fdroidService from "../services/fdroidService";
 import * as telemetryService from "../services/telemetryService";
+import * as modelFeedbackService from "../services/modelFeedbackService";
 
 // Cache for device information to use in logging
 const deviceInfoCache: Map<string, { model: string; brand: string }> =
   new Map();
+
+const DEFAULT_MODEL_API_URL = "http://127.0.0.1:8000";
+const VALID_REMOVAL_TYPES = new Set([
+  "RECOMMENDED",
+  "ADVANCED",
+  "EXPERT",
+  "UNSAFE",
+]);
+type RemovalType = "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
+
+function resolveModelApiBaseUrl(): string {
+  const raw = process.env.DEDROID_MODEL_API_URL?.trim();
+  if (!raw) return DEFAULT_MODEL_API_URL;
+  return raw.replace(/\/+$/, "");
+}
+
+function normalizeRemovalType(value: unknown): RemovalType | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toUpperCase();
+  if (!VALID_REMOVAL_TYPES.has(normalized)) return null;
+  return normalized as RemovalType;
+}
+
+function isCoreNamespacePackage(packageName: string): boolean {
+  return (
+    packageName.startsWith("com.android.") ||
+    packageName.startsWith("android.") ||
+    packageName.startsWith("com.miui.") ||
+    packageName.startsWith("com.xiaomi.") ||
+    packageName.startsWith("com.samsung.") ||
+    packageName.startsWith("com.sec.") ||
+    packageName.startsWith("com.huawei.") ||
+    packageName.startsWith("com.oppo.") ||
+    packageName.startsWith("com.vivo.") ||
+    packageName.startsWith("com.oneplus.")
+  );
+}
 
 /**
  * Get device info from cache or return default values
@@ -52,6 +90,15 @@ function recordTelemetryForAction(input: {
       localInfo.modelConfidence >= 0.8,
     removalType: localInfo?.removal,
     category: localInfo?.category,
+  });
+
+  modelFeedbackService.uploadActionFeedback({
+    packageName: input.packageName,
+    action: input.action,
+    success: input.success,
+    modelLabel: localInfo?.modelLabel,
+    modelConfidence: localInfo?.modelConfidence,
+    deviceBrand: deviceInfo.brand,
   });
 }
 
@@ -258,24 +305,127 @@ export function registerAdbHandlers() {
   // Check package safety (LOCAL DATA)
   ipcMain.handle("adb:check-safety", async (_, packageNames: string[]) => {
     try {
+      const dedupedPackageNames = [...new Set(packageNames.map((p) => p.trim()).filter(Boolean))];
       console.log(
-        `[LOCAL DATA] Checking safety for ${packageNames.length} packages`,
+        `[LOCAL DATA] Checking safety for ${dedupedPackageNames.length} packages`,
       );
 
-      const packages = packageNames.map((name) => {
-        const info = packageDataService.getPackageInfo(name);
+      if (typeof fetch === "function" && dedupedPackageNames.length > 0) {
+        try {
+          const response = await fetch(`${resolveModelApiBaseUrl()}/api/check-packages`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ packages: dedupedPackageNames }),
+          });
 
-        const isCoreNamespace =
-          name.startsWith("com.android.") ||
-          name.startsWith("android.") ||
-          name.startsWith("com.miui.") ||
-          name.startsWith("com.xiaomi.") ||
-          name.startsWith("com.samsung.") ||
-          name.startsWith("com.sec.") ||
-          name.startsWith("com.huawei.") ||
-          name.startsWith("com.oppo.") ||
-          name.startsWith("com.vivo.") ||
-          name.startsWith("com.oneplus.");
+          if (response.ok) {
+            const payload = (await response.json()) as {
+              model_version?: string;
+              packages?: Array<{
+                package_id?: string;
+                label?: string;
+                confidence?: number;
+                description?: string;
+                top_factors?: string[];
+                safety_gate?: string[];
+                graph_risk_score?: number;
+                graph_risk_reasons?: string[];
+              }>;
+            };
+
+            if (Array.isArray(payload.packages) && payload.packages.length > 0) {
+              const packages = payload.packages
+                .map((entry) => {
+                  const packageName =
+                    typeof entry.package_id === "string" ? entry.package_id.trim() : "";
+                  if (!packageName) return null;
+
+                  const info = packageDataService.getPackageInfo(packageName);
+                  const isCoreNamespace = isCoreNamespacePackage(packageName);
+
+                  const modelLabel = normalizeRemovalType(entry.label) ?? info?.modelLabel ?? null;
+                  const finalRemovalType: RemovalType =
+                    modelLabel ?? info?.removal ?? (isCoreNamespace ? "UNSAFE" : "ADVANCED");
+                  const modelConfidence =
+                    typeof entry.confidence === "number"
+                      ? Math.max(0, Math.min(1, entry.confidence))
+                      : info?.modelConfidence ?? null;
+
+                  const graphRiskScore =
+                    typeof entry.graph_risk_score === "number"
+                      ? Math.max(0, Math.min(1, entry.graph_risk_score))
+                      : null;
+
+                  const graphRiskReasons = Array.isArray(entry.graph_risk_reasons)
+                    ? entry.graph_risk_reasons.filter(
+                        (reason): reason is string => typeof reason === "string" && reason.length > 0,
+                      )
+                    : [];
+
+                  const topFactors = Array.isArray(entry.top_factors)
+                    ? entry.top_factors.filter(
+                        (factor): factor is string => typeof factor === "string" && factor.length > 0,
+                      )
+                    : [];
+
+                  const safetyGate = Array.isArray(entry.safety_gate)
+                    ? entry.safety_gate.filter(
+                        (gate): gate is string => typeof gate === "string" && gate.length > 0,
+                      )
+                    : [];
+
+                  const canUninstall = finalRemovalType !== "UNSAFE" && !isCoreNamespace;
+                  const fallbackDescription = isCoreNamespace
+                    ? "Unknown core/OEM package - uninstall blocked for safety"
+                    : "Unknown package - proceed with caution";
+
+                  const safetyDescription =
+                    (typeof entry.description === "string" && entry.description.trim()) ||
+                    info?.description ||
+                    graphRiskReasons[0] ||
+                    fallbackDescription;
+
+                  return {
+                    package_name: packageName,
+                    safety: packageDataService.getSafetyColor(finalRemovalType),
+                    safety_description: safetyDescription,
+                    can_uninstall: canUninstall,
+                    description: safetyDescription,
+                    category: info?.category ?? "UNKNOWN",
+                    removal_type: finalRemovalType,
+                    model_label: modelLabel,
+                    model_confidence: modelConfidence,
+                    model_version:
+                      typeof payload.model_version === "string" ? payload.model_version : info?.modelVersion ?? null,
+                    model_gate_applied: safetyGate.length > 0,
+                    dependencies: info?.dependencies ?? [],
+                    alternatives: info?.alternatives ?? [],
+                    graph_risk_score: graphRiskScore,
+                    graph_risk_reasons: graphRiskReasons.length ? graphRiskReasons : null,
+                    model_top_factors: topFactors.length ? topFactors : null,
+                  };
+                })
+                .filter((pkg): pkg is NonNullable<typeof pkg> => pkg !== null);
+
+              if (packages.length > 0) {
+                return { packages, total: packages.length };
+              }
+            }
+          } else {
+            console.warn(
+              `[MODEL API] /api/check-packages returned ${response.status}; using local fallback`,
+            );
+          }
+        } catch (error) {
+          console.warn("[MODEL API] Safety check failed; using local fallback:", error);
+        }
+      }
+
+      const packages = dedupedPackageNames.map((name) => {
+        const info = packageDataService.getPackageInfo(name);
+        const isCoreNamespace = isCoreNamespacePackage(name);
 
         if (info) {
           const modelUnsafeGate =
@@ -309,6 +459,9 @@ export function registerAdbHandlers() {
             model_gate_applied: modelUnsafeGate,
             dependencies: info.dependencies,
             alternatives: info.alternatives,
+            graph_risk_score: null,
+            graph_risk_reasons: null,
+            model_top_factors: info.modelTopFactors ?? null,
           };
         }
 
@@ -329,6 +482,9 @@ export function registerAdbHandlers() {
           model_gate_applied: false,
           dependencies: [],
           alternatives: [],
+          graph_risk_score: null,
+          graph_risk_reasons: null,
+          model_top_factors: null,
         };
       });
 
@@ -564,6 +720,66 @@ export function registerAdbHandlers() {
         };
       } catch (error) {
         console.error("[ADB LOCAL] Failed to enable package:", error);
+        throw error;
+      }
+    },
+  );
+
+  // Background optimization controls
+  ipcMain.handle(
+    "adb:get-background-restriction-status",
+    async (_, deviceId: string, packageName: string, userId = 0) => {
+      try {
+        if (!deviceId || !packageName) {
+          throw new Error("deviceId and packageName are required");
+        }
+
+        return await LocalAdb.getBackgroundRestrictionStatus(
+          deviceId,
+          packageName,
+          userId,
+        );
+      } catch (error) {
+        console.error(
+          "[ADB LOCAL] Failed to get background restriction status:",
+          error,
+        );
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:optimize-background-restriction",
+    async (
+      _,
+      deviceId: string,
+      packageName: string,
+      mode: LocalAdb.BackgroundRestrictionMode = "restrict",
+      userId = 0,
+    ) => {
+      try {
+        if (!deviceId || !packageName) {
+          throw new Error("deviceId and packageName are required");
+        }
+
+        const normalizedMode: LocalAdb.BackgroundRestrictionMode =
+          mode === "relax" ? "relax" : "restrict";
+        console.log(
+          `[ADB LOCAL] ${normalizedMode} background for ${packageName}`,
+        );
+
+        return await LocalAdb.optimizeBackgroundRestriction(
+          deviceId,
+          packageName,
+          normalizedMode,
+          userId,
+        );
+      } catch (error) {
+        console.error(
+          "[ADB LOCAL] Failed to optimize background restriction:",
+          error,
+        );
         throw error;
       }
     },

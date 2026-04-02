@@ -48,6 +48,17 @@ function getActionType(
   }
 }
 
+function isHistoryTrackedAction(
+  action: string,
+): action is "uninstall" | "restore" | "disable" | "enable" {
+  return (
+    action === "uninstall" ||
+    action === "restore" ||
+    action === "disable" ||
+    action === "enable"
+  );
+}
+
 // Estimate package size (in MB) - in real app, would get from ADB
 function estimatePackageSize(packageName: string): number {
   if (
@@ -322,7 +333,13 @@ export default function Packages() {
   };
 
   const handleAction = async (
-    action: "uninstall" | "restore" | "disable" | "enable",
+    action:
+      | "uninstall"
+      | "restore"
+      | "disable"
+      | "enable"
+      | "restrict-background"
+      | "relax-background",
     packageNames: string[],
   ) => {
     if (!selectedDevice) return;
@@ -369,6 +386,22 @@ export default function Packages() {
                 selectedUser,
               );
               break;
+            case "restrict-background":
+              result = await window.electronAPI.adb.optimizeBackgroundRestriction(
+                selectedDevice.adb_id,
+                packageName,
+                "restrict",
+                selectedUser,
+              );
+              break;
+            case "relax-background":
+              result = await window.electronAPI.adb.optimizeBackgroundRestriction(
+                selectedDevice.adb_id,
+                packageName,
+                "relax",
+                selectedUser,
+              );
+              break;
           }
           if (result?.success) {
             success = true;
@@ -382,25 +415,34 @@ export default function Packages() {
           failCount++;
         }
 
-        recordAction({
-          deviceId: selectedDevice.adb_id,
-          deviceModel: selectedDevice.model,
-          deviceBrand: selectedDevice.brand,
-          packageName,
-          action: getActionType(action),
-          androidUser: selectedUser,
-          success,
-          errorMessage,
-        });
+        if (isHistoryTrackedAction(action)) {
+          recordAction({
+            deviceId: selectedDevice.adb_id,
+            deviceModel: selectedDevice.model,
+            deviceBrand: selectedDevice.brand,
+            packageName,
+            action: getActionType(action),
+            androidUser: selectedUser,
+            success,
+            errorMessage,
+          });
+        }
       }
 
       await fetchPackages(true);
       await fetchStats();
       clearSelection();
 
+      const actionLabel =
+        action === "restrict-background"
+          ? "background restriction"
+          : action === "relax-background"
+            ? "background relaxation"
+            : action;
+
       showNotification(
         failCount === 0 ? "success" : "error",
-        `${action}: ${successCount} succeeded, ${failCount} failed`,
+        `${actionLabel}: ${successCount} succeeded, ${failCount} failed`,
       );
     } finally {
       setActionLoading(false);

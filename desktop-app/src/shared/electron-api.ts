@@ -85,6 +85,9 @@ export interface PackageSafetyInfo {
   model_gate_applied: boolean;
   dependencies: string[];
   alternatives: string[];
+  graph_risk_score?: number | null;
+  graph_risk_reasons?: string[] | null;
+  model_top_factors?: string[] | null;
 }
 
 export interface PackageActionResult {
@@ -92,6 +95,33 @@ export interface PackageActionResult {
   action: string;
   success: boolean;
   message: string;
+}
+
+export type BackgroundRestrictionMode = "restrict" | "relax";
+
+export interface BackgroundRestrictionStatus {
+  packageName: string;
+  userId: number;
+  packageUid: number | null;
+  standbyBucket: string | null;
+  runInBackgroundMode: string | null;
+  runAnyInBackgroundMode: string | null;
+  wakeLockMode: string | null;
+  networkRestricted: boolean | null;
+  controlsActive: string[];
+  warnings: string[];
+}
+
+export interface BackgroundOptimizationResult {
+  success: boolean;
+  packageName: string;
+  mode: BackgroundRestrictionMode;
+  userId: number;
+  message: string;
+  appliedSteps: string[];
+  failedSteps: string[];
+  warnings: string[];
+  status: BackgroundRestrictionStatus;
 }
 
 export interface BulkActionResult {
@@ -364,6 +394,17 @@ export interface ElectronAPI {
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
     getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
     getDeviceHealthSnapshot: (deviceId: string) => Promise<DeviceHealthSnapshot>;
+    getBackgroundRestrictionStatus: (
+      deviceId: string,
+      packageName: string,
+      userId?: number,
+    ) => Promise<BackgroundRestrictionStatus>;
+    optimizeBackgroundRestriction: (
+      deviceId: string,
+      packageName: string,
+      mode?: BackgroundRestrictionMode,
+      userId?: number,
+    ) => Promise<BackgroundOptimizationResult>;
   };
   debloat: {
     getPackages: () => Promise<DebloatPackage[]>;

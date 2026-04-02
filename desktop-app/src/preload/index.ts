@@ -107,6 +107,30 @@ const electronAPI: ElectronAPI = {
       ipcRenderer.invoke("adb:get-package-details", deviceId, packageName),
     getDeviceHealthSnapshot: (deviceId: string) =>
       ipcRenderer.invoke("adb:get-device-health-snapshot", deviceId),
+    getBackgroundRestrictionStatus: (
+      deviceId: string,
+      packageName: string,
+      userId?: number,
+    ) =>
+      ipcRenderer.invoke(
+        "adb:get-background-restriction-status",
+        deviceId,
+        packageName,
+        userId,
+      ),
+    optimizeBackgroundRestriction: (
+      deviceId: string,
+      packageName: string,
+      mode?: "restrict" | "relax",
+      userId?: number,
+    ) =>
+      ipcRenderer.invoke(
+        "adb:optimize-background-restriction",
+        deviceId,
+        packageName,
+        mode,
+        userId,
+      ),
   },
 
   // ============ DEBLOAT DATA API (LOCAL JSON for now later we would have the real API) ============

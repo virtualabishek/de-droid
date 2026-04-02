@@ -3,29 +3,33 @@
     "ONEPLUS",
     "HUAWEI",
     "OPPO",
-    "VIVO"
+    "REALME",
+    "VIVO",
+    "INFINIX",
+    "TECNO",
+    "ITEL"
   ],
   "expansion_holdout": {
     "ONEPLUS": {
       "status": "ok",
       "sample_size": 141,
-      "accuracy": 0.5673758865248227,
-      "macro_f1": 0.4558443532451741,
+      "accuracy": 0.2695035460992908,
+      "macro_f1": 0.24633699633699635,
       "unsafe_recall": 0.0,
       "false_safe_rate": null,
-      "confidence_coverage_ge_0_8": 0.0,
-      "expected_calibration_error": 0.16591430993989256,
+      "confidence_coverage_ge_0_8": 0.014184397163120567,
+      "expected_calibration_error": 0.2323685103593617,
       "confusion_matrix": [
         [
+          7,
           0,
-          0,
-          29,
+          22,
           0
         ],
         [
-          21,
-          49,
-          10,
+          61,
+          0,
+          19,
           0
         ],
         [
@@ -43,52 +47,52 @@
       ],
       "classification_report": {
         "ADVANCED": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 0.10144927536231885,
+          "recall": 0.2413793103448276,
+          "f1-score": 0.14285714285714285,
           "support": 29.0
         },
         "EXPERT": {
-          "precision": 1.0,
-          "recall": 0.6125,
-          "f1-score": 0.7596899224806202,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
           "support": 80.0
         },
         "RECOMMENDED": {
-          "precision": 0.44285714285714284,
+          "precision": 0.4305555555555556,
           "recall": 0.96875,
-          "f1-score": 0.6078431372549019,
+          "f1-score": 0.5961538461538461,
           "support": 32.0
         },
-        "accuracy": 0.5673758865248227,
+        "accuracy": 0.2695035460992908,
         "macro avg": {
-          "precision": 0.48095238095238096,
-          "recall": 0.5270833333333333,
-          "f1-score": 0.4558443532451741,
+          "precision": 0.17733494363929148,
+          "recall": 0.4033764367816092,
+          "f1-score": 0.24633699633699635,
           "support": 141.0
         },
         "weighted avg": {
-          "precision": 0.6678824721377913,
-          "recall": 0.5673758865248227,
-          "f1-score": 0.5689799587986275,
+          "precision": 0.11858018981053209,
+          "recall": 0.2695035460992908,
+          "f1-score": 0.1646792923388668,
           "support": 141.0
         }
       }
     },
     "HUAWEI": {
       "status": "ok",
-      "sample_size": 95,
-      "accuracy": 0.631578947368421,
-      "macro_f1": 0.33620689655172414,
+      "sample_size": 98,
+      "accuracy": 0.5306122448979592,
+      "macro_f1": 0.2962732919254658,
       "unsafe_recall": 0.0,
       "false_safe_rate": null,
-      "confidence_coverage_ge_0_8": 0.0,
-      "expected_calibration_error": 0.18576865767121212,
+      "confidence_coverage_ge_0_8": 0.02040816326530612,
+      "expected_calibration_error": 0.21096823811638918,
       "confusion_matrix": [
         [
           5,
           0,
-          9,
+          10,
           0
         ],
         [
@@ -98,9 +102,9 @@
           0
         ],
         [
-          21,
-          3,
-          55,
+          26,
+          8,
+          47,
           0
         ],
         [
@@ -112,10 +116,10 @@
       ],
       "classification_report": {
         "ADVANCED": {
-          "precision": 0.19230769230769232,
-          "recall": 0.35714285714285715,
-          "f1-score": 0.25,
-          "support": 14.0
+          "precision": 0.16129032258064516,
+          "recall": 0.3333333333333333,
+          "f1-score": 0.21739130434782608,
+          "support": 15.0
         },
         "EXPERT": {
           "precision": 0.0,
@@ -124,52 +128,52 @@
           "support": 2.0
         },
         "RECOMMENDED": {
-          "precision": 0.8333333333333334,
-          "recall": 0.6962025316455697,
-          "f1-score": 0.7586206896551724,
-          "support": 79.0
+          "precision": 0.7966101694915254,
+          "recall": 0.5802469135802469,
+          "f1-score": 0.6714285714285714,
+          "support": 81.0
         },
-        "accuracy": 0.631578947368421,
+        "accuracy": 0.5306122448979592,
         "macro avg": {
-          "precision": 0.34188034188034194,
-          "recall": 0.3511151295961423,
-          "f1-score": 0.33620689655172414,
-          "support": 95.0
+          "precision": 0.31930016402405687,
+          "recall": 0.3045267489711934,
+          "f1-score": 0.2962732919254658,
+          "support": 98.0
         },
         "weighted avg": {
-          "precision": 0.7213225371120109,
-          "recall": 0.6315789473684211,
-          "f1-score": 0.6676950998185118,
-          "support": 95.0
+          "precision": 0.6831099853828903,
+          "recall": 0.5306122448979592,
+          "f1-score": 0.5882304474584864,
+          "support": 98.0
         }
       }
     },
     "OPPO": {
       "status": "ok",
-      "sample_size": 56,
-      "accuracy": 0.25,
-      "macro_f1": 0.13709677419354838,
+      "sample_size": 82,
+      "accuracy": 0.2926829268292683,
+      "macro_f1": 0.13655462184873948,
       "unsafe_recall": 0.0,
       "false_safe_rate": 1.0,
-      "confidence_coverage_ge_0_8": 0.0,
-      "expected_calibration_error": 0.20204748511187082,
+      "confidence_coverage_ge_0_8": 0.024390243902439025,
+      "expected_calibration_error": 0.20177696044731042,
       "confusion_matrix": [
         [
           3,
           0,
-          8,
+          13,
           0
         ],
         [
           0,
           0,
-          1,
+          4,
           0
         ],
         [
-          15,
-          14,
-          11,
+          30,
+          7,
+          21,
           0
         ],
         [
@@ -181,22 +185,22 @@
       ],
       "classification_report": {
         "ADVANCED": {
-          "precision": 0.15,
-          "recall": 0.2727272727272727,
-          "f1-score": 0.1935483870967742,
-          "support": 11.0
+          "precision": 0.08571428571428572,
+          "recall": 0.1875,
+          "f1-score": 0.11764705882352941,
+          "support": 16.0
         },
         "EXPERT": {
           "precision": 0.0,
           "recall": 0.0,
           "f1-score": 0.0,
-          "support": 1.0
+          "support": 4.0
         },
         "RECOMMENDED": {
-          "precision": 0.5,
-          "recall": 0.275,
-          "f1-score": 0.3548387096774194,
-          "support": 40.0
+          "precision": 0.525,
+          "recall": 0.3620689655172414,
+          "f1-score": 0.42857142857142855,
+          "support": 58.0
         },
         "UNSAFE": {
           "precision": 0.0,
@@ -204,20 +208,24 @@
           "f1-score": 0.0,
           "support": 4.0
         },
-        "accuracy": 0.25,
+        "accuracy": 0.2926829268292683,
         "macro avg": {
-          "precision": 0.1625,
-          "recall": 0.13693181818181818,
-          "f1-score": 0.13709677419354838,
-          "support": 56.0
+          "precision": 0.15267857142857144,
+          "recall": 0.13739224137931033,
+          "f1-score": 0.13655462184873948,
+          "support": 82.0
         },
         "weighted avg": {
-          "precision": 0.3866071428571428,
-          "recall": 0.25,
-          "f1-score": 0.2914746543778802,
-          "support": 56.0
+          "precision": 0.38806620209059234,
+          "recall": 0.2926829268292683,
+          "f1-score": 0.3260914121746259,
+          "support": 82.0
         }
       }
+    },
+    "REALME": {
+      "status": "insufficient_data",
+      "sample_size": 3
     },
     "VIVO": {
       "status": "ok",
@@ -226,8 +234,8 @@
       "macro_f1": 0.2371794871794872,
       "unsafe_recall": 0.0,
       "false_safe_rate": null,
-      "confidence_coverage_ge_0_8": 0.0,
-      "expected_calibration_error": 0.35602473860162853,
+      "confidence_coverage_ge_0_8": 0.09090909090909091,
+      "expected_calibration_error": 0.33511458665584526,
       "confusion_matrix": [
         [
           1,
@@ -287,6 +295,77 @@
           "support": 11.0
         }
       }
+    },
+    "INFINIX": {
+      "status": "ok",
+      "sample_size": 22,
+      "accuracy": 0.9090909090909091,
+      "macro_f1": 0.47619047619047616,
+      "unsafe_recall": 0.0,
+      "false_safe_rate": null,
+      "confidence_coverage_ge_0_8": 0.0,
+      "expected_calibration_error": 0.30767700060086756,
+      "confusion_matrix": [
+        [
+          0,
+          0,
+          2,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          20,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "classification_report": {
+        "ADVANCED": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 2.0
+        },
+        "RECOMMENDED": {
+          "precision": 0.9090909090909091,
+          "recall": 1.0,
+          "f1-score": 0.9523809523809523,
+          "support": 20.0
+        },
+        "accuracy": 0.9090909090909091,
+        "macro avg": {
+          "precision": 0.45454545454545453,
+          "recall": 0.5,
+          "f1-score": 0.47619047619047616,
+          "support": 22.0
+        },
+        "weighted avg": {
+          "precision": 0.8264462809917354,
+          "recall": 0.9090909090909091,
+          "f1-score": 0.8658008658008658,
+          "support": 22.0
+        }
+      }
+    },
+    "TECNO": {
+      "status": "insufficient_data",
+      "sample_size": 0
+    },
+    "ITEL": {
+      "status": "insufficient_data",
+      "sample_size": 0
     }
   },
   "release_criteria": {
@@ -311,11 +390,29 @@
         "unsafe_recall": 0.0,
         "false_safe_rate": 1.0
       },
+      "REALME": {
+        "status": "insufficient_data",
+        "passes": false
+      },
       "VIVO": {
         "status": "ok",
         "passes": false,
         "unsafe_recall": 0.0,
         "false_safe_rate": null
+      },
+      "INFINIX": {
+        "status": "ok",
+        "passes": false,
+        "unsafe_recall": 0.0,
+        "false_safe_rate": null
+      },
+      "TECNO": {
+        "status": "insufficient_data",
+        "passes": false
+      },
+      "ITEL": {
+        "status": "insufficient_data",
+        "passes": false
       }
     }
   },
@@ -365,6 +462,19 @@
         "validate_device_rollbacks"
       ]
     },
+    "REALME": {
+      "readiness": "not_ready",
+      "metrics_status": "insufficient_data",
+      "release_check": {
+        "status": "insufficient_data",
+        "passes": false
+      },
+      "next_actions": [
+        "curate_gold_set",
+        "review_oem_overrides",
+        "validate_device_rollbacks"
+      ]
+    },
     "VIVO": {
       "readiness": "needs_improvement",
       "metrics_status": "ok",
@@ -373,6 +483,47 @@
         "passes": false,
         "unsafe_recall": 0.0,
         "false_safe_rate": null
+      },
+      "next_actions": [
+        "curate_gold_set",
+        "review_oem_overrides",
+        "validate_device_rollbacks"
+      ]
+    },
+    "INFINIX": {
+      "readiness": "needs_improvement",
+      "metrics_status": "ok",
+      "release_check": {
+        "status": "ok",
+        "passes": false,
+        "unsafe_recall": 0.0,
+        "false_safe_rate": null
+      },
+      "next_actions": [
+        "curate_gold_set",
+        "review_oem_overrides",
+        "validate_device_rollbacks"
+      ]
+    },
+    "TECNO": {
+      "readiness": "not_ready",
+      "metrics_status": "insufficient_data",
+      "release_check": {
+        "status": "insufficient_data",
+        "passes": false
+      },
+      "next_actions": [
+        "curate_gold_set",
+        "review_oem_overrides",
+        "validate_device_rollbacks"
+      ]
+    },
+    "ITEL": {
+      "readiness": "not_ready",
+      "metrics_status": "insufficient_data",
+      "release_check": {
+        "status": "insufficient_data",
+        "passes": false
       },
       "next_actions": [
         "curate_gold_set",

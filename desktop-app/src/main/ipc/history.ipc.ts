@@ -6,6 +6,7 @@ import * as historyService from "../services/historyService";
 import * as backupService from "../services/backupService";
 import * as settingsService from "../services/settingsService";
 import * as telemetryService from "../services/telemetryService";
+import * as modelFeedbackService from "../services/modelFeedbackService";
 
 export function registerHistoryHandlers() {
   // ============ HISTORY HANDLERS (LOCAL SQLITE) ============
@@ -102,6 +103,13 @@ export function registerHistoryHandlers() {
             packageName: action.package_name,
             action: "UNDO",
             success: true,
+          });
+
+          modelFeedbackService.uploadActionFeedback({
+            packageName: action.package_name,
+            action: "UNDO",
+            success: true,
+            deviceBrand: action.device_brand || undefined,
           });
         }
       }

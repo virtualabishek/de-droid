@@ -1,0 +1,2840 @@
+{
+  "meta": {
+    "oem": "ONEPLUS",
+    "count": 160,
+    "generated_at": "2026-03-31T15:26:06.665286+00:00",
+    "source": "uad-online",
+    "threshold": 0.7,
+    "evidence_summary": {
+      "keyword:oneplus": 89,
+      "keyword:oplus": 1,
+      "keyword:oxygenos": 2,
+      "prefix-match": 160
+    },
+    "source_ref": "https://raw.githubusercontent.com/0x192/universal-android-debloater/main/resources/assets/uad_lists.json"
+  },
+  "packages": [
+    {
+      "id": "cn.oneplus.nvbackup",
+      "list": "ONEPLUS",
+      "description": "NVBackupUI\nRuns in the background on some phones.\nHandles things related to OTA system updates?\nSafe to disable, but might break OTA updates.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "cn.oneplus.oem_tcma",
+      "list": "ONEPLUS",
+      "description": "TCMA = Tiered Contention Multiple Access\nRuns on boot.\nA form of CSMA/CA, a cellular traffic management protocol. TCMA schedules transmission of different types of traffic based on urgency.\nChina-only? (the \"cn\" in cn.oneplus is China's country code)\nhttps://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance\nhttps://patents.google.com/patent/US20020163933A1",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "cn.oneplus.oemtcma",
+      "list": "ONEPLUS",
+      "description": "TCMA = Tiered Contention Multiple Access\nRuns on boot.\nA form of CSMA/CA, a cellular traffic management protocol. TCMA schedules transmission of different types of traffic based on urgency.\nChina-only? (the \"cn\" in cn.oneplus is China's country code)\nhttps://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance\nhttps://patents.google.com/patent/US20020163933A1",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "cn.oneplus.opmms",
+      "list": "ONEPLUS",
+      "description": "OPMmsLocation\nDetermines your location when sending SMS/MMS?\nChina-only? (\"cn\" is China's country code)",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "cn.oneplus.photos",
+      "list": "ONEPLUS",
+      "description": "Shot On OnePlus\nAccessible through the Wallpapers selection menu.\nProvides photos uploaded by OnePlus users, allowing you to set them as your wallpaper.\nEach day, one new photo appears within the application.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.accessory",
+      "list": "ONEPLUS",
+      "description": "Oneplus Link\nI'm guessing this has to do with connecting to Oneplus accessories, like the Oneplus Buds (wireless earbuds). Might wanna keep it enabled if you use oneplus accessory devices.\nNoticed no negative effects from disable after weeks of use.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.account",
+      "list": "ONEPLUS",
+      "description": "OnePlus Account\nEnables Oneplus account login on device.\nProbably handles authentication for Oneplus apps. Safe to remove if you don't use them.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.account.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme for Oneplus Account?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.account.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme for Oneplus Account?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.android.cellbroadcast.overlay",
+      "list": "ONEPLUS",
+      "description": "Wireless emergency alerts Theme pack\nGuessing it's a pack of themes for the emergency alert UI, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aod",
+      "list": "ONEPLUS",
+      "description": "Always On Display / Ambient Display\nRuns in the background.\nWhen enabled in settings it shows clock and notifications when you raise the phone or touch the screen.\nThis is basically a lower-power lock-screen. It could in theory reduce power draw if you check notifications/clock often as OLED screens draw minimal power showing a mostly black screen(black = pixel off), but in practice the number of times you'll unintentionally trigger it will likely eat up any potential power savings and more. And if your device doesn't have an OLED screen this will draw way more power.\nMost of these power savings could be applied to your standard lock-screen simply by making your background image completely black.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aod.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for AOD? (Always On Display)",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aod.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for AOD? (Always On Display)",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aodnotification.overlay.gold",
+      "list": "ONEPLUS",
+      "description": "System UI Theme pack\nSeems to be a theme overlay for AOD (Always On Display).",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aodnotification.overlay.purple",
+      "list": "ONEPLUS",
+      "description": "System UI Theme pack\nSeems to be a theme overlay for AOD (Always On Display).",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.aodnotification.overlay.red",
+      "list": "ONEPLUS",
+      "description": "System UI Theme pack\nSeems to be a theme overlay for AOD (Always On Display).",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.applocker",
+      "list": "ONEPLUS",
+      "description": "Encrypts and locks apps behind password access.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.appupgrader",
+      "list": "ONEPLUS",
+      "description": "Built-in App Updates\nBased on the name I'm guessing it's an upater for built-in Oneplus apps?\nSeems safe to disable, but only seems to run on boot, so there's little to be gained from disabling.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.asti",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.backuprestore",
+      "list": "ONEPLUS",
+      "description": "OnePlus Switch (https://play.google.com/store/apps/details?id=com.oneplus.backuprestore)\nLets you migrate contacts, text messages, photos, and other data from one device to another.\nCan also backup data as a compressed archive.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.backuprestore.remoteservice",
+      "list": "ONEPLUS",
+      "description": "Likely a backend service for OnePlus Switch(com.oneplus.backuprestore).\nI've never seen it run in the background.\nProbably safe to disable.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.brickmode",
+      "list": "ONEPLUS",
+      "description": "OnePlus Zen Mode (https://play.google.com/store/apps/details?id=com.oneplus.brickmode)\nZen Mode helps you put down your phone and enjoy your life.\nIn Zen Mode you will only be able to take photos and answer calls.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.bttestmode",
+      "list": "ONEPLUS",
+      "description": "OnePlus Bluetooth test mode\nType *#*#232339#*#* in the OnePlus dialer to access this hidden test menu.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.calculator",
+      "list": "ONEPLUS",
+      "description": "Stock Oneplus Calculator app.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.calculator.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Calculator app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.calendar.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for stock Calendar app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.calendar.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for stock Calendar app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.camera",
+      "list": "ONEPLUS",
+      "description": "Camera\nThe stock Oneplus camera app.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.camera.service",
+      "list": "ONEPLUS",
+      "description": "Runs in the background on some phones.\nNot sure what it does; camera functions fine without it. Could be related to photo backup?",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.card",
+      "list": "ONEPLUS",
+      "description": "Card Package\nWidget which lets you add membership card in Shelf.\nYou enter numbers for a club card or something and it'll store it and generate a barcode for you.\nShelf is a page on your home screen that allows you to take memos, add widgets, gain access to your most-used apps, and get a quick glimpse of the weather. Swipe right (from the left edge of your home screen) to reveal it.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.card.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Card package?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.card.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Card package?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.carrierlocation",
+      "list": "ONEPLUS",
+      "description": "Carrier Location Access\nRuns on boot, but not in the background beyond that.\nNot sure what this does. Could be related to detecting region to determine which radio frequencies to use?\nNoticed no ill effects from weeks of having it disabled.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.chargingpilar",
+      "list": "ONEPLUS",
+      "description": "Geolocates the phone to find OnePlus charging stations nearby. Connects to 'gateway.oneplus.net'\n\nPithus analysis: https://beta.pithus.org/report/8c157eeec2931d3d1140aa8c452d7afa570e04c9d51e6cd5987dbb3ec43df4f9",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.cloud.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for some Oneplus Cloud thing?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.cloud.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for some Oneplus Cloud thing?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.commonoverlay.android",
+      "list": "ONEPLUS",
+      "description": "Android System Theme pack",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.android.networkstack.inprocess",
+      "list": "ONEPLUS",
+      "description": "Theming for Android system parts?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.android.networkstack.inprocess.cn",
+      "list": "ONEPLUS",
+      "description": "Theming for Android system parts?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.android.systemui",
+      "list": "ONEPLUS",
+      "description": "System UI Theme pack\nGuessing it's a pack of themes for some Oneplus-specific system component, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.android.wifi.resources",
+      "list": "ONEPLUS",
+      "description": "System Wi-Fi resources Theme pack\nGuessing it's a pack of themes for some Wi-Fi related system UI, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.google.android.networkstack",
+      "list": "ONEPLUS",
+      "description": "Network manager Theme pack\nThe package name is pretty self-explanatory.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.google.android.networkstack.cn",
+      "list": "ONEPLUS",
+      "description": "Network manager Theme pack\nThe package name is pretty self-explanatory.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.commonoverlay.com.oneplus",
+      "list": "ONEPLUS",
+      "description": "Oneplus System Theme pack\nGuessing it's a pack of themes for Oneplus-specific system components, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.communication.data",
+      "list": "ONEPLUS",
+      "description": "Oneplus call recorder service. Feature accessible from the stock dialer app",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.config",
+      "list": "ONEPLUS",
+      "description": "OPConfig\nOccasionally runs in the background.\nPackage source is: OPOnlineConfig.apk\nGuessing it might handle communication certificates and general network config for Oneplus apps.\nOnly has INTERNET and RECEIVE_BOOT_COMPLETED permissions.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.contacts",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.contacts.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Contacts?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.contacts.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Contacts?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.coreservice",
+      "list": "ONEPLUS",
+      "description": "Android System\nImportant system package for Oneplus phones?\nRuns in the background as part of the system.\nContains broadcast dispatch and theme handler services.\nProbably unsafe to disable, but please contribute info about what happens if you do.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.cota",
+      "list": "ONEPLUS",
+      "description": "Carrier Update\nRuns in the background.\ncota = Carrier OTA. Handles carrier-specific OTA updates? Probably safe to disable if you didn't get your phone from a carrier; the normal System Update(com.oneplus.opbackup) should handle the OTA updates. I can confirm that I got an OTA notification even with this disabled.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.dataoptimization",
+      "list": "ONEPLUS",
+      "description": "OPDataOptimization\nDoesn't contain any services and I've never seen it run.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.deskclock",
+      "list": "ONEPLUS",
+      "description": "Clock\nThe stock Oneplus clock app.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.deskclock.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Clock app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.deskclock.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Clock app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.diagnosemanager",
+      "list": "ONEPLUS",
+      "description": "Logging app for diagnosis/troubleshooting when the SIM card state change. Only used on devices running OxygenOS 9 and lower. Runs at boot and triggers when SIM card state change.\n\nPithus analysis: https://beta.pithus.org/report/f4c76054795bf55012edf1f60e992b6e339085b9ca2cbe685917a62dd07492c0",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oxygenos",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.dialer",
+      "list": "ONEPLUS",
+      "description": "OnePlus Dialer used in OxygenOS 11 and lower.\nNote: don't forget to download another phone dialer app before removing this package.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "keyword:oxygenos",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.dirac.simplemanager",
+      "list": "ONEPLUS",
+      "description": "Runs in the background.\nMain Dirac service.\nAudio fidelity improvement from the Swedish company Dirac.\nAttempts to achieve a flat frequency response curve(i.e: fidelity). Should mainly improve speaker fidelity as it can be pre-calculated and stored as a corrective EQ curve, something not possible for most devices connected through the 3.5mm jack; presets only exist for a very limited number of headphones. Change for non-preset 3.5mm jack devices is just a generic EQ curve that could decrease fidelity just as likely as it could increase it.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.dirac.simplemanager.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Dirac?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.dirac.simplemanager.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Dirac?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.engmode",
+      "list": "ONEPLUS",
+      "description": "Some kind of Engineer mode? I've no clue.\nContains a bunch of activities with \"info\" in their names.\nContains an \"OpFloatViewService\", but I've never seen it run.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.faceunlock",
+      "list": "ONEPLUS",
+      "description": "Face Unlock\nRuns in the background as part of the system.\nUnlock your device by simply looking at the display.\nFace unlock is bad for security and privacy:\nhttps://www.ubergizmo.com/2017/03/galaxy-s8-facial-unlock-photograph/\nhttps://www.kaspersky.com/blog/face-unlock-insecurity/21618/\nhttps://www.freecodecamp.org/news/why-you-should-never-unlock-your-phone-with-your-face-79c07772a28/",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.factorymode",
+      "list": "ONEPLUS",
+      "description": "FactoryMode\nUsed in the factory to test devices.\nType *#808# in the OnePlus dialer to acess the hidden menu.\nPotential security risk: https://nitter.net/fs0c131y/status/930115188988182531\nIt's possible for an app to enable root access on any device with the APK pre-installed.\nFor now, this only works in ADB, which requires local access to the device.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.factorymode.specialtest",
+      "list": "ONEPLUS",
+      "description": "Engineering Mode Special Test\nUsed in the factory to test devices.\nSee com.oneplus.factorymode",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.filemanager",
+      "list": "ONEPLUS",
+      "description": "File manager\nStock OnePlus file manager app.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.filemanager.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus File manager app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.filemanager.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus File manager app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.gallery",
+      "list": "ONEPLUS",
+      "description": "Oneplus Gallery (https://play.google.com/store/apps/details?id=com.oneplus.gallery)\nOccasionally runs in the background. Some old versions of the app (like for Oneplus 3 on Android 9) don't run in the background.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.gamespace",
+      "list": "ONEPLUS",
+      "description": "OnePlus Game Space\nOccasionally runs in the background as part of the system.\nAllows you to launch your game library, check game stats(such as playtime), activate game overlay features, change performance settings to tweak game/battery performance during gaming.\nThis is the only way to access the recording buffer functionality (records the last X seconds into RAM and saves them when you tap save), so keep enabled if you need that or any of the other features.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.oplus.cosa"
+      ],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.gamespace.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Game Space?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.gamespace.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Game Space?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.geoiptime",
+      "list": "ONEPLUS",
+      "description": "Sets the Timezone (it is not an NTP client). Automatically starts at boot and connects to `checkip.amazonaws.com` and `gateway.oneplus.com`.\n\nPithus analysis: https://beta.pithus.org/report/5e375a6b8da588a1490e42266f4e33975ce73207d79755a109101bd5fb07cc7c",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.iconpack.circle",
+      "list": "ONEPLUS",
+      "description": "OnePlus Icon Pack - Round (https://play.google.com/store/apps/details?id=com.oneplus.iconpack.circle)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.iconpack.oneplus",
+      "list": "ONEPLUS",
+      "description": "OnePlus Icon Pack (https://play.google.com/store/apps/details?id=com.oneplus.iconpack.oneplus)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.iconpack.square",
+      "list": "ONEPLUS",
+      "description": "OnePlus Icon Pack - Square (https://play.google.com/store/apps/details?id=com.oneplus.iconpack.square)",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.ifaaservice",
+      "list": "ONEPLUS",
+      "description": "IFAA = (China’s) Internet Finance Authentication Alliance\nProvides biometric authentication for Alipay. Safe to disable if you don't use it.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.minidumpoptimization",
+      "list": "ONEPLUS",
+      "description": "OPMinidumpOptimization\nRuns in the background.\nNot sure what it does, but haven't noticed any negative effects from weeks of having it disabled.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.mms",
+      "list": "ONEPLUS",
+      "description": "OnePlus Messages (https://play.google.com/store/apps/details?id=com.oneplus.mms)\nOnly used on OnePlus 8 / 8 Pro according to the description.\nProbably safe to remove, just make sure to install another SMS app to not lose that functionality; QKSMS is a good FOSS replacement for basic SMS functionality and Google Messages is an option if you need full RCS support.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.mms.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme overlay for Oneplus Messages app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.mms.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme overlay for Oneplus Messages app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.note",
+      "list": "ONEPLUS",
+      "description": "OnePlus Notes app",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.note.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme overlay for Oneplus Notes app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.note.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme overlay for Oneplus Notes app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.odmoverlay.android",
+      "list": "ONEPLUS",
+      "description": "Android System Theme pack\nGuessing it's a pack of themes for some Oneplus-specific system components, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.odmoverlay.com.android.settings",
+      "list": "ONEPLUS",
+      "description": "Settings Theme pack\nGuessing it's a pack of themes for the settings app, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.odmoverlay.com.android.systemui",
+      "list": "ONEPLUS",
+      "description": "System UI Theme pack\nGuessing it's a pack of themes for some Oneplus-specific system component, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.odmoverlay.com.oneplus",
+      "list": "ONEPLUS",
+      "description": "Oneplus System Theme pack\nGuessing it's a pack of themes for Oneplus-specific system components, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opbackup",
+      "list": "ONEPLUS",
+      "description": "System Update\nRuns in the background.\nHandles things related to OTA system updates.\nSafe to disable, but probably breaks system updates.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.opbackup.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for System Update?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.opbackup.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for System Update?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.opbugreportlite",
+      "list": "ONEPLUS",
+      "description": "OPBugReportLite\nRuns in the background. Runs as part of the system, even if disabled? Disabling does remove all RAM usage tho, and hopefully removes access to user data, as disable/uninstall should sever the connection to the Android user account.\nSilently sends, every 6 hours, battery stats, kernel panics, watchdogs, ANRs and all crashes of your device to Singapore.\nhttps://www.androidpit.com/oneplus-opbugreportlite-data-collection\nSource (yeah it's Elliot Alderson again :D): https://nitter.net/fs0c131y/status/933037531066785797",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opshelf",
+      "list": "ONEPLUS",
+      "description": "OnePlus Shelf (https://play.google.com/store/apps/details?id=com.oneplus.opshelf)\nWidget panel accessible from swiping down on the top-right side of the screen allowing quick access to apps, meteo, spotify, memos...\n\nPithus analysis: https://beta.pithus.org/report/a50f166c8c2fae1204650c7af1cb287e20ad5286a89b013ada787f4b1b90fc64.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opsports",
+      "list": "ONEPLUS",
+      "description": "Cricket Scores (https://play.google.com/store/apps/details?id=com.oneplus.opsports)\nLets you access and follow cricket teams and tournaments.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opwlb",
+      "list": "ONEPLUS",
+      "description": "Work-Life Balance\nNot present in most Oneplus phones? This functionality might have been superseded by other similar apps, like for example Zen Mode.\nHaven't tested, but probably safe to disable.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opwlb.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Work-Life Balance?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.opwlb.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Work-Life Balance?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.orm",
+      "list": "ONEPLUS",
+      "description": "Seems to be Oneplus' Memory Management System according to a press-kit/-release they made for Android 11 (multiple sites wrote \"ORM Memory Management System\" word-for-word).\nRuns in the background as part of the system. Runs even if disabled? Doesn't use any RAM when disabled tho, vs ~50MB when enabled.\nSeems safe to disable, haven't noticed any negative effects in weeks of use, but I assume it breaks the \"RAM Boost\" feature (which is pointless anyway IMO).\nApk file name: OPOmm, mm = Memory Management?\nHas 2 permissions: KILL_BACKGROUND_PROCESSES and SET_TIME_ZONE.\nContains 2 services: OPManagerService and BackgroundCollectorService.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.overlay",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.productoverlay.android",
+      "list": "ONEPLUS",
+      "description": "Android System Theme pack\nGuessing it's a pack of themes for some Android System component, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.productoverlay.com.android.providers.settings",
+      "list": "ONEPLUS",
+      "description": "Settings Storage Theme pack\nGuessing it's a pack of themes for Settings Storage, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.productoverlay.com.oneplus",
+      "list": "ONEPLUS",
+      "description": "Oneplus System Theme pack\nGuessing it's a pack of themes for Oneplus-specific system components, based on the name.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.providers.media",
+      "list": "ONEPLUS",
+      "description": "OnePlus Media Storage\nRuns in the background.\nSeems to just add recycle bin functionality to your file management (file browsers). Keep enabled if you like that function. But safe to disable if you don't want it.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.screenrecord",
+      "list": "ONEPLUS",
+      "description": "Screen Recorder\nThe Android 11 screen recorder with some Oneplus modifications.\nRuns the \"SystemUITileService\" when you have it as one of the quicksettings tiles, but doesn't seem to run in the background outside of that.\nDoesn't have an app icon, but you can create a shortcut to it with the Activity Launcher app (to avoid the background service).\nhttps://f-droid.org/en/packages/de.szalkowski.activitylauncher/",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.screenrecord.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Screenrecord?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.screenrecord.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Screenrecord?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.screenshot",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.sdcardservice",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.security",
+      "list": "ONEPLUS",
+      "description": "Dashboard\nRuns \"WidgetViewService\" and \"SecureService\" in the background.\nManages widget data access? Noticed no apparent ill effects on disable in Android 9.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.security.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme overlay for com.oneplus.security?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.security.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme overlay for com.oneplus.security?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.ses",
+      "list": "ONEPLUS",
+      "description": "OPSes\nApk file name: OPSesAuthentication.\nContains a \"SesService\", but I've never seen it run.\nRelated to Amazon SES?(Simple Email Service) https://aws.amazon.com/ses/",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.setupwizard",
+      "list": "ONEPLUS",
+      "description": "The Oneplus portion of the first-boot setup.\nRuns on boot, but not in the background beyond that.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.simcontacts",
+      "list": "ONEPLUS",
+      "description": "SimContacts Manager\nRuns in the background. Manages contacts and sync to SIM? Noticed no apparent ill effects on disable in Android 9.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.simcontacts.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme overlay for Oneplus SimContacts Manager app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.simcontacts.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme overlay for Oneplus SimContacts Manager app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.skin",
+      "list": "ONEPLUS",
+      "description": "Community OEM candidate for ONEPLUS",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.sms.smscplugger",
+      "list": "ONEPLUS",
+      "description": "Probably related to SMS based on the name?\nContains no services and I've never seen it run.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.75
+    },
+    {
+      "id": "com.oneplus.sound.tuner",
+      "list": "ONEPLUS",
+      "description": "Dolby Atmos\nRuns in the background as part of the system. Runs even if disabled.\nSound tuning for Atmos. Breaks the Dolby Atmos sound settings menu if disabled.\nCould in theory increase loudspeaker fidelity as it can be pre-calculated and stored as a corrective EQ curve, something not possible for headphones (they'd need a unique preset for each pair of headphones).",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.soundrecorder",
+      "list": "ONEPLUS",
+      "description": "Recorder\nOnePlus sound recording app.\nRequires turning on \"Allow modifying system settings\" to use for some reason? Probably tied to recording phone-calls.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.soundrecorder.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Soundrecorder app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.soundrecorder.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Soundrecorder app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.telephonyoptimization",
+      "list": "ONEPLUS",
+      "description": "OPTelephonyOptimization\nContains a service with the same name, but I've never seen it run.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.twspods",
+      "list": "ONEPLUS",
+      "description": "OnePlus Buds (https://play.google.com/store/apps/details?id=com.oneplus.twspods)\nCompanion app for Oneplus Buds. For updating firmware and changing settings.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.wallpaper",
+      "list": "ONEPLUS",
+      "description": "Pack of live wallpapers from Oneplus.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oneplus.wifiapsettings",
+      "list": "ONEPLUS",
+      "description": "Wi-Fi Access Point Settings?\nRuns on boot.\nNoticed no change after disabling; Wi-Fi and related menus still seem fully functional.",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.wifiapsettings.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Dark theme for Wi-Fi Access Point Settings?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oneplus.wifiapsettings.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Light theme for Wi-Fi Access Point Settings?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.appplatform",
+      "list": "ONEPLUS",
+      "description": "App Services\nMight be renamed package of com.heytap.appplatform which is related to Oppo's Heytap account services. Provides a RomUpdateService. Probably not safe to remove.\n\nPithus analysis: https://beta.pithus.org/report/2025ceb69d9379a01771de71ff00051eb0f0c7f44226a72c2066db9649b6dcd2",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.athena",
+      "list": "ONEPLUS",
+      "description": "OnePlus background process manager. Removing it will solve the notification delay you can have but will disable the virtual ram expansion feature (swap RAM to disk) and the 'close all' button in the 'recent apps' page.\nRemoving this app may deteriorate battery performance.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.atlas",
+      "list": "ONEPLUS",
+      "description": "Atlas Service\nSeems to be a Sound provider. Performs a lot of actions upon audio related events. Still not clear if it is really necessary. Runs at boot and stay in background. Pithus analysis: https://beta.pithus.org/report/6d0f9433431cd34a8e9aaef99b329b3623118a1699033be36032f64653dab3d0",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.cosa",
+      "list": "ONEPLUS",
+      "description": "App Enhancement Services\nIf enabled, connects to OPPO servers (icosa-service-eu.allawnos.com) every time a new app is installed. Seems to be mostly focused on gaming performance optimisation according to the settings description:\n'[...] a service that optimises phone performance for specific apps and game scenarios. [...] frame rates, battery usage, touch sensitivity, network connection, vibration and gameplay assistance features.'\n\nCan be disabled via hidden setting (Settings -> Search 'App Enhancement Services' -> App Enhancement Services).\nNote: removing this package prevents the OnePlus Game Center to detect games.\n\nPithus analysis: https://beta.pithus.org/report/f55e935357865f4647e59c98afb5a3a46aba22a48844d80d2819d122781e3fde.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.oneplus.gamespace"
+      ],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.crashbox",
+      "list": "ONEPLUS",
+      "description": "Sends system failure data to developers. Automatically runs at boot.\n\nPithus analysis: https://beta.pithus.org/report/6031048af7434e9cfe3435244dd105ac70e3bfe1f25ecdcca9b2a40b356590a2",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.exsystemservice",
+      "list": "ONEPLUS",
+      "description": "[NEED MORE INFO / APK NEEDED] Lots of permissions. The screenshot function will stop working when the app is disabled.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.games",
+      "list": "ONEPLUS",
+      "description": "Games (https://play.google.com/store/apps/details?id=com.oplus.games)\nOccasionally runs in the background as part of the system.\nAllows you to launch your game library, check game stats(such as playtime), activate game overlay features and performance settings to tweak game/battery performance during gaming.\nThis is the only way to access the recording buffer functionality (records the last X seconds into RAM and saves them when you tap save), so keep enabled if you need that or any of the other features.Note: new package name of com.oneplus.gamespace (since the merge between Oppo and OnePlus. Oplus = Oppo+OnePlus",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "keyword:oplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.kekepay",
+      "list": "ONEPLUS",
+      "description": "Chinese pay service? Safe to remove but no documentation found online\n[APK NEEDED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.lfeh",
+      "list": "ONEPLUS",
+      "description": "Seems to be related to the the logging suite.\n\nPithus analysis: https://beta.pithus.org/report/0542dbdbe10fd3a868ea497ec92670619670f574bbce37d949975dc109cd316f",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.logkit",
+      "list": "ONEPLUS",
+      "description": "Logs service and bug reporting app\nSafe to remove if you don't report bugs to OEM",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.multiapp",
+      "list": "ONEPLUS",
+      "description": "App Cloner. Allows to clone an app. Have access to all installed apps. Is bundled with OnePlus analytics\n\nPithus analysis: https://beta.pithus.org/report/8a1d0783debb405ebadb3fc52507de5f69ecb55f499732b7331dac74ad69ffd7",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.ocar",
+      "list": "ONEPLUS",
+      "description": "Car+\n Related to Oppo's car app [APK NEEDED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.pay",
+      "list": "ONEPLUS",
+      "description": "Secure Payment\nLets you pay with your phone. Privacy issue aside, you should probably not trust their security: https://www.bitdefender.com/blog/hotforsecurity/hackers-attack-oneplus-again-this-time-stealing-customer-details",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.oplus.securitykeyboard",
+      "list": "ONEPLUS",
+      "description": "Secure Keyboard\nKeyboard that appears only when typing a password on apps and webpages, if enabled on Keyboard and Input settings",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.sos",
+      "list": "ONEPLUS",
+      "description": "Emergency Alert service by clicking power button 5 times. It will automatically call contacts (and/or send a SMS) you designated as emergency contacts",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.statistics.rom",
+      "list": "ONEPLUS",
+      "description": "User Experience Program\nIntrusive telemetry. Runs at boot and constantly stays in background\n\nPithus analysis: https://beta.pithus.org/report/7720549a5b4bc305a15e19b3e17ba6857a52e6e12db94006677c59f2fad84331",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.stdid",
+      "list": "ONEPLUS",
+      "description": "StdID\nNeeded for tracking battery usage on per app basis. Dependency for GameSpace\n\n [MORE INFO NEEDED / APK NEEDED]",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [
+        "com.oneplus.gamespace",
+        "com.coloros.gamespace"
+      ],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.synergy",
+      "list": "ONEPLUS",
+      "description": "HeySynergy\nProvides the screencasting feature and OPPO's PC Connect (https://connect.oppo.com/). Don't bother downloading 'PC Connect Desktop' if the 'Phone Connect' Quick Settings tile isn't available on your phone.\n\nPithus analysis: https://beta.pithus.org/report/16d9ea536683291fbffe46dedd3c655379b5fcfdb473ec1cab5290cf5af27fba",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [
+        "com.heytap.mcs",
+        "com.heytap.accessory"
+      ],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.oplus.wifibackuprestore",
+      "list": "ONEPLUS",
+      "description": "Lets you backup your wifi credentials to the cloud. This app has obviously access to your wifi credential and have the INTERNET permission.\n\nPithus analysis: https://beta.pithus.org/report/76e43cf4dc55452f39d9b6117074f4072189d3c8ad9cb295a86e49438545f7aa",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "net.oneplus.commonlogtool",
+      "list": "ONEPLUS",
+      "description": "OnePlus Common Log Tool\n9 permissions and given what we know about OnePlus logging apps, it's a good idea to disable this.\nSee com.oneplus.opbugreportlite, com.oem.oemlogkit and net.oneplus.odm",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.forums",
+      "list": "ONEPLUS",
+      "description": "OnePlus Community (https://play.google.com/store/apps/details?id=net.oneplus.forums)\nLiterally just their forum... in an app.\nJust use a Browser if you wanna access the forums.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.launcher",
+      "list": "ONEPLUS",
+      "description": "Oneplus Launcher\nRuns in the background as part of the system.\nAside from obviously handling the default launcher itself, it also handles the Recents UI on Android 9, the home&recents gestures in Android 11, some submenus in the Settings app and possibly more that I'm unaware of.\nProbably not a good idea to disable.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.launcher.black.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for the Oneplus Launcher?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.launcher.white.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for the Oneplus Launcher?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.odm",
+      "list": "ONEPLUS",
+      "description": "\"OnePlus System Service\"\nShady telemetry app.\nSends loads of data to OnePlus' servers, including IMEI, phone number, MAC addresses, mobile network names and IMSI prefixes, Wi-Fi connection info, the phone's serial number and every time an app was opened.\nSource: https://www.chrisdcmoore.co.uk/post/oneplus-analytics/\nPress: https://www.androidpolice.com/2017/10/10/never-settle-oneplus-found-collecting-personally-identifiable-analytics-data-phone-owners/",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.odm.provider",
+      "list": "ONEPLUS",
+      "description": "Insight Provider\nProvider for net.oneplus.odm? (shady telemetry app)\nContent providers encapsulate data, providing centralized management of data shared between apps.\nhttps://developer.android.com/guide/topics/providers/content-providers.html",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.provider.appcategoryprovider",
+      "list": "ONEPLUS",
+      "description": "AppCategoryProvider\nRuns in the background.\nI think this categorizes apps for use with system functionality, for example: automatically adding games to Game Mode.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "net.oneplus.push",
+      "list": "ONEPLUS",
+      "description": "Push\nOnePlus push notifications.\nOnly used by OnePlus' pre-installed apps. Pushes \"surveys and other junk\" according to a user.\nhttps://forums.oneplus.com/threads/psa-non-root-root-stop-oneplus-push-notifications.580058/\nOnePlus can remotely send push notifications:\nhttps://www.androidpolice.com/2019/07/01/oneplus-accidentally-pushed-a-cryptic-notification-to-all-7-pro-users/",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.wallpaperresources",
+      "list": "ONEPLUS",
+      "description": "Resources for some live wall papers? Not sure.\nOnly contains a \"WallpaperResourceProvider\", no services, activities or receivers.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "net.oneplus.weather",
+      "list": "ONEPLUS",
+      "description": "OnePlus Weather (https://play.google.com/store/apps/details?id=net.oneplus.weather)\nOccasionally runs in the background; I think it runs every now and then to change the app icon to current weather conditions.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.weather.basiccolorblack.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Weather app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.weather.basiccolorwhite.overlay",
+      "list": "ONEPLUS",
+      "description": "Theme overlay for Oneplus Weather app?",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "net.oneplus.widget",
+      "list": "ONEPLUS",
+      "description": "OnePlus Widget\nLets you use OnePlus widgets on the home screen.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:oneplus",
+        "oneplus",
+        "prefix-match",
+        "uad-online"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    }
+  ]
+}

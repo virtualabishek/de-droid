@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "oem": "VIVO",
+    "count": 11,
+    "generated_at": "2026-03-31T15:26:06.679825+00:00",
+    "source": "uad-online",
+    "threshold": 0.7,
+    "evidence_summary": {
+      "keyword:vivo": 6,
+      "prefix-match": 11
+    },
+    "source_ref": "https://raw.githubusercontent.com/0x192/universal-android-debloater/main/resources/assets/uad_lists.json"
+  },
+  "packages": [
+    {
+      "id": "com.bbk.account",
+      "list": "VIVO",
+      "description": "Vivo account\nVivo privacy policy is really bad: https://privacy.vivo.com/privacy\nNote: Removing this will obviously break fuctions that require Vivo account authentication: accessibility, data backup etc.",
+      "removal": "EXPERT",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.bbk.appstore",
+      "list": "VIVO",
+      "description": "Vivo app store.\nNote: apps from this store can still be upgraded with the built-in check upgrade feature even with this package removed",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.bbk.calendar",
+      "list": "VIVO",
+      "description": "Default calendar app.\n50 permissions for a calendar app. What could go wrong?\n\nPithus analysis: https://beta.pithus.org/report/db107cb828a1ec9b7cbcd9fd86542da877fdf4cf947c18c8a48a2b09e568ad10",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.bbk.iqoo.logsystem",
+      "list": "VIVO",
+      "description": "User experience service\nTelemetry app.\nNote:Disabling this will break trial version system upgrade feature.",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.vivo.browser",
+      "list": "VIVO",
+      "description": "Vivo browser full of trackers (https://play.google.com/store/apps/details?id=com.vivo.browser)",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.vivo.dream.weather",
+      "list": "VIVO",
+      "description": "Vivo weather app",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.vivo.hybrid",
+      "list": "VIVO",
+      "description": "Quick App\nProvides Quick App support. Quick Apps are Javascript+CSS apps that don't need any installation. This technology has its uses but I'm personally not a huge fan on having to rely on a JS engine to run an application\nThis system app has a lot of permissions (including SEND_SMS, CAMERA, READ_EXTERNAL_STORAGE, RECORD_AUDIO... why?)\nMore information: https://www.xda-developers.com/huawei-quick-apps-alternative-google-instant-apps/\n OW2 Quick App whitepaper: https://quick-app-initiative.ow2.io/docs/Quick_App_White_Paper.pdf",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.vivo.puresearch",
+      "list": "VIVO",
+      "description": "Search Widget\nDesktop search bar",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    },
+    {
+      "id": "com.vivo.share",
+      "list": "VIVO",
+      "description": "Vivo share\nTransfer data between vivo device & PC",
+      "removal": "ADVANCED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.vivo.space",
+      "list": "VIVO",
+      "description": "Open Vivo official website.\nUseless app",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "keyword:vivo",
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 1.0
+    },
+    {
+      "id": "com.vivo.voicewakeup",
+      "list": "VIVO",
+      "description": "Voice wake-up. Has a lot of permissions (REQUEST_INSTALL_PACKAGES, READ_EXTERNAL_STORAGE, RECORD_AUDIO...). Kind of a \"smart assistant\" ? It is constantly listening waiting for a trigger word [MORE INFO NEEDED]",
+      "removal": "RECOMMENDED",
+      "category": "BLOATWARE",
+      "dependencies": [],
+      "neededBy": [],
+      "labels": [
+        "prefix-match",
+        "uad-online",
+        "vivo"
+      ],
+      "alternatives": [],
+      "source": "variant:uad-online",
+      "matchScore": 0.85
+    }
+  ]
+}

@@ -7,7 +7,13 @@ import { PackageDetailsModal } from "./PackageDetailsModal";
 
 interface PackageListProps {
   onAction: (
-    action: "uninstall" | "restore" | "disable" | "enable",
+    action:
+      | "uninstall"
+      | "restore"
+      | "disable"
+      | "enable"
+      | "restrict-background"
+      | "relax-background",
     packages: string[],
   ) => void;
   isLoading: boolean;
@@ -211,7 +217,13 @@ export function PackageList({
   // Modal state
   const [showWarningDialog, setShowWarningDialog] = useState(false);
   const [pendingAction, setPendingAction] = useState<{
-    action: "uninstall" | "restore" | "disable" | "enable";
+    action:
+      | "uninstall"
+      | "restore"
+      | "disable"
+      | "enable"
+      | "restrict-background"
+      | "relax-background";
     packages: string[];
   } | null>(null);
   const [selectedPackageAlternatives, setSelectedPackageAlternatives] = useState<AlternativeApp[]>([]);
@@ -660,7 +672,15 @@ export function PackageList({
     setCollapsedGroups(newCollapsed);
   };
 
-  const handleActionClick = (action: "uninstall" | "restore" | "disable" | "enable") => {
+  const handleActionClick = (
+    action:
+      | "uninstall"
+      | "restore"
+      | "disable"
+      | "enable"
+      | "restrict-background"
+      | "relax-background",
+  ) => {
     const packageNames = selectedPackages.map((p) => p.name);
     if ((action === "uninstall" || action === "disable") && hasEssentialPackages) {
       setPendingAction({ action, packages: packageNames });
@@ -1545,6 +1565,30 @@ export function PackageList({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Enable
+            </button>
+            <button
+              onClick={() => handleActionClick("restrict-background")}
+              disabled={isLoading}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.657 0 3-1.567 3-3.5S13.657 4 12 4s-3 1.567-3 3.5 1.343 3.5 3 3.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 20v-1a7 7 0 0114 0v1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4l16 16" />
+              </svg>
+              Restrict BG
+            </button>
+            <button
+              onClick={() => handleActionClick("relax-background")}
+              disabled={isLoading}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c1.657 0 3-1.567 3-3.5S13.657 4 12 4s-3 1.567-3 3.5 1.343 3.5 3 3.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 20v-1a7 7 0 0114 0v1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l2 2 3-3" />
+              </svg>
+              Relax BG
             </button>
           </div>
         </div>
