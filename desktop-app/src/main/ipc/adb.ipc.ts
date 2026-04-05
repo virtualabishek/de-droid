@@ -157,6 +157,14 @@ function parsePackageDetailsFromDumpsys(dumpsysOutput: string) {
   const isUpdatedSystemApp =
     !!apkPath && apkPath.includes("/data/app/") && /\bSYSTEM\b/.test(dumpsysOutput);
 
+  const normalizedApkPath = (apkPath || "").toLowerCase();
+  const isSystemPath =
+    normalizedApkPath.startsWith("/system/") ||
+    normalizedApkPath.startsWith("/product/") ||
+    normalizedApkPath.startsWith("/vendor/") ||
+    normalizedApkPath.startsWith("/system_ext/") ||
+    normalizedApkPath.startsWith("/odm/");
+
   return {
     version_name: versionName,
     version_code: versionCode,
@@ -166,6 +174,7 @@ function parsePackageDetailsFromDumpsys(dumpsysOutput: string) {
     update_time: updateTime,
     data_dir: dataDir,
     apk_path: apkPath,
+    is_system_path: isSystemPath,
     is_system: isSystem,
     is_updated_system_app: isUpdatedSystemApp,
   };
@@ -290,11 +299,47 @@ export function registerAdbHandlers() {
         );
         console.log(`[ADB LOCAL] Got ${packageStates.length} packages`);
 
+        const packagePathEntries = await LocalAdb.listPackagesWithPaths(
+          deviceId,
+          userId,
+          false,
+        );
+        const packagePathMap = new Map(
+          packagePathEntries.map((entry) => [entry.name, entry]),
+        );
+
         // Step 2: Enrich with local debloat data
         const enriched = packageDataService.enrichPackages(packageStates);
+        const bloatwarePackages = enriched.filter(
+          (pkg) => pkg.category?.toUpperCase() === "BLOATWARE",
+        );
+
+        const sizeEntries = await Promise.all(
+          bloatwarePackages.map(async (pkg) => {
+            try {
+              const pathEntry = packagePathMap.get(pkg.name);
+              const sizeBytes = await LocalAdb.getPackageSizeBytes(deviceId, pkg.name, {
+                codePathHint: pathEntry?.path,
+                includeDataDir: false,
+                resolveSplitApks: true,
+              });
+              return [pkg.name, sizeBytes] as const;
+            } catch {
+              return [pkg.name, null] as const;
+            }
+          }),
+        );
+        const sizeMap = new Map(sizeEntries);
+        const enrichedWithSizes = enriched.map((pkg) => ({
+          ...pkg,
+          sizeBytes:
+            pkg.category?.toUpperCase() === "BLOATWARE"
+              ? sizeMap.get(pkg.name) ?? undefined
+              : undefined,
+        }));
         console.log(`[LOCAL DATA] Enriched ${enriched.length} packages`);
 
-        return { packages: enriched, total: enriched.length };
+        return { packages: enrichedWithSizes, total: enrichedWithSizes.length };
       } catch (error) {
         console.error("[ADB LOCAL] Failed to get enriched packages:", error);
         throw error;
@@ -1364,16 +1409,61 @@ export function registerAdbHandlers() {
 
         const metadata = parsePackageDetailsFromDumpsys(result.output);
         const permissions = mapPermissionsForDetails(permissionResult);
+        const shouldFetchSize = localInfo?.category?.toUpperCase() === "BLOATWARE";
+        const sizeBytes = shouldFetchSize
+          ? await LocalAdb.getPackageSizeBytes(deviceId, packageName, {
+              codePathHint: metadata.apk_path,
+              includeDataDir: false,
+              resolveSplitApks: true,
+            })
+          : null;
 
         return {
           package: packageName,
           ...metadata,
+          size_bytes: sizeBytes,
           permissions,
           debloat_info: localInfo,
           dumpsys_output: result.output,
         };
       } catch (error) {
         console.error("Failed to get package details:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
+    "adb:get-package-sizes",
+    async (_, deviceId: string, packageNames: string[]) => {
+      try {
+        const uniquePackages = [...new Set(packageNames.filter(Boolean))];
+        const sizes: Record<string, number> = {};
+        const unavailable: string[] = [];
+
+        for (const packageName of uniquePackages) {
+          try {
+            const sizeBytes = await LocalAdb.getPackageSizeBytes(deviceId, packageName, {
+              includeDataDir: false,
+              resolveSplitApks: true,
+            });
+            if (typeof sizeBytes === "number") {
+              sizes[packageName] = sizeBytes;
+            } else {
+              unavailable.push(packageName);
+            }
+          } catch {
+            unavailable.push(packageName);
+          }
+        }
+
+        return {
+          sizes,
+          unavailable,
+          total: uniquePackages.length,
+        };
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to get package sizes:", error);
         throw error;
       }
     },

@@ -811,6 +811,7 @@ export function enrichPackages(
   neededBy: string[];
   labels: string[];
   alternatives: string[];
+  sizeBytes?: number;
   modelLabel?: string;
   modelConfidence?: number;
   modelVersion?: string;

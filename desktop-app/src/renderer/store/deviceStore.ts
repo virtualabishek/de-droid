@@ -12,6 +12,7 @@ interface Package {
   name: string;
   state: 'enabled' | 'disabled' | 'uninstalled';
   selected?: boolean;
+  sizeBytes?: number;
   description?: string;
   removal?: string;
   category?: string;

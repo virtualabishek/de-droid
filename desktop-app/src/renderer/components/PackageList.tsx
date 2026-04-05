@@ -36,6 +36,7 @@ interface Package {
   name: string;
   state: "enabled" | "disabled" | "uninstalled";
   selected?: boolean;
+  sizeBytes?: number;
   description?: string;
   removal?: string;
   category?: string;
@@ -87,6 +88,22 @@ function isSystemPackage(packageName: string): boolean {
   return Object.keys(VENDOR_PREFIXES).some((prefix) =>
     lowerPackageName.startsWith(prefix),
   );
+}
+
+function formatBytes(bytes?: number): string {
+  if (typeof bytes !== "number" || !Number.isFinite(bytes) || bytes <= 0) {
+    return "Size N/A";
+  }
+  if (bytes >= 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${Math.round(bytes)} B`;
 }
 
 type SortOption = "name-asc" | "name-desc" | "state" | "category" | "removal" | "vendor" | "confidence";
@@ -816,6 +833,11 @@ export function PackageList({
             <p className="text-xs text-gray-400 line-clamp-2">{pkg.description}</p>
           )}
           <div className="flex flex-wrap gap-1 mt-2">
+            {pkg.category?.toUpperCase() === "BLOATWARE" && (
+              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-800/80 text-gray-200 border border-gray-600/60">
+                {formatBytes(pkg.sizeBytes)}
+              </span>
+            )}
             {pkg.category && (
               <span className={`text-xs px-1.5 py-0.5 rounded ${getCategoryColor(pkg.category)}`}>
                 {pkg.category}
@@ -909,6 +931,11 @@ export function PackageList({
           {pkg.removal && (
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${getRemovalColor(pkg.removal)}`}>
               {pkg.removal}
+            </span>
+          )}
+          {pkg.category?.toUpperCase() === "BLOATWARE" && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-800/80 text-gray-200 border border-gray-600/60">
+              {formatBytes(pkg.sizeBytes)}
             </span>
           )}
           {typeof pkg.modelConfidence === "number" && (

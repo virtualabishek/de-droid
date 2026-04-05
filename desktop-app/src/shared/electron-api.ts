@@ -58,6 +58,7 @@ export interface EnrichedPackage extends PackageInfo {
   removal: string;
   category: string;
   list: string;
+  sizeBytes?: number;
   dependencies: string[];
   neededBy: string[];
   labels: string[];
@@ -95,6 +96,12 @@ export interface PackageActionResult {
   action: string;
   success: boolean;
   message: string;
+}
+
+export interface PackageSizesResult {
+  sizes: Record<string, number>;
+  unavailable: string[];
+  total: number;
 }
 
 export type BackgroundRestrictionMode = "restrict" | "relax";
@@ -393,6 +400,10 @@ export interface ElectronAPI {
       userId?: number,
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
     getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
+    getPackageSizes: (
+      deviceId: string,
+      packageNames: string[],
+    ) => Promise<PackageSizesResult>;
     getDeviceHealthSnapshot: (deviceId: string) => Promise<DeviceHealthSnapshot>;
     getBackgroundRestrictionStatus: (
       deviceId: string,

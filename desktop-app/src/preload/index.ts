@@ -105,6 +105,8 @@ const electronAPI: ElectronAPI = {
       ),
     getPackageDetails: (deviceId: string, packageName: string) =>
       ipcRenderer.invoke("adb:get-package-details", deviceId, packageName),
+    getPackageSizes: (deviceId: string, packageNames: string[]) =>
+      ipcRenderer.invoke("adb:get-package-sizes", deviceId, packageNames),
     getDeviceHealthSnapshot: (deviceId: string) =>
       ipcRenderer.invoke("adb:get-device-health-snapshot", deviceId),
     getBackgroundRestrictionStatus: (

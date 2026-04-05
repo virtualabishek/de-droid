@@ -77,23 +77,18 @@ function isHistoryTrackedAction(
   );
 }
 
-// Estimate package size (in MB) - in real app, would get from ADB
-function estimatePackageSize(packageName: string): number {
-  if (
-    packageName.includes("facebook") ||
-    packageName.includes("google.android.apps")
-  )
-    return 150;
-  if (packageName.includes("samsung") || packageName.includes("miui"))
-    return 80;
-  if (packageName.includes("game") || packageName.includes("play")) return 200;
-  return Math.floor(20 + Math.random() * 60);
-}
-
-// Format bytes to human readable
-function formatSize(mb: number): string {
-  if (mb >= 1000) return `${(mb / 1000).toFixed(1)} GB`;
-  return `${mb.toFixed(0)} MB`;
+function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
+  if (bytes >= 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${Math.round(bytes)} B`;
 }
 
 // Device Nickname Editor
@@ -314,21 +309,25 @@ export default function Packages() {
     );
 
     const bloatwareSize = bloatwarePackages.reduce(
-      (acc, p) => acc + estimatePackageSize(p.name),
+      (acc, p) => acc + (p.sizeBytes || 0),
       0,
     );
     const freedSpace = removedPackages.reduce(
-      (acc, p) => acc + estimatePackageSize(p.name),
+      (acc, p) => acc + (p.sizeBytes || 0),
       0,
     );
     const potentialSavings = recommendedPackages.reduce(
-      (acc, p) => acc + estimatePackageSize(p.name),
+      (acc, p) => acc + (p.sizeBytes || 0),
       0,
     );
 
     const totalBloat = bloatwareSize + freedSpace;
     const cleanPercentage =
       totalBloat > 0 ? Math.round((freedSpace / totalBloat) * 100) : 100;
+
+    const missingPotentialSizeCount = recommendedPackages.filter(
+      (p) => typeof p.sizeBytes !== "number",
+    ).length;
 
     return {
       bloatwareSize,
@@ -338,6 +337,7 @@ export default function Packages() {
       bloatwareCount: bloatwarePackages.length,
       removedCount: removedPackages.length,
       recommendedCount: recommendedPackages.length,
+      missingPotentialSizeCount,
     };
   }, [packages]);
 
@@ -752,12 +752,18 @@ export default function Packages() {
                   <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                   </svg>
-                  <span className="text-gray-300">Estimated space freed</span>
+                  <span className="text-gray-300">Total bloatware size</span>
                 </div>
                 <span className="text-2xl font-bold text-green-400">
-                  {formatSize(storageStats.potentialSavings)}
+                  {formatBytes(storageStats.bloatwareSize)}
                 </span>
               </div>
+              {quickDebloatState.status === "idle" &&
+                storageStats.missingPotentialSizeCount > 0 && (
+                  <p className="text-xs text-yellow-300/90 mt-3">
+                    Size unavailable for {storageStats.missingPotentialSizeCount} package(s), so total may be lower.
+                  </p>
+                )}
             </div>
 
             {quickDebloatState.status === "idle" ? (

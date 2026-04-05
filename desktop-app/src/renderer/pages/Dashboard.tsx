@@ -14,21 +14,18 @@ type ConnectionDiagnostics = Awaited<
   ReturnType<typeof window.electronAPI.adb.runConnectionDiagnostics>
 >;
 
-function estimatePackageSize(packageName: string): number {
-  if (
-    packageName.includes("facebook") ||
-    packageName.includes("google.android.apps")
-  )
-    return 150;
-  if (packageName.includes("samsung") || packageName.includes("miui"))
-    return 80;
-  if (packageName.includes("game") || packageName.includes("play")) return 200;
-  return Math.floor(20 + Math.random() * 60);
-}
-
-function formatSize(mb: number): string {
-  if (mb >= 1000) return `${(mb / 1000).toFixed(1)} GB`;
-  return `${mb.toFixed(0)} MB`;
+function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
+  if (bytes >= 1024 * 1024 * 1024) {
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${Math.round(bytes)} B`;
 }
 
 function getAndroidVersion(sdkLevel: number): string {
@@ -223,15 +220,15 @@ export default function Dashboard() {
 
     return {
       bloatwareSize: bloatwarePackages.reduce(
-        (acc, p) => acc + estimatePackageSize(p.name),
+        (acc, p) => acc + (p.sizeBytes || 0),
         0,
       ),
       freedSpace: removedPackages.reduce(
-        (acc, p) => acc + estimatePackageSize(p.name),
+        (acc, p) => acc + (p.sizeBytes || 0),
         0,
       ),
       potentialSavings: recommendedPackages.reduce(
-        (acc, p) => acc + estimatePackageSize(p.name),
+        (acc, p) => acc + (p.sizeBytes || 0),
         0,
       ),
       bloatwareCount: bloatwarePackages.length,
@@ -473,12 +470,12 @@ export default function Dashboard() {
                   subtitle={
                     isLoadingPackages
                       ? "Calculating..."
-                      : `~${formatSize(storageStats.bloatwareSize)} used`
+                      : `${formatBytes(storageStats.bloatwareSize)} detected`
                   }
                 />
                 <InfoCard
                   title="Space Freed"
-                  value={isLoadingPackages ? "..." : formatSize(storageStats.freedSpace)}
+                  value={isLoadingPackages ? "..." : formatBytes(storageStats.freedSpace)}
                   icon={
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -494,7 +491,7 @@ export default function Dashboard() {
                 <InfoCard
                   title="Potential Savings"
                   value={
-                    isLoadingPackages ? "..." : formatSize(storageStats.potentialSavings)
+                    isLoadingPackages ? "..." : formatBytes(storageStats.bloatwareSize)
                   }
                   icon={
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -505,7 +502,7 @@ export default function Dashboard() {
                   subtitle={
                     isLoadingPackages
                       ? "Calculating..."
-                      : `${storageStats.recommendedCount} safe to remove`
+                      : `${storageStats.bloatwareCount} bloatware packages detected`
                   }
                 />
                 <div className="relative overflow-hidden rounded-2xl border border-primary-500/30 bg-gradient-to-br from-gray-800 to-gray-900 p-5 shadow-lg shadow-black/20">
