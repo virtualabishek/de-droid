@@ -8,6 +8,24 @@ import { useHistoryStore } from "../store/historyStore";
 import { useAuthStore } from "../store/authStore";
 import { useToastStore } from "../store/toastStore";
 
+type QuickDebloatItemStatus = "pending" | "running" | "success" | "failed";
+
+interface QuickDebloatItem {
+  packageName: string;
+  status: QuickDebloatItemStatus;
+  message?: string;
+}
+
+interface QuickDebloatState {
+  status: "idle" | "running" | "completed";
+  total: number;
+  processed: number;
+  successCount: number;
+  failCount: number;
+  currentPackage: string | null;
+  items: QuickDebloatItem[];
+}
+
 // Map SDK level to Android version
 function getAndroidVersion(sdkLevel: number): string {
   const sdkToVersion: Record<number, string> = {
@@ -195,6 +213,15 @@ export default function Packages() {
   const [showBackupModal, setShowBackupModal] = useState(false);
   const [deviceNickname, setDeviceNickname] = useState<string | null>(null);
   const [showQuickDebloat, setShowQuickDebloat] = useState(false);
+  const [quickDebloatState, setQuickDebloatState] = useState<QuickDebloatState>({
+    status: "idle",
+    total: 0,
+    processed: 0,
+    successCount: 0,
+    failCount: 0,
+    currentPackage: null,
+    items: [],
+  });
   const [permissionPackage, setPermissionPackage] = useState<string | null>(
     null,
   );
@@ -451,6 +478,8 @@ export default function Packages() {
 
   // Quick debloat - remove all recommended packages
   const handleQuickDebloat = async () => {
+    if (!selectedDevice) return;
+
     const recommendedPackages = packages.filter(
       (p) => p.removal === "RECOMMENDED" && p.state === "enabled",
     );
@@ -460,11 +489,103 @@ export default function Packages() {
       return;
     }
 
-    setShowQuickDebloat(false);
-    await handleAction(
-      "uninstall",
-      recommendedPackages.map((p) => p.name),
-    );
+    const packageNames = recommendedPackages.map((p) => p.name);
+    setQuickDebloatState({
+      status: "running",
+      total: packageNames.length,
+      processed: 0,
+      successCount: 0,
+      failCount: 0,
+      currentPackage: packageNames[0] || null,
+      items: packageNames.map((packageName) => ({ packageName, status: "pending" })),
+    });
+    setActionLoading(true);
+
+    let successCount = 0;
+    let failCount = 0;
+
+    try {
+      for (let index = 0; index < packageNames.length; index++) {
+        const packageName = packageNames[index];
+
+        setQuickDebloatState((prev) => ({
+          ...prev,
+          currentPackage: packageName,
+          items: prev.items.map((item) =>
+            item.packageName === packageName
+              ? { ...item, status: "running", message: undefined }
+              : item,
+          ),
+        }));
+
+        let success = false;
+        let errorMessage: string | undefined;
+
+        try {
+          const result = await window.electronAPI.adb.uninstallPackage(
+            selectedDevice.adb_id,
+            packageName,
+            selectedUser,
+            selectedDevice.android_sdk,
+          );
+
+          if (result?.success) {
+            success = true;
+            successCount++;
+          } else {
+            errorMessage = result?.message || "Uninstall failed";
+            failCount++;
+          }
+        } catch (err) {
+          errorMessage = err instanceof Error ? err.message : "Unknown error";
+          failCount++;
+        }
+
+        recordAction({
+          deviceId: selectedDevice.adb_id,
+          deviceModel: selectedDevice.model,
+          deviceBrand: selectedDevice.brand,
+          packageName,
+          action: "UNINSTALL",
+          androidUser: selectedUser,
+          success,
+          errorMessage,
+        });
+
+        setQuickDebloatState((prev) => ({
+          ...prev,
+          processed: index + 1,
+          successCount,
+          failCount,
+          items: prev.items.map((item) =>
+            item.packageName === packageName
+              ? {
+                  ...item,
+                  status: success ? "success" : "failed",
+                  message: errorMessage,
+                }
+              : item,
+          ),
+        }));
+      }
+
+      await fetchPackages(true);
+      await fetchStats();
+      clearSelection();
+
+      setQuickDebloatState((prev) => ({
+        ...prev,
+        status: "completed",
+        currentPackage: null,
+      }));
+
+      showNotification(
+        failCount === 0 ? "success" : "error",
+        `Quick debloat complete: ${successCount} succeeded, ${failCount} failed`,
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleRestorePackages = async (packageNames: string[]) => {
@@ -621,7 +742,9 @@ export default function Packages() {
                   <span className="text-gray-300">Packages to remove</span>
                 </div>
                 <span className="text-2xl font-bold text-green-400">
-                  {storageStats.recommendedCount}
+                  {quickDebloatState.status === "idle"
+                    ? storageStats.recommendedCount
+                    : quickDebloatState.total}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -637,30 +760,140 @@ export default function Packages() {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6">
-              <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-sm text-blue-300/90">
-                This will safely remove all packages marked as &quot;Recommended&quot; for removal. These packages are safe to remove and won&apos;t affect your device&apos;s core functionality.
-              </p>
-            </div>
+            {quickDebloatState.status === "idle" ? (
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6">
+                <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-sm text-blue-300/90">
+                  This will safely remove all packages marked as &quot;Recommended&quot; for removal. These packages are safe to remove and won&apos;t affect your device&apos;s core functionality.
+                </p>
+              </div>
+            ) : (
+              <div className="mb-6 space-y-3">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-emerald-300">
+                      {quickDebloatState.status === "running"
+                        ? "Debloating in progress"
+                        : "Debloat finished"}
+                    </span>
+                    <span className="text-emerald-200 font-semibold">
+                      {Math.round(
+                        (quickDebloatState.processed /
+                          Math.max(quickDebloatState.total, 1)) *
+                          100,
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-900/60 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-300"
+                      style={{
+                        width: `${Math.round(
+                          (quickDebloatState.processed /
+                            Math.max(quickDebloatState.total, 1)) *
+                            100,
+                        )}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-xs text-emerald-100/80">
+                    <span>
+                      {quickDebloatState.processed}/{quickDebloatState.total} processed
+                    </span>
+                    <span>
+                      {quickDebloatState.successCount} removed, {quickDebloatState.failCount} failed
+                    </span>
+                  </div>
+                  {quickDebloatState.currentPackage && (
+                    <div className="mt-3 text-xs text-emerald-100/90 flex items-center gap-2">
+                      <span className="inline-block w-3 h-3 border-2 border-emerald-300 border-t-transparent rounded-full animate-spin"></span>
+                      Removing: {quickDebloatState.currentPackage}
+                    </div>
+                  )}
+                </div>
+
+                <div className="max-h-44 overflow-y-auto rounded-xl border border-gray-700 bg-gray-900/40 divide-y divide-gray-800">
+                  {quickDebloatState.items.map((item) => (
+                    <div key={item.packageName} className="px-3 py-2.5 flex items-center justify-between gap-3 text-sm">
+                      <span className="text-gray-200 truncate">{item.packageName}</span>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
+                          item.status === "success"
+                            ? "bg-green-500/20 text-green-300"
+                            : item.status === "failed"
+                              ? "bg-red-500/20 text-red-300"
+                              : item.status === "running"
+                                ? "bg-blue-500/20 text-blue-300"
+                                : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {item.status === "success"
+                          ? "Removed"
+                          : item.status === "failed"
+                            ? "Failed"
+                            : item.status === "running"
+                              ? "Removing"
+                              : "Pending"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-3">
               <button
-                onClick={() => setShowQuickDebloat(false)}
+                onClick={() => {
+                  if (quickDebloatState.status !== "running") {
+                    setShowQuickDebloat(false);
+                    setQuickDebloatState({
+                      status: "idle",
+                      total: 0,
+                      processed: 0,
+                      successCount: 0,
+                      failCount: 0,
+                      currentPackage: null,
+                      items: [],
+                    });
+                  }
+                }}
+                disabled={quickDebloatState.status === "running"}
                 className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-xl transition-colors font-medium"
               >
-                Cancel
+                {quickDebloatState.status === "running"
+                  ? "Debloating..."
+                  : quickDebloatState.status === "completed"
+                    ? "Close"
+                    : "Cancel"}
               </button>
               <button
                 onClick={handleQuickDebloat}
+                disabled={quickDebloatState.status === "running"}
                 className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl font-medium transition-all shadow-lg shadow-green-500/20 flex items-center justify-center gap-2"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Start Debloat
+                {quickDebloatState.status === "running" ? (
+                  <>
+                    <span className="inline-block w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></span>
+                    Removing...
+                  </>
+                ) : quickDebloatState.status === "completed" ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Finished
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Start Debloat
+                  </>
+                )}
               </button>
             </div>
           </div>
