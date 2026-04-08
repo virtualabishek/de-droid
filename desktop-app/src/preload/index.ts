@@ -105,6 +105,8 @@ const electronAPI: ElectronAPI = {
       ),
     getPackageDetails: (deviceId: string, packageName: string) =>
       ipcRenderer.invoke("adb:get-package-details", deviceId, packageName),
+    getPackageSizes: (deviceId: string, packageNames: string[]) =>
+      ipcRenderer.invoke("adb:get-package-sizes", deviceId, packageNames),
     getDeviceHealthSnapshot: (deviceId: string) =>
       ipcRenderer.invoke("adb:get-device-health-snapshot", deviceId),
     getBackgroundRestrictionStatus: (
@@ -212,6 +214,9 @@ const electronAPI: ElectronAPI = {
   // ============ HISTORY API (LOCAL SQLITE) ============
   history: {
     getAll: (limit?: number) => ipcRenderer.invoke("history:get-all", limit),
+    clear: (deviceId?: string) => ipcRenderer.invoke("history:clear", deviceId),
+    deleteSelected: (ids: string[]) =>
+      ipcRenderer.invoke("history:delete-selected", ids),
     getStats: () => ipcRenderer.invoke("history:get-stats"),
     getDevice: (deviceId: string, limit?: number) =>
       ipcRenderer.invoke("history:get-device", deviceId, limit),
@@ -242,6 +247,7 @@ const electronAPI: ElectronAPI = {
   // ============ SAVED BACKUPS API (LOCAL SQLITE) ============
   savedBackups: {
     getAll: () => ipcRenderer.invoke("backups:get-all"),
+    clear: (deviceId?: string) => ipcRenderer.invoke("backups:clear", deviceId),
     get: (id: string) => ipcRenderer.invoke("backups:get", id),
     getDevice: (deviceId: string) =>
       ipcRenderer.invoke("backups:get-device", deviceId),

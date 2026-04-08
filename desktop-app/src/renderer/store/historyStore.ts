@@ -83,6 +83,9 @@ interface HistoryState {
     packages: Array<{ name: string; state: string }>;
   }) => Promise<void>;
   deleteBackup: (id: string) => Promise<void>;
+  clearHistory: (deviceId?: string) => Promise<number>;
+  deleteSelectedHistory: (ids: string[]) => Promise<number>;
+  clearBackups: (deviceId?: string) => Promise<number>;
   clearError: () => void;
 }
 
@@ -285,6 +288,97 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
       set({
         error:
           error instanceof Error ? error.message : "Failed to delete backup",
+      });
+      throw error;
+    }
+  },
+
+  clearHistory: async (deviceId?: string) => {
+    try {
+      const api = window?.electronAPI?.history;
+      if (!api) {
+        throw new Error("History API unavailable");
+      }
+
+      const result = await api.clear(deviceId);
+      if (!result?.success) {
+        throw new Error("Failed to clear history");
+      }
+
+      if (deviceId) {
+        set((state) => ({
+          history: state.history.filter((item) => item.device_id !== deviceId),
+        }));
+      } else {
+        set({ history: [] });
+      }
+
+      get().fetchStats();
+      return result.deleted || 0;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Failed to clear history",
+      });
+      throw error;
+    }
+  },
+
+  deleteSelectedHistory: async (ids: string[]) => {
+    try {
+      const api = window?.electronAPI?.history;
+      if (!api) {
+        throw new Error("History API unavailable");
+      }
+
+      const result = await api.deleteSelected(ids);
+      if (!result?.success) {
+        throw new Error("Failed to delete selected history");
+      }
+
+      const idSet = new Set(ids);
+      set((state) => ({
+        history: state.history.filter((item) => !idSet.has(item.id)),
+      }));
+
+      get().fetchStats();
+      return result.deleted || 0;
+    } catch (error) {
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete selected history",
+      });
+      throw error;
+    }
+  },
+
+  clearBackups: async (deviceId?: string) => {
+    try {
+      const api = window?.electronAPI?.savedBackups;
+      if (!api) {
+        throw new Error("Backups API unavailable");
+      }
+
+      const result = await api.clear(deviceId);
+      if (!result?.success) {
+        throw new Error("Failed to clear backups");
+      }
+
+      if (deviceId) {
+        set((state) => ({
+          savedBackups: state.savedBackups.filter(
+            (backup) => backup.device_id !== deviceId,
+          ),
+        }));
+      } else {
+        set({ savedBackups: [] });
+      }
+
+      return result.deleted || 0;
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Failed to clear backups",
       });
       throw error;
     }

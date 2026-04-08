@@ -12,6 +12,7 @@ interface Permission {
 
 interface PackageDetails {
   package: string;
+  size_bytes?: number | null;
   version_name?: string;
   version_code?: number;
   target_sdk?: number;
@@ -20,6 +21,7 @@ interface PackageDetails {
   update_time?: string;
   data_dir?: string;
   apk_path?: string;
+  is_system_path?: boolean;
   is_system?: boolean;
   is_updated_system_app?: boolean;
   permissions?: {
@@ -165,6 +167,28 @@ export function PackageDetailsModal({
   const formatBucket = (bucket?: string | null) => {
     if (!bucket) return 'Unknown';
     return bucket.replace(/_/g, ' ');
+  };
+
+  const formatBytes = (bytes?: number | null, isBloatware?: boolean, isSystemPath?: boolean) => {
+    if (!isBloatware) {
+      return 'Only shown for bloatware';
+    }
+    if (typeof bytes !== 'number' || !Number.isFinite(bytes) || bytes <= 0) {
+      if (isSystemPath) {
+        return 'Unavailable on this device policy';
+      }
+      return 'Unknown';
+    }
+    if (bytes >= 1024 * 1024 * 1024) {
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    }
+    if (bytes >= 1024 * 1024) {
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+    if (bytes >= 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${Math.round(bytes)} B`;
   };
 
   if (!isOpen) return null;
@@ -471,6 +495,16 @@ export function PackageDetailsModal({
                         )}
                         {details.is_updated_system_app && (
                           <span className="text-blue-400 ml-2">(Updated)</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-gray-700/50 rounded-lg">
+                      <h3 className="text-xs font-medium text-gray-400 mb-1">Installed Size</h3>
+                      <p className="text-white text-sm">
+                        {formatBytes(
+                          details.size_bytes,
+                          details.debloat_info?.category?.toUpperCase() === 'BLOATWARE',
+                          details.is_system_path,
                         )}
                       </p>
                     </div>

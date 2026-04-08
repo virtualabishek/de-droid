@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistoryStore, ActionHistoryItem } from '../store/historyStore';
 import { useDeviceStore } from '../store/deviceStore';
 
@@ -63,6 +63,9 @@ export default function History() {
     fetchStats,
     fetchSavedBackups,
     deleteBackup,
+    clearHistory,
+    deleteSelectedHistory,
+    clearBackups,
     clearError,
   } = useHistoryStore();
 
@@ -70,6 +73,8 @@ export default function History() {
 
   const [filterAction, setFilterAction] = useState<'all' | 'UNINSTALL' | 'DISABLE' | 'RESTORE' | 'ENABLE'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'success' | 'failed'>('all');
+  const [historyDeviceFilter, setHistoryDeviceFilter] = useState<string>('all');
+  const [backupDeviceFilter, setBackupDeviceFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'history' | 'backups'>('history');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -82,6 +87,32 @@ export default function History() {
     fetchSavedBackups();
   }, [fetchHistory, fetchStats, fetchSavedBackups]);
 
+  const historyDevices = useMemo(() => {
+    const byDevice = new Map<string, { id: string; label: string }>();
+    history.forEach((item) => {
+      const id = item.device_id;
+      if (!id || byDevice.has(id)) return;
+      const brand = item.device_brand || '';
+      const model = item.device_model || '';
+      const label = `${(brand + ' ' + model).trim() || 'Unknown Device'} (${id})`;
+      byDevice.set(id, { id, label });
+    });
+    return Array.from(byDevice.values());
+  }, [history]);
+
+  const backupDevices = useMemo(() => {
+    const byDevice = new Map<string, { id: string; label: string }>();
+    savedBackups.forEach((backup) => {
+      const id = backup.device_id;
+      if (!id || byDevice.has(id)) return;
+      const brand = backup.device_brand || '';
+      const model = backup.device_model || '';
+      const label = `${(brand + ' ' + model).trim() || 'Unknown Device'} (${id})`;
+      byDevice.set(id, { id, label });
+    });
+    return Array.from(byDevice.values());
+  }, [savedBackups]);
+
   // Filter history based on current filters
   const filteredHistory = history.filter((item) => {
     const matchesAction = filterAction === 'all' || item.action === filterAction;
@@ -89,8 +120,13 @@ export default function History() {
       filterStatus === 'all' ||
       (filterStatus === 'success' && item.success) ||
       (filterStatus === 'failed' && !item.success);
+    const matchesDevice = historyDeviceFilter === 'all' || item.device_id === historyDeviceFilter;
     const matchesSearch = item.packageName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesAction && matchesStatus && matchesSearch;
+    return matchesAction && matchesStatus && matchesDevice && matchesSearch;
+  });
+
+  const filteredBackups = savedBackups.filter((backup) => {
+    return backupDeviceFilter === 'all' || backup.device_id === backupDeviceFilter;
   });
 
   // Group history by date
@@ -209,10 +245,15 @@ export default function History() {
     setIsUndoing(true);
     let successCount = 0;
     let failCount = 0;
+    let skippedCount = 0;
 
     for (const id of selectedItems) {
       const item = history.find((h) => h.id === id);
       if (!item || !item.success) continue;
+      if (item.device_id !== selectedDevice.adb_id) {
+        skippedCount++;
+        continue;
+      }
 
       const reverseAction = getReverseAction(item.action);
       if (!reverseAction) continue;
@@ -270,7 +311,7 @@ export default function History() {
 
     setNotification({
       type: failCount === 0 ? 'success' : 'error',
-      message: `Undo completed: ${successCount} succeeded, ${failCount} failed`,
+      message: `Undo completed: ${successCount} succeeded, ${failCount} failed, ${skippedCount} skipped`,
     });
 
     // Refresh history and stats
@@ -287,6 +328,71 @@ export default function History() {
       setTimeout(() => setNotification(null), 3000);
     } catch {
       setNotification({ type: 'error', message: 'Failed to delete backup' });
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
+  const handleDeleteSelectedHistory = async () => {
+    if (selectedItems.size === 0) return;
+
+    const ok = window.confirm(`Delete ${selectedItems.size} selected history item(s)? This cannot be undone.`);
+    if (!ok) return;
+
+    try {
+      const deleted = await deleteSelectedHistory(Array.from(selectedItems));
+      setSelectedItems(new Set());
+      setNotification({ type: 'success', message: `Deleted ${deleted} history item(s)` });
+      fetchHistory();
+      setTimeout(() => setNotification(null), 3000);
+    } catch {
+      setNotification({ type: 'error', message: 'Failed to delete selected history' });
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
+  const handleClearHistory = async (forCurrentDevice: boolean) => {
+    const deviceId = forCurrentDevice ? selectedDevice?.adb_id : undefined;
+    if (forCurrentDevice && !deviceId) {
+      setNotification({ type: 'error', message: 'No connected device selected' });
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+
+    const label = forCurrentDevice ? 'current device history' : 'all history';
+    const ok = window.confirm(`Clear ${label}? This cannot be undone.`);
+    if (!ok) return;
+
+    try {
+      const deleted = await clearHistory(deviceId);
+      setSelectedItems(new Set());
+      setNotification({ type: 'success', message: `Cleared ${deleted} history item(s)` });
+      fetchHistory();
+      setTimeout(() => setNotification(null), 3000);
+    } catch {
+      setNotification({ type: 'error', message: 'Failed to clear history' });
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
+  const handleClearBackups = async (forCurrentDevice: boolean) => {
+    const deviceId = forCurrentDevice ? selectedDevice?.adb_id : undefined;
+    if (forCurrentDevice && !deviceId) {
+      setNotification({ type: 'error', message: 'No connected device selected' });
+      setTimeout(() => setNotification(null), 3000);
+      return;
+    }
+
+    const label = forCurrentDevice ? 'current device backups' : 'all backups';
+    const ok = window.confirm(`Delete ${label}? This cannot be undone.`);
+    if (!ok) return;
+
+    try {
+      const deleted = await clearBackups(deviceId);
+      setNotification({ type: 'success', message: `Deleted ${deleted} backup(s)` });
+      fetchSavedBackups();
+      setTimeout(() => setNotification(null), 3000);
+    } catch {
+      setNotification({ type: 'error', message: 'Failed to clear backups' });
       setTimeout(() => setNotification(null), 3000);
     }
   };
@@ -468,6 +574,18 @@ export default function History() {
                   </svg>
                 </div>
                 <select
+                  value={historyDeviceFilter}
+                  onChange={(e) => setHistoryDeviceFilter(e.target.value)}
+                  className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+                >
+                  <option value="all">All Devices</option>
+                  {historyDevices.map((device) => (
+                    <option key={device.id} value={device.id}>
+                      {device.label}
+                    </option>
+                  ))}
+                </select>
+                <select
                   value={filterAction}
                   onChange={(e) => setFilterAction(e.target.value as typeof filterAction)}
                   className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
@@ -489,6 +607,22 @@ export default function History() {
                 </select>
               </div>
 
+              <div className="mt-4 pt-4 border-t border-gray-700 flex items-center justify-end gap-2">
+                <button
+                  onClick={() => handleClearHistory(true)}
+                  disabled={!selectedDevice}
+                  className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg transition-colors"
+                >
+                  Clear Current Device
+                </button>
+                <button
+                  onClick={() => handleClearHistory(false)}
+                  className="px-3 py-1 text-sm bg-red-700 hover:bg-red-600 rounded-lg transition-colors"
+                >
+                  Clear All History
+                </button>
+              </div>
+
               {/* Selection actions */}
               {selectedItems.size > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-700 flex items-center justify-between">
@@ -507,6 +641,12 @@ export default function History() {
                       className="px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
                     >
                       Clear Selection
+                    </button>
+                    <button
+                      onClick={handleDeleteSelectedHistory}
+                      className="px-3 py-1 text-sm bg-red-700 hover:bg-red-600 rounded-lg transition-colors font-medium"
+                    >
+                      Delete Selected
                     </button>
                     <button
                       onClick={handleUndoSelected}
@@ -604,11 +744,10 @@ export default function History() {
                                 )}
                                 <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                                   <span>🕐 {formatTime(item.createdAt)}</span>
-                                  {item.device && (
-                                    <span>
-                                      📱 {item.device.brand} {item.device.model}
-                                    </span>
-                                  )}
+                                  <span>
+                                    📱 {`${(item.device_brand || '')} ${(item.device_model || '')}`.trim() || 'Unknown Device'}
+                                  </span>
+                                  <span className="font-mono">{item.device_id}</span>
                                   <span>👤 User {item.androidUser}</span>
                                 </div>
                               </div>
@@ -618,9 +757,13 @@ export default function History() {
                                     e.stopPropagation();
                                     handleUndoSingle(item);
                                   }}
-                                  disabled={isUndoing}
+                                  disabled={isUndoing || selectedDevice.adb_id !== item.device_id}
                                   className="px-3 py-1 text-xs bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded transition-colors"
-                                  title={`Undo this action (${getReverseAction(item.action)})`}
+                                  title={
+                                    selectedDevice.adb_id !== item.device_id
+                                      ? 'Connect/select the same device to undo this action'
+                                      : `Undo this action (${getReverseAction(item.action)})`
+                                  }
                                 >
                                   {isUndoing ? 'Undoing...' : 'Undo'}
                                 </button>
@@ -643,7 +786,7 @@ export default function History() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
                 <p className="text-gray-400">Loading backups...</p>
               </div>
-            ) : savedBackups.length === 0 ? (
+            ) : filteredBackups.length === 0 ? (
               <div className="bg-gray-800 rounded-lg border border-gray-700 p-8 text-center">
                 <svg
                   className="w-16 h-16 mx-auto text-gray-600 mb-4"
@@ -658,14 +801,48 @@ export default function History() {
                     d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
                   />
                 </svg>
-                <h3 className="text-xl font-medium text-gray-300 mb-2">No saved backups</h3>
+                <h3 className="text-xl font-medium text-gray-300 mb-2">
+                  {savedBackups.length === 0 ? 'No saved backups' : 'No backups for this device'}
+                </h3>
                 <p className="text-gray-500">
-                  Create a backup from the Dashboard to save your device's package state
+                  {savedBackups.length === 0
+                    ? "Create a backup from the Dashboard to save your device's package state"
+                    : 'Try switching the device filter to view backups from another device'}
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {savedBackups.map((backup) => (
+              <>
+                <div className="mb-4 bg-gray-800 rounded-lg border border-gray-700 p-4 flex items-center gap-3">
+                  <select
+                    value={backupDeviceFilter}
+                    onChange={(e) => setBackupDeviceFilter(e.target.value)}
+                    className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+                  >
+                    <option value="all">All Devices</option>
+                    {backupDevices.map((device) => (
+                      <option key={device.id} value={device.id}>
+                        {device.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      onClick={() => handleClearBackups(true)}
+                      disabled={!selectedDevice}
+                      className="px-3 py-2 text-sm bg-gray-700 hover:bg-gray-600 disabled:opacity-50 rounded-lg transition-colors"
+                    >
+                      Clear Current Device
+                    </button>
+                    <button
+                      onClick={() => handleClearBackups(false)}
+                      className="px-3 py-2 text-sm bg-red-700 hover:bg-red-600 rounded-lg transition-colors"
+                    >
+                      Clear All Backups
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredBackups.map((backup) => (
                   <div
                     key={backup.id}
                     className="bg-gray-800 rounded-lg border border-gray-700 p-4"
@@ -693,14 +870,16 @@ export default function History() {
                       </button>
                     </div>
                     <div className="space-y-2 text-sm">
-                      {backup.device && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-500">Device:</span>
-                          <span className="text-gray-300">
-                            {backup.device.brand} {backup.device.model}
-                          </span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Device:</span>
+                        <span className="text-gray-300">
+                          {`${(backup.device_brand || '')} ${(backup.device_model || '')}`.trim() || 'Unknown Device'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Device ID:</span>
+                        <span className="text-gray-300 font-mono">{backup.device_id}</span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">Packages:</span>
                         <span className="text-gray-300">{backup.packages.length} packages</span>
@@ -736,7 +915,8 @@ export default function History() {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+              </>
             )}
           </div>
         )}

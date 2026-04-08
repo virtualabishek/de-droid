@@ -110,6 +110,23 @@ export function updateBackupName(id: string, name: string): SavedBackup | null {
 }
 
 /**
+ * Clear backups for all devices or one specific device
+ */
+export function clearBackups(deviceId?: string): number {
+  const db = getDatabase();
+
+  if (deviceId) {
+    const result = db
+      .prepare("DELETE FROM saved_backups WHERE device_id = ?")
+      .run(deviceId);
+    return result.changes;
+  }
+
+  const result = db.prepare("DELETE FROM saved_backups").run();
+  return result.changes;
+}
+
+/**
  * Compare a backup with current package states
  */
 export function compareBackupWithCurrent(

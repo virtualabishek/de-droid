@@ -61,6 +61,7 @@ python -m venv model-api/env
 source model-api/env/bin/activate
 pip install -r model-api/requirements.txt
 uvicorn main:app --app-dir model-api/model-api --host 0.0.0.0 --port 8000 --reload
+// uvicorn main:app --host 0.0.0.0 --port 8000 --reload (if model-api/main.py is running from outside)
 ```
 
 ### Train and export model predictions (optional)

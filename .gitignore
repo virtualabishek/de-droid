@@ -28,3 +28,13 @@ model-api/processed/*.bak
 
 /docs
 docs
+
+# desktop app build artifacts
+desktop-app/release/
+desktop-app/dist/
+desktop-app/*.tsbuildinfo
+*.AppImage
+*.deb
+*.dmg
+*.exe
+*.msi

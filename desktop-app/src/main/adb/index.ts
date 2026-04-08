@@ -3,9 +3,84 @@
  * Executes ADB commands locally using Node.js child_process
  */
 import { exec } from "child_process";
+import { promises as fs } from "fs";
+import * as path from "path";
 import { promisify } from "util";
+import { getSetting } from "../services/settingsService";
 
 const execAsync = promisify(exec);
+const ADB_EXECUTABLE = process.platform === "win32" ? "adb.exe" : "adb";
+const PLATFORM_TOOLS_SUBDIR =
+  process.platform === "win32"
+    ? "win"
+    : process.platform === "darwin"
+      ? "mac"
+      : "linux";
+let cachedAdbExecutablePath: string | null = null;
+
+function shellEscape(value: string): string {
+  return `"${value.replace(/(["\\$`])/g, "\\$1")}"`;
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  if (!filePath) return false;
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveAdbExecutablePath(): Promise<string> {
+  if (cachedAdbExecutablePath) {
+    return cachedAdbExecutablePath;
+  }
+
+  const configuredPath = getSetting("adb_path");
+  if (configuredPath && (await pathExists(configuredPath))) {
+    cachedAdbExecutablePath = configuredPath;
+    return cachedAdbExecutablePath;
+  }
+
+  const envCandidates = [process.env.ANDROID_SDK_ROOT, process.env.ANDROID_HOME]
+    .filter((value): value is string => Boolean(value))
+    .map((sdkRoot) => path.join(sdkRoot, "platform-tools", ADB_EXECUTABLE));
+
+  const bundledCandidates = [
+    path.join(
+      process.resourcesPath,
+      "platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+    path.join(
+      process.cwd(),
+      "resources",
+      "platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+    path.resolve(
+      __dirname,
+      "../../../resources/platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+  ];
+
+  const candidates = [...bundledCandidates, ...envCandidates];
+
+  for (const candidate of candidates) {
+    if (await pathExists(candidate)) {
+      cachedAdbExecutablePath = candidate;
+      return cachedAdbExecutablePath;
+    }
+  }
+
+  cachedAdbExecutablePath = ADB_EXECUTABLE;
+  return cachedAdbExecutablePath;
+}
 
 export interface AdbDevice {
   id: string;
@@ -25,6 +100,18 @@ export interface AdbCommandResult {
 export interface PackageInfo {
   name: string;
   state: "enabled" | "disabled" | "uninstalled";
+}
+
+export interface PackagePathInfo {
+  name: string;
+  path: string;
+  isSystemPath: boolean;
+}
+
+export interface PackageSizeOptions {
+  codePathHint?: string;
+  includeDataDir?: boolean;
+  resolveSplitApks?: boolean;
 }
 
 export interface TopProcess {
@@ -225,7 +312,11 @@ async function executeAdb(
   timeout = 30000,
 ): Promise<AdbCommandResult> {
   try {
-    const { stdout, stderr } = await execAsync(`adb ${command}`, { timeout });
+    const adbExecutablePath = await resolveAdbExecutablePath();
+    const { stdout, stderr } = await execAsync(
+      `${shellEscape(adbExecutablePath)} ${command}`,
+      { timeout },
+    );
     return {
       success: true,
       output: stdout.trim(),
@@ -246,6 +337,184 @@ function runShellCommand(
   timeout = 30000,
 ): Promise<AdbCommandResult> {
   return executeAdb(`-s ${deviceId} shell ${shellCommand}`, timeout);
+}
+
+function escapeShellArg(value: string): string {
+  return value.replace(/(["\\$`])/g, "\\$1");
+}
+
+function extractPackagePathDetails(dumpsysOutput: string): {
+  dataDir?: string;
+  codePath?: string;
+  resourcePath?: string;
+} {
+  const dataDirMatch = dumpsysOutput.match(/^\s*dataDir=([^\n\r]+)/m);
+  const codePathMatch = dumpsysOutput.match(/^\s*codePath=([^\n\r]+)/m);
+  const resourcePathMatch = dumpsysOutput.match(/^\s*resourcePath=([^\n\r]+)/m);
+
+  return {
+    dataDir: dataDirMatch?.[1]?.trim(),
+    codePath: codePathMatch?.[1]?.trim(),
+    resourcePath: resourcePathMatch?.[1]?.trim(),
+  };
+}
+
+function parseDuKilobytes(output: string): number | null {
+  const lines = output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  for (let index = lines.length - 1; index >= 0; index--) {
+    const line = lines[index];
+    const firstToken = line.split(/\s+/)[0];
+    const parsed = Number.parseInt(firstToken, 10);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
+}
+
+function parseLsSizeBytes(output: string): number | null {
+  const firstLine = output.split("\n")[0]?.trim();
+  if (!firstLine) return null;
+  const parts = firstLine.split(/\s+/);
+  if (parts.length < 5) return null;
+  const parsed = Number.parseInt(parts[4], 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseStatSizeBytes(output: string): number | null {
+  const firstLine = output.split("\n")[0]?.trim();
+  if (!firstLine) return null;
+  const parsed = Number.parseInt(firstLine, 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+async function getPathSizeKilobytes(
+  deviceId: string,
+  absolutePath: string,
+): Promise<number | null> {
+  if (!absolutePath || !absolutePath.startsWith("/")) return null;
+  const escapedPath = escapeShellArg(absolutePath);
+  const result = await runShellCommand(deviceId, `du -sk \"${escapedPath}\"`, 15000);
+  if (!result.success) return null;
+  return parseDuKilobytes(result.output);
+}
+
+async function getFileSizeBytes(
+  deviceId: string,
+  absolutePath: string,
+): Promise<number | null> {
+  if (!absolutePath || !absolutePath.startsWith("/")) return null;
+  const escapedPath = escapeShellArg(absolutePath);
+
+  const statResult = await runShellCommand(
+    deviceId,
+    `stat -c %s \"${escapedPath}\"`,
+    10000,
+  );
+  if (statResult.success) {
+    const statBytes = parseStatSizeBytes(statResult.output);
+    if (typeof statBytes === "number" && statBytes >= 0) {
+      return statBytes;
+    }
+  }
+
+  const result = await runShellCommand(deviceId, `ls -ln \"${escapedPath}\"`, 10000);
+  if (!result.success) return null;
+  return parseLsSizeBytes(result.output);
+}
+
+async function getPackageApkPaths(
+  deviceId: string,
+  packageName: string,
+): Promise<string[]> {
+  const result = await runShellCommand(deviceId, `pm path ${packageName}`, 10000);
+  if (!result.success) return [];
+
+  const paths = result.output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("package:"))
+    .map((line) => line.replace("package:", "").trim())
+    .filter((line) => line.startsWith("/"));
+
+  return [...new Set(paths)];
+}
+
+async function getPackageCodePathFromPm(
+  deviceId: string,
+  packageName: string,
+): Promise<string | null> {
+  const result = await runShellCommand(deviceId, `pm path ${packageName}`, 10000);
+  if (!result.success) return null;
+
+  const line = result.output
+    .split("\n")
+    .find((entry) => entry.trim().startsWith("package:"));
+  if (!line) return null;
+
+  const pathValue = line.replace("package:", "").trim();
+  return pathValue.startsWith("/") ? pathValue : null;
+}
+
+async function getPackageCodePathFromPmList(
+  deviceId: string,
+  packageName: string,
+): Promise<string | null> {
+  const result = await runShellCommand(
+    deviceId,
+    `pm list packages -f -u ${packageName}`,
+    10000,
+  );
+  if (!result.success) return null;
+
+  const line = result.output
+    .split("\n")
+    .map((entry) => entry.trim())
+    .find((entry) => {
+      if (!entry.startsWith("package:")) return false;
+      const parts = entry.replace("package:", "").split("=");
+      return parts[1]?.trim() === packageName;
+    });
+
+  if (!line) return null;
+  const [pathValue] = line.replace("package:", "").split("=");
+  const normalizedPath = pathValue?.trim();
+  return normalizedPath && normalizedPath.startsWith("/") ? normalizedPath : null;
+}
+
+function parsePackagePathListOutput(output: string): PackagePathInfo[] {
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("package:"))
+    .map((line) => line.replace("package:", ""))
+    .map((line) => {
+      const equalsIndex = line.lastIndexOf("=");
+      if (equalsIndex <= 0) return null;
+      const path = line.slice(0, equalsIndex).trim();
+      const name = line.slice(equalsIndex + 1).trim();
+      if (!path.startsWith("/") || !name) return null;
+
+      const normalizedPath = path.toLowerCase();
+      const isSystemPath =
+        normalizedPath.startsWith("/system/") ||
+        normalizedPath.startsWith("/product/") ||
+        normalizedPath.startsWith("/vendor/") ||
+        normalizedPath.startsWith("/system_ext/") ||
+        normalizedPath.startsWith("/odm/");
+
+      return {
+        name,
+        path,
+        isSystemPath,
+      };
+    })
+    .filter((entry): entry is PackagePathInfo => entry !== null);
 }
 
 function isUnsupportedCommandError(text?: string): boolean {
@@ -585,6 +854,29 @@ export async function listPackages(
 }
 
 /**
+ * List installed packages with resolved code path (`pm list packages -f`).
+ */
+export async function listPackagesWithPaths(
+  deviceId: string,
+  userId = 0,
+  includeUninstalled = false,
+): Promise<PackagePathInfo[]> {
+  const userFlag = Number.isFinite(userId) ? `--user ${userId}` : "";
+  const uninstalledFlag = includeUninstalled ? "-u" : "";
+  const command = `-s ${deviceId} shell pm list packages -f ${userFlag} ${uninstalledFlag}`
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const result = await executeAdb(command);
+  if (!result.success) {
+    console.error("Failed to list package paths:", result.error);
+    return [];
+  }
+
+  return parsePackagePathListOutput(result.output);
+}
+
+/**
  * Get package states (enabled, disabled, uninstalled)
  */
 export async function getPackageStates(
@@ -762,6 +1054,92 @@ export async function enablePackage(
 ): Promise<AdbCommandResult> {
   const command = `-s ${deviceId} shell pm enable --user ${userId} ${packageName}`;
   return await executeAdb(command);
+}
+
+/**
+ * Get installed package size in bytes for a package.
+ */
+export async function getPackageSizeBytes(
+  deviceId: string,
+  packageName: string,
+  options: PackageSizeOptions = {},
+): Promise<number | null> {
+  const includeDataDir = options.includeDataDir !== false;
+  const resolveSplitApks = options.resolveSplitApks !== false;
+
+  const pathCandidates = new Set<string>();
+
+  if (resolveSplitApks) {
+    const apkPaths = await getPackageApkPaths(deviceId, packageName);
+    for (const apkPath of apkPaths) {
+      pathCandidates.add(apkPath);
+    }
+  }
+
+  if (options.codePathHint && options.codePathHint.startsWith("/")) {
+    pathCandidates.add(options.codePathHint);
+  }
+
+  if (pathCandidates.size === 0) {
+    const codePath = await getPackageCodePathFromPm(deviceId, packageName);
+    if (codePath) {
+      pathCandidates.add(codePath);
+    }
+  }
+
+  if (pathCandidates.size === 0) {
+    const codePath = await getPackageCodePathFromPmList(deviceId, packageName);
+    if (codePath) {
+      pathCandidates.add(codePath);
+    }
+  }
+
+  let totalBytes = 0;
+  let foundAny = false;
+
+  for (const apkPath of pathCandidates) {
+    const fileBytes = await getFileSizeBytes(deviceId, apkPath);
+    if (typeof fileBytes === "number" && fileBytes >= 0) {
+      totalBytes += fileBytes;
+      foundAny = true;
+      continue;
+    }
+
+    const sizeKb = await getPathSizeKilobytes(deviceId, apkPath);
+    if (typeof sizeKb === "number" && sizeKb >= 0) {
+      totalBytes += sizeKb * 1024;
+      foundAny = true;
+    }
+  }
+
+  if (includeDataDir) {
+    const dumpsys = await runShellCommand(
+      deviceId,
+      `dumpsys package ${packageName}`,
+      15000,
+    );
+
+    if (dumpsys.success && dumpsys.output) {
+      const details = extractPackagePathDetails(dumpsys.output);
+      if (details.dataDir) {
+        const dataSizeKb = await getPathSizeKilobytes(deviceId, details.dataDir);
+        if (typeof dataSizeKb === "number" && dataSizeKb >= 0) {
+          totalBytes += dataSizeKb * 1024;
+          foundAny = true;
+        }
+      }
+
+      if (!foundAny && details.codePath) {
+        const codeSizeKb = await getPathSizeKilobytes(deviceId, details.codePath);
+        if (typeof codeSizeKb === "number" && codeSizeKb >= 0) {
+          totalBytes += codeSizeKb * 1024;
+          foundAny = true;
+        }
+      }
+    }
+  }
+
+  return foundAny ? totalBytes : null;
 }
 
 /**

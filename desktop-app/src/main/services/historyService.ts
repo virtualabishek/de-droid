@@ -4,6 +4,8 @@
 import { v4 as uuidv4 } from "uuid";
 import { getDatabase, ActionHistoryRecord } from "../database";
 
+const HISTORY_DEDUP_WINDOW_SECONDS = 5;
+
 export interface CreateHistoryInput {
   deviceId: string;
   deviceModel?: string;
@@ -34,6 +36,42 @@ export function createHistoryRecord(
   input: CreateHistoryInput,
 ): ActionHistoryRecord {
   const db = getDatabase();
+
+  const recentDuplicate = db
+    .prepare(
+      `
+      SELECT *, ((julianday('now') - julianday(created_at)) * 86400.0) AS age_seconds
+      FROM action_history
+      WHERE device_id = ?
+        AND package_name = ?
+        AND action = ?
+        AND android_user = ?
+        AND success = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `,
+    )
+    .get(
+      input.deviceId,
+      input.packageName,
+      input.action,
+      input.androidUser || 0,
+      input.success ? 1 : 0,
+    ) as (ActionHistoryRecord & { age_seconds?: number }) | undefined;
+
+  if (
+    recentDuplicate &&
+    typeof recentDuplicate.age_seconds === "number" &&
+    recentDuplicate.age_seconds >= 0 &&
+    recentDuplicate.age_seconds <= HISTORY_DEDUP_WINDOW_SECONDS
+  ) {
+    return {
+      ...recentDuplicate,
+      success: Boolean(recentDuplicate.success),
+      is_undone: Boolean(recentDuplicate.is_undone),
+    };
+  }
+
   const id = uuidv4();
 
   const stmt = db.prepare(`
@@ -196,5 +234,37 @@ export function cleanupOldHistory(daysToKeep = 90): number {
     .prepare("DELETE FROM action_history WHERE created_at < ?")
     .run(cutoffDate.toISOString());
 
+  return result.changes;
+}
+
+/**
+ * Delete specific history rows by IDs
+ */
+export function deleteHistoryByIds(ids: string[]): number {
+  if (ids.length === 0) return 0;
+
+  const db = getDatabase();
+  const placeholders = ids.map(() => "?").join(",");
+  const result = db
+    .prepare(`DELETE FROM action_history WHERE id IN (${placeholders})`)
+    .run(...ids);
+
+  return result.changes;
+}
+
+/**
+ * Clear history for all devices or one specific device
+ */
+export function clearHistory(deviceId?: string): number {
+  const db = getDatabase();
+
+  if (deviceId) {
+    const result = db
+      .prepare("DELETE FROM action_history WHERE device_id = ?")
+      .run(deviceId);
+    return result.changes;
+  }
+
+  const result = db.prepare("DELETE FROM action_history").run();
   return result.changes;
 }

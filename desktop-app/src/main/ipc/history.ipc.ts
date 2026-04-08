@@ -21,6 +21,29 @@ export function registerHistoryHandlers() {
     }
   });
 
+  ipcMain.handle("history:clear", async (_, deviceId?: string) => {
+    try {
+      const deleted = historyService.clearHistory(deviceId);
+      return { success: true, deleted };
+    } catch (error) {
+      console.error("Failed to clear history:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("history:delete-selected", async (_, ids: string[]) => {
+    try {
+      const safeIds = Array.isArray(ids)
+        ? ids.filter((id) => typeof id === "string" && id.trim().length > 0)
+        : [];
+      const deleted = historyService.deleteHistoryByIds(safeIds);
+      return { success: true, deleted };
+    } catch (error) {
+      console.error("Failed to delete selected history rows:", error);
+      throw error;
+    }
+  });
+
   // Get action stats
   ipcMain.handle("history:get-stats", async () => {
     try {
@@ -149,6 +172,16 @@ export function registerHistoryHandlers() {
       return backupService.getAllBackups();
     } catch (error) {
       console.error("Failed to get backups:", error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle("backups:clear", async (_, deviceId?: string) => {
+    try {
+      const deleted = backupService.clearBackups(deviceId);
+      return { success: true, deleted };
+    } catch (error) {
+      console.error("Failed to clear backups:", error);
       throw error;
     }
   });

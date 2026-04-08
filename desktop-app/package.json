@@ -1,7 +1,9 @@
 {
   "name": "de-droid-frontend",
-  "version": "1.0.0",
-  "description": "Universal Android Debloater - Electron Desktop App",
+  "version": "0.0.1",
+  "description": "De Droid (Debloat Android. De - bloat. Destroy bloatware.",
+  "author": "VirtualAbishek <virtualabishek@users.noreply.github.com>",
+  "homepage": "https://github.com/virtualabishek/de-droid",
   "main": "dist/main/index.js",
   "private": true,
   "scripts": {
@@ -17,7 +19,7 @@
     "package": "electron-builder",
     "package:win": "electron-builder --win",
     "package:mac": "electron-builder --mac",
-    "package:linux": "electron-builder --linux",
+    "package:linux": "electron-builder --linux AppImage",
     "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
@@ -58,7 +60,8 @@
       "output": "release"
     },
     "files": [
-      "dist/**/*"
+      "dist/**/*",
+      "resources/dedroid-transparent-logo.png"
     ],
     "extraResources": [
       {
@@ -67,6 +70,13 @@
         "filter": [
           "**/*.json"
         ]
+      },
+      {
+        "from": "resources/platform-tools",
+        "to": "platform-tools",
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
@@ -74,14 +84,14 @@
         "nsis",
         "portable"
       ],
-      "icon": "resources/icon.ico"
+      "icon": "resources/dedroid-transparent-logo.png"
     },
     "mac": {
       "target": [
         "dmg",
         "zip"
       ],
-      "icon": "resources/icon.icns",
+      "icon": "resources/dedroid-transparent-logo.png",
       "category": "public.app-category.utilities"
     },
     "linux": {
@@ -89,7 +99,8 @@
         "AppImage",
         "deb"
       ],
-      "icon": "resources/icon.png",
+      "icon": "resources/dedroid-transparent-logo.png",
+      "maintainer": "VirtualAbishek <virtualabishek@users.noreply.github.com>",
       "category": "Utility"
     },
     "nsis": {

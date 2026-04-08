@@ -9,6 +9,14 @@ import { registerHistoryHandlers } from "./ipc/history.ipc";
 dotenv.config();
 let mainWindow: BrowserWindow | null = null;
 
+function getAppIconPath(): string {
+  if (process.env.NODE_ENV === "development") {
+    return path.join(__dirname, "../../resources/dedroid-transparent-logo.png");
+  }
+
+  return path.join(process.resourcesPath, "dedroid-transparent-logo.png");
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
@@ -23,6 +31,7 @@ function createWindow() {
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "default",
     frame: true,
     backgroundColor: "#1a1a2e",
+    icon: getAppIconPath(),
   });
 
   if (process.env.NODE_ENV === "development") {

@@ -57,7 +57,9 @@ export interface EnrichedPackage extends PackageInfo {
   description: string;
   removal: string;
   category: string;
+  packageType?: "system" | "user";
   list: string;
+  sizeBytes?: number;
   dependencies: string[];
   neededBy: string[];
   labels: string[];
@@ -95,6 +97,12 @@ export interface PackageActionResult {
   action: string;
   success: boolean;
   message: string;
+}
+
+export interface PackageSizesResult {
+  sizes: Record<string, number>;
+  unavailable: string[];
+  total: number;
 }
 
 export type BackgroundRestrictionMode = "restrict" | "relax";
@@ -393,6 +401,10 @@ export interface ElectronAPI {
       userId?: number,
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
     getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
+    getPackageSizes: (
+      deviceId: string,
+      packageNames: string[],
+    ) => Promise<PackageSizesResult>;
     getDeviceHealthSnapshot: (deviceId: string) => Promise<DeviceHealthSnapshot>;
     getBackgroundRestrictionStatus: (
       deviceId: string,
@@ -448,6 +460,10 @@ export interface ElectronAPI {
   };
   history: {
     getAll: (limit?: number) => Promise<ActionHistoryRecord[]>;
+    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
+    deleteSelected: (
+      ids: string[],
+    ) => Promise<{ success: boolean; deleted: number }>;
     getStats: () => Promise<HistoryStats>;
     getDevice: (
       deviceId: string,
@@ -472,6 +488,7 @@ export interface ElectronAPI {
   };
   savedBackups: {
     getAll: () => Promise<SavedBackup[]>;
+    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
     get: (id: string) => Promise<SavedBackup | null>;
     getDevice: (deviceId: string) => Promise<SavedBackup[]>;
     create: (backup: {

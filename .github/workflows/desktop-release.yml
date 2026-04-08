@@ -1,0 +1,62 @@
+name: Desktop Release
+
+on:
+  push:
+    tags:
+      - "desktop-v*"
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            package_script: package:linux
+          - os: macos-latest
+            package_script: package:mac
+          - os: windows-latest
+            package_script: package:win
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: desktop-app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: desktop-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Package app
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run ${{ matrix.package_script }}
+
+      - name: Upload packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: de-droid-${{ matrix.os }}
+          path: |
+            desktop-app/release/*.AppImage
+            desktop-app/release/*.deb
+            desktop-app/release/*.dmg
+            desktop-app/release/*.zip
+            desktop-app/release/*.exe
+            desktop-app/release/*.msi
+            desktop-app/release/*.blockmap
+            desktop-app/release/latest*.yml
