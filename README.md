@@ -1,84 +1,88 @@
 # De-Droid
 
-De-Droid is a desktop app that helps you remove Android bloatware safely on non-rooted devices.
+<p align="center">
+  <img src="desktop-app/resources/dedroid-text-skyblue.png" alt="De-Droid" width="460" />
+</p>
 
-It uses local ADB commands for real actions, and an optional ML safety model for smarter guidance.
+<p align="center">
+  <strong>Debloat Android. De-bloat. Destroy bloatware.</strong><br/>
+  A local-first desktop app to safely remove Android bloatware on non-rooted devices.
+</p>
 
-## What it can do
+## Overview
 
-- Connect to Android phones over USB or wireless ADB.
-- Scan installed packages and show current state.
-- Uninstall, disable, enable, and restore packages.
-- Show package safety labels with confidence (`RECOMMENDED`, `ADVANCED`, `EXPERT`, `UNSAFE`).
-- Block dangerous removals with safety gates.
-- Save backup snapshots and compare before/after changes.
-- Keep history and telemetry logs locally.
-- Show open-source alternatives for many apps.
-- Show device health and package permission details.
+De-Droid combines local ADB execution with safety intelligence to help you remove unnecessary apps with confidence.
 
-## New architecture (model-first, local execution)
+- Local ADB actions for uninstall, disable, enable, and restore.
+- Safety labels (`RECOMMENDED`, `ADVANCED`, `EXPERT`, `UNSAFE`) with confidence signals.
+- Smart filtering for system/user, bloatware, state, and removal level.
+- Backup snapshots, history tracking, and before/after comparisons.
+- Permission and background control insights per package.
+- Optional ML-assisted package safety scoring via FastAPI.
+
+## Architecture
 
 De-Droid follows a local-first architecture:
 
-- **Local execution (Electron main process):** runs ADB commands directly on your machine.
-- **Optional intelligence layer (FastAPI):** provides model-based safety scoring and explanations.
-- **Local data layer (JSON + SQLite):** stores package metadata, predictions, backups, history, and settings.
+- **Desktop app (`desktop-app/`)**: Electron + React + TypeScript UI and local command execution.
+- **Model API (`model-api/`)**: optional FastAPI service for advanced safety predictions.
+- **Local data**: JSON + SQLite for package metadata, backups, history, telemetry, and settings.
 
-Full details are in `ARCHITECTURE.md`.
+See `ARCHITECTURE.md` for full architecture details.
 
-## Repository structure
+## Repository Structure
 
 ```text
 de-droid/
   desktop-app/          # Electron + React + TypeScript app
-  model-api/            # ML training pipeline + FastAPI service
-  ARCHITECTURE.md       # High-level system architecture
-  LICENSE               # Open-source license
+  model-api/            # ML pipeline + FastAPI service
+  ARCHITECTURE.md       # High-level architecture
+  LICENSE               # MIT license
   README.md
 ```
 
-## Quick start
+## Quick Start
 
 ### Requirements
 
-- Node.js 18+
-- pnpm
-- Python 3.11+
-- ADB in PATH
+- Node.js 20+
+- npm
+- Python 3.11+ (only for optional model API)
 
-### Run desktop app
+> Note: De-Droid supports bundled platform-tools for packaged releases, so end users do not need to install ADB manually.
+
+### Run Desktop App
 
 ```bash
 cd desktop-app
-pnpm install
-pnpm run dev
+npm install
+npm run dev
 ```
 
-### Run model API (optional)
+### Run Model API (Optional)
 
 ```bash
 python -m venv model-api/env
 source model-api/env/bin/activate
 pip install -r model-api/requirements.txt
 uvicorn main:app --app-dir model-api/model-api --host 0.0.0.0 --port 8000 --reload
-// uvicorn main:app --host 0.0.0.0 --port 8000 --reload (if model-api/main.py is running from outside)
 ```
 
-### Train and export model predictions (optional)
+### Train and Export Predictions (Optional)
 
 ```bash
 python model-api/scripts/build_training_dataset.py
 python model-api/scripts/train_safety_model.py --predictions-out-desktop desktop-app/src/data/safety_predictions.json
 ```
 
-## Safety labels
+## Safety Labels
 
-- `RECOMMENDED`: usually safe to remove for most users.
-- `ADVANCED`: can be removed, but check your use case first.
-- `EXPERT`: can affect system features; remove only if you understand the impact.
-- `UNSAFE`: do not remove.
+- `RECOMMENDED`: usually safe for most users.
+- `ADVANCED`: needs review based on your use case.
+- `EXPERT`: may affect features; remove only if you understand impact.
+- `UNSAFE`: removal is blocked/restricted for safety.
 
-## Model API endpoints
+## Model API Endpoints
 
 - `GET /health`
 - `POST /api/check-packages`
