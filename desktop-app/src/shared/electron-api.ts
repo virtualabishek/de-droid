@@ -459,6 +459,10 @@ export interface ElectronAPI {
   };
   history: {
     getAll: (limit?: number) => Promise<ActionHistoryRecord[]>;
+    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
+    deleteSelected: (
+      ids: string[],
+    ) => Promise<{ success: boolean; deleted: number }>;
     getStats: () => Promise<HistoryStats>;
     getDevice: (
       deviceId: string,
@@ -483,6 +487,7 @@ export interface ElectronAPI {
   };
   savedBackups: {
     getAll: () => Promise<SavedBackup[]>;
+    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
     get: (id: string) => Promise<SavedBackup | null>;
     getDevice: (deviceId: string) => Promise<SavedBackup[]>;
     create: (backup: {

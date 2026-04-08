@@ -214,6 +214,9 @@ const electronAPI: ElectronAPI = {
   // ============ HISTORY API (LOCAL SQLITE) ============
   history: {
     getAll: (limit?: number) => ipcRenderer.invoke("history:get-all", limit),
+    clear: (deviceId?: string) => ipcRenderer.invoke("history:clear", deviceId),
+    deleteSelected: (ids: string[]) =>
+      ipcRenderer.invoke("history:delete-selected", ids),
     getStats: () => ipcRenderer.invoke("history:get-stats"),
     getDevice: (deviceId: string, limit?: number) =>
       ipcRenderer.invoke("history:get-device", deviceId, limit),
@@ -244,6 +247,7 @@ const electronAPI: ElectronAPI = {
   // ============ SAVED BACKUPS API (LOCAL SQLITE) ============
   savedBackups: {
     getAll: () => ipcRenderer.invoke("backups:get-all"),
+    clear: (deviceId?: string) => ipcRenderer.invoke("backups:clear", deviceId),
     get: (id: string) => ipcRenderer.invoke("backups:get", id),
     getDevice: (deviceId: string) =>
       ipcRenderer.invoke("backups:get-device", deviceId),
