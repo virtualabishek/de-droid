@@ -57,6 +57,7 @@ export interface EnrichedPackage extends PackageInfo {
   description: string;
   removal: string;
   category: string;
+  packageType?: "system" | "user";
   list: string;
   sizeBytes?: number;
   dependencies: string[];

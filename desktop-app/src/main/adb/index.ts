@@ -3,9 +3,84 @@
  * Executes ADB commands locally using Node.js child_process
  */
 import { exec } from "child_process";
+import { promises as fs } from "fs";
+import * as path from "path";
 import { promisify } from "util";
+import { getSetting } from "../services/settingsService";
 
 const execAsync = promisify(exec);
+const ADB_EXECUTABLE = process.platform === "win32" ? "adb.exe" : "adb";
+const PLATFORM_TOOLS_SUBDIR =
+  process.platform === "win32"
+    ? "win"
+    : process.platform === "darwin"
+      ? "mac"
+      : "linux";
+let cachedAdbExecutablePath: string | null = null;
+
+function shellEscape(value: string): string {
+  return `"${value.replace(/(["\\$`])/g, "\\$1")}"`;
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  if (!filePath) return false;
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveAdbExecutablePath(): Promise<string> {
+  if (cachedAdbExecutablePath) {
+    return cachedAdbExecutablePath;
+  }
+
+  const configuredPath = getSetting("adb_path");
+  if (configuredPath && (await pathExists(configuredPath))) {
+    cachedAdbExecutablePath = configuredPath;
+    return cachedAdbExecutablePath;
+  }
+
+  const envCandidates = [process.env.ANDROID_SDK_ROOT, process.env.ANDROID_HOME]
+    .filter((value): value is string => Boolean(value))
+    .map((sdkRoot) => path.join(sdkRoot, "platform-tools", ADB_EXECUTABLE));
+
+  const bundledCandidates = [
+    path.join(
+      process.resourcesPath,
+      "platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+    path.join(
+      process.cwd(),
+      "resources",
+      "platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+    path.resolve(
+      __dirname,
+      "../../../resources/platform-tools",
+      PLATFORM_TOOLS_SUBDIR,
+      ADB_EXECUTABLE,
+    ),
+  ];
+
+  const candidates = [...bundledCandidates, ...envCandidates];
+
+  for (const candidate of candidates) {
+    if (await pathExists(candidate)) {
+      cachedAdbExecutablePath = candidate;
+      return cachedAdbExecutablePath;
+    }
+  }
+
+  cachedAdbExecutablePath = ADB_EXECUTABLE;
+  return cachedAdbExecutablePath;
+}
 
 export interface AdbDevice {
   id: string;
@@ -237,7 +312,11 @@ async function executeAdb(
   timeout = 30000,
 ): Promise<AdbCommandResult> {
   try {
-    const { stdout, stderr } = await execAsync(`adb ${command}`, { timeout });
+    const adbExecutablePath = await resolveAdbExecutablePath();
+    const { stdout, stderr } = await execAsync(
+      `${shellEscape(adbExecutablePath)} ${command}`,
+      { timeout },
+    );
     return {
       success: true,
       output: stdout.trim(),

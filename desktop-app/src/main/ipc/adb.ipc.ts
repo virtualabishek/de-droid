@@ -332,6 +332,7 @@ export function registerAdbHandlers() {
         const sizeMap = new Map(sizeEntries);
         const enrichedWithSizes = enriched.map((pkg) => ({
           ...pkg,
+          packageType: packagePathMap.get(pkg.name)?.isSystemPath === true ? "system" : "user",
           sizeBytes:
             pkg.category?.toUpperCase() === "BLOATWARE"
               ? sizeMap.get(pkg.name) ?? undefined

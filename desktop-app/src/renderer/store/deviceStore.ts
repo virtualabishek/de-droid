@@ -11,6 +11,7 @@ interface Device {
 interface Package {
   name: string;
   state: 'enabled' | 'disabled' | 'uninstalled';
+  packageType?: 'system' | 'user';
   selected?: boolean;
   sizeBytes?: number;
   description?: string;

@@ -63,7 +63,7 @@ function InfoCard({
   gradient: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-gray-700/70 bg-gradient-to-br from-gray-800 to-gray-900 p-5 shadow-lg shadow-black/20">
+    <div className="relative overflow-hidden rounded-2xl border border-gray-700/70 bg-gray-800 p-5 shadow-lg shadow-black/20">
       <div className={`absolute inset-0 opacity-15 ${gradient}`} />
       <div className="relative">
         <div className="flex items-center justify-between">
@@ -279,10 +279,10 @@ export default function Dashboard() {
 
   return (
     <div className="h-full flex flex-col bg-gray-900">
-      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-900/30 border-b border-gray-700/50 p-6">
+      <header className="bg-gray-800 border-b border-gray-700/50 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-primary-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-white">
               Dashboard
             </h1>
             <p className="text-gray-400 mt-1 flex items-center gap-2">
@@ -316,7 +316,7 @@ export default function Dashboard() {
         <div className="w-80 flex-shrink-0 flex flex-col gap-4">
           <DeviceSelector />
 
-          <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+          <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
             <h3 className="text-sm font-medium text-gray-300 mb-3">Connection</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -340,7 +340,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-800 to-primary-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+          <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-gray-200">Live Device Health</h3>
               <span className="text-[11px] text-gray-400">
@@ -408,7 +408,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-800 to-purple-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+          <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
             <h3 className="text-sm font-medium text-gray-200 mb-3">Performance Snapshot</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between gap-3">
@@ -505,7 +505,7 @@ export default function Dashboard() {
                       : `${storageStats.bloatwareCount} bloatware packages detected`
                   }
                 />
-                <div className="relative overflow-hidden rounded-2xl border border-primary-500/30 bg-gradient-to-br from-gray-800 to-gray-900 p-5 shadow-lg shadow-black/20">
+                <div className="relative overflow-hidden rounded-2xl border border-primary-500/30 bg-gray-800 p-5 shadow-lg shadow-black/20">
                   <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-primary-500 to-purple-500" />
                   <div className="relative h-full flex items-center justify-between">
                     <div>
@@ -520,7 +520,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-gray-800 to-indigo-900/20 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
+              <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <h2 className="text-lg font-semibold text-white">AI / ML Model Features</h2>
@@ -620,7 +620,7 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
+                <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
                   <h2 className="text-lg font-semibold mb-4">Phone Details</h2>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between gap-4">
@@ -654,7 +654,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-800 to-gray-800/80 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
+                <div className="bg-gray-800 rounded-xl border border-gray-700/70 p-5 shadow-lg shadow-black/20">
                   <h2 className="text-lg font-semibold mb-4">Package State Overview</h2>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between gap-4">
@@ -692,7 +692,7 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <div className="h-full overflow-y-auto bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl border border-gray-700 p-6">
+            <div className="h-full overflow-y-auto bg-gray-800 rounded-xl border border-gray-700 p-6">
               <div className="max-w-3xl mx-auto space-y-5">
                 <div className="text-center bg-gray-900/40 border border-gray-700 rounded-2xl p-8">
                   <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-900/40">

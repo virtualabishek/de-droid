@@ -35,6 +35,7 @@ interface AlternativeApp {
 interface Package {
   name: string;
   state: "enabled" | "disabled" | "uninstalled";
+  packageType?: "system" | "user";
   selected?: boolean;
   sizeBytes?: number;
   description?: string;
@@ -88,6 +89,13 @@ function isSystemPackage(packageName: string): boolean {
   return Object.keys(VENDOR_PREFIXES).some((prefix) =>
     lowerPackageName.startsWith(prefix),
   );
+}
+
+function resolvePackageType(pkg: Package): "system" | "user" {
+  if (pkg.packageType === "system" || pkg.packageType === "user") {
+    return pkg.packageType;
+  }
+  return isSystemPackage(pkg.name) ? "system" : "user";
 }
 
 function formatBytes(bytes?: number): string {
@@ -160,9 +168,21 @@ const FILTER_PRESETS: FilterPreset[] = [
   { id: "all", name: "All Packages", icon: "📦", filters: {} },
   {
     id: "bloatware",
-    name: "Bloatware",
+    name: "System Bloatware",
     icon: "🗑️",
-    filters: { categories: ["BLOATWARE"] },
+    filters: { categories: ["BLOATWARE"], packageTypes: ["system"] },
+  },
+  {
+    id: "user-bloatware",
+    name: "User Bloatware",
+    icon: "👤",
+    filters: { categories: ["BLOATWARE"], packageTypes: ["user"] },
+  },
+  {
+    id: "removed-bloatware",
+    name: "Removed Bloatware",
+    icon: "♻️",
+    filters: { categories: ["BLOATWARE"], states: ["uninstalled", "disabled"] },
   },
   {
     id: "safe-remove",
@@ -420,7 +440,7 @@ export function PackageList({
         matchesModelConfidence = typeof modelConfidence !== "number";
       }
 
-      const packageType = isSystemPackage(pkg.name) ? "system" : "user";
+      const packageType = resolvePackageType(pkg);
       const matchesPackageType = packageTypeFilter.includes(packageType);
 
       return (
@@ -563,7 +583,7 @@ export function PackageList({
 
   // Package counts
   const packageCounts = useMemo(() => {
-    const systemCount = packages.filter((pkg) => isSystemPackage(pkg.name)).length;
+    const systemCount = packages.filter((pkg) => resolvePackageType(pkg) === "system").length;
     const userCount = packages.length - systemCount;
     const enabledCount = packages.filter((pkg) => pkg.state === "enabled").length;
     const disabledCount = packages.filter((pkg) => pkg.state === "disabled").length;
@@ -577,6 +597,45 @@ export function PackageList({
   const selectedPackages = packages.filter((pkg) => pkg.selected);
   const selectedCount = selectedPackages.length;
   const hasEssentialPackages = selectedPackages.some((pkg) => pkg.category?.toUpperCase() === "ESSENTIAL");
+
+  const getActionablePackageNames = (
+    action:
+      | "uninstall"
+      | "restore"
+      | "disable"
+      | "enable"
+      | "restrict-background"
+      | "relax-background",
+  ) => {
+    return selectedPackages
+      .filter((pkg) => {
+        switch (action) {
+          case "uninstall":
+            return pkg.state !== "uninstalled";
+          case "restore":
+            return pkg.state === "uninstalled";
+          case "disable":
+            return pkg.state === "enabled";
+          case "enable":
+            return pkg.state === "disabled";
+          case "restrict-background":
+          case "relax-background":
+            return pkg.state !== "uninstalled";
+          default:
+            return false;
+        }
+      })
+      .map((pkg) => pkg.name);
+  };
+
+  const actionableCounts = {
+    uninstall: getActionablePackageNames("uninstall").length,
+    restore: getActionablePackageNames("restore").length,
+    disable: getActionablePackageNames("disable").length,
+    enable: getActionablePackageNames("enable").length,
+    restrictBackground: getActionablePackageNames("restrict-background").length,
+    relaxBackground: getActionablePackageNames("relax-background").length,
+  };
 
   // Active filters count
   const activeFiltersCount = useMemo(() => {
@@ -698,8 +757,17 @@ export function PackageList({
       | "restrict-background"
       | "relax-background",
   ) => {
-    const packageNames = selectedPackages.map((p) => p.name);
-    if ((action === "uninstall" || action === "disable") && hasEssentialPackages) {
+    const packageNames = getActionablePackageNames(action);
+    if (packageNames.length === 0) {
+      return;
+    }
+    const hasEssentialActionable = selectedPackages.some(
+      (pkg) =>
+        packageNames.includes(pkg.name) &&
+        pkg.category?.toUpperCase() === "ESSENTIAL",
+    );
+
+    if ((action === "uninstall" || action === "disable") && hasEssentialActionable) {
       setPendingAction({ action, packages: packageNames });
       setShowWarningDialog(true);
       return;
@@ -740,8 +808,8 @@ export function PackageList({
         clearSelection();
         setShowSearchSuggestions(false);
       }
-      // Number keys 1-7 for presets
-      if (e.key >= "1" && e.key <= "7" && !e.ctrlKey && !e.metaKey && document.activeElement?.tagName !== "INPUT") {
+      // Number keys for presets
+      if (e.key >= "1" && e.key <= "9" && !e.ctrlKey && !e.metaKey && document.activeElement?.tagName !== "INPUT") {
         const presetIndex = parseInt(e.key) - 1;
         if (FILTER_PRESETS[presetIndex]) {
           applyPreset(FILTER_PRESETS[presetIndex]);
@@ -1048,8 +1116,10 @@ export function PackageList({
             >
               <span>{preset.icon}</span>
               <span>{preset.name}</span>
-              {preset.id === "bloatware" && <span className="bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded text-xs">{packageCounts.bloatware}</span>}
+              {preset.id === "bloatware" && <span className="bg-red-500/30 text-red-300 px-1.5 py-0.5 rounded text-xs">{packages.filter((pkg) => pkg.category?.toUpperCase() === "BLOATWARE" && resolvePackageType(pkg) === "system").length}</span>}
+              {preset.id === "user-bloatware" && <span className="bg-cyan-500/30 text-cyan-200 px-1.5 py-0.5 rounded text-xs">{packages.filter((pkg) => pkg.category?.toUpperCase() === "BLOATWARE" && resolvePackageType(pkg) === "user").length}</span>}
               {preset.id === "safe-remove" && <span className="bg-green-500/30 text-green-300 px-1.5 py-0.5 rounded text-xs">{packageCounts.recommended}</span>}
+              {preset.id === "removed-bloatware" && <span className="bg-amber-500/30 text-amber-200 px-1.5 py-0.5 rounded text-xs">{packages.filter((pkg) => pkg.category?.toUpperCase() === "BLOATWARE" && (pkg.state === "uninstalled" || pkg.state === "disabled")).length}</span>}
             </button>
           ))}
           {customPresets.map((preset) => (
@@ -1554,7 +1624,7 @@ export function PackageList({
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleActionClick("uninstall")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.uninstall === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1564,7 +1634,7 @@ export function PackageList({
             </button>
             <button
               onClick={() => handleActionClick("restore")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.restore === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1574,7 +1644,7 @@ export function PackageList({
             </button>
             <button
               onClick={() => handleActionClick("disable")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.disable === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1584,7 +1654,7 @@ export function PackageList({
             </button>
             <button
               onClick={() => handleActionClick("enable")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.enable === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1595,7 +1665,7 @@ export function PackageList({
             </button>
             <button
               onClick={() => handleActionClick("restrict-background")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.restrictBackground === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1607,7 +1677,7 @@ export function PackageList({
             </button>
             <button
               onClick={() => handleActionClick("relax-background")}
-              disabled={isLoading}
+              disabled={isLoading || actionableCounts.relaxBackground === 0}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

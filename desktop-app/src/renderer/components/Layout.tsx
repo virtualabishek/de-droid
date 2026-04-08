@@ -6,6 +6,7 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useThemeStore } from "../store/themeStore";
 import { ToastContainer } from "./ToastContainer";
+import appIcon from "../assets/app-icon.png";
 
 const SIDEBAR_COLLAPSE_KEY = "de-droid.sidebar.collapsed";
 
@@ -90,9 +91,12 @@ export function Layout() {
           <div
             className={`flex items-center ${isSidebarCollapsed ? "flex-col gap-2" : "justify-between"}`}
           >
-            <div className={isSidebarCollapsed ? "hidden" : "block"}>
-              <h1 className="text-2xl font-bold text-primary-400">De-Droid</h1>
-              <p className="text-sm text-gray-400 mt-1">Android Debloater</p>
+            <div className="flex items-center gap-3">
+              <img src={appIcon} alt="De-Droid" className="w-9 h-9 object-contain" />
+              <div className={isSidebarCollapsed ? "hidden" : "block"}>
+                <h1 className="text-2xl font-bold text-primary-400">De-Droid</h1>
+                <p className="text-sm text-gray-400 mt-1">Android Debloater</p>
+              </div>
             </div>
             <ThemeToggle />
             <button
