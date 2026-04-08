@@ -1,10 +1,18 @@
 name: Desktop Release
 
 on:
-  push:
-    tags:
-      - "desktop-v*"
+  release:
+    types:
+      - published
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to build (example: v0.0.2)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
@@ -21,6 +29,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+
     defaults:
       run:
         working-directory: desktop-app
@@ -28,6 +39,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -60,3 +73,47 @@ jobs:
             desktop-app/release/*.msi
             desktop-app/release/*.blockmap
             desktop-app/release/latest*.yml
+
+  attach-assets:
+    name: Attach Release Assets
+    runs-on: ubuntu-latest
+    needs: build-and-release
+
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name || github.event.inputs.tag }}
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Ensure release exists for manual dispatch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" --title "De-Droid $RELEASE_TAG" --notes "Manual release build"
+          fi
+
+      - name: Upload assets to GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          shopt -s nullglob
+          files=(
+            release-assets/*.AppImage
+            release-assets/*.deb
+            release-assets/*.dmg
+            release-assets/*.zip
+            release-assets/*.exe
+            release-assets/*.msi
+            release-assets/*.blockmap
+            release-assets/latest*.yml
+          )
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No release assets found"
+            exit 1
+          fi
+          gh release upload "$RELEASE_TAG" "${files[@]}" --clobber
