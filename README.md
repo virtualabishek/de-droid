@@ -1,16 +1,15 @@
-# De-Droid
 
 <p align="center">
-  <img src="desktop-app/resources/dedroid-text-skyblue.png" alt="De-Droid" width="460" />
+  <img src="desktop-app/resources/dedroid-text-skyblue.png" alt="De-Droid" height="120" /><br/>
+  <sub>Logo designed by <a href="https://github.com/sushant-yog">Sushant Bhattarai</a></sub>
 </p>
-
 <p align="center">
   <strong>Debloat Android. De-bloat. Destroy bloatware.</strong><br/>
   A local-first desktop app to safely remove Android bloatware on non-rooted devices.<br/>
-  Logo designed by <a href="https://github.com/sushant-yog">Sushant Yog</a>
+  <br/>
 </p>
 
-## Overview
+# De-Droid
 
 De-Droid combines local ADB execution with safety intelligence to help you remove unnecessary apps with confidence.
 
