@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>Debloat Android. De-bloat. Destroy bloatware.</strong><br/>
-  A local-first desktop app to safely remove Android bloatware on non-rooted devices.
+  A local-first desktop app to safely remove Android bloatware on non-rooted devices.<br/>
+  Logo designed by <a href="https://github.com/sushant-yog">Sushant Yog</a>
 </p>
 
 ## Overview
