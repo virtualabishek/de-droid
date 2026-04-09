@@ -36,7 +36,6 @@ See `ARCHITECTURE.md` for full architecture details.
 de-droid/
   desktop-app/          # Electron + React + TypeScript app
   model-api/            # ML pipeline + FastAPI service
-  ARCHITECTURE.md       # High-level architecture
   LICENSE               # MIT license
   README.md
 ```

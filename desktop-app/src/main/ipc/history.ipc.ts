@@ -9,8 +9,6 @@ import * as telemetryService from "../services/telemetryService";
 import * as modelFeedbackService from "../services/modelFeedbackService";
 
 export function registerHistoryHandlers() {
-  // ============ HISTORY HANDLERS (LOCAL SQLITE) ============
-
   // Get action history
   ipcMain.handle("history:get-all", async (_, limit?: number) => {
     try {

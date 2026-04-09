@@ -19,7 +19,7 @@
   "include": [
     "src/main/**/*",
     "src/preload/**/*",
-    "src/shared/**/*",
+    "src/@types/**/*",
     "src/data/**/*"
   ],
   "exclude": ["node_modules", "src/renderer"]

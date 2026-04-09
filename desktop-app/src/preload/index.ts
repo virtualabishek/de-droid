@@ -1,6 +1,6 @@
 
 import { contextBridge, ipcRenderer } from "electron";
-import type { DownloadProgress, ElectronAPI } from "../shared/electron-api";
+import type { DownloadProgress, ElectronAPI } from "../@types/electron-api";
 
 const electronAPI: ElectronAPI = {
   // ============ ADB API ============

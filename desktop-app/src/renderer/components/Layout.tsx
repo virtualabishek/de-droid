@@ -84,70 +84,63 @@ export function Layout() {
       {/* Sidebar */}
       <aside
         className={`h-full bg-gray-800 border-r border-gray-700 flex flex-col transition-all duration-200 ${
-          isSidebarCollapsed ? "w-20" : "w-64"
+          isSidebarCollapsed ? "w-20" : "w-72"
         }`}
       >
-        <div className={`border-b border-gray-700 ${isSidebarCollapsed ? "p-3" : "p-6"}`}>
-          <div
-            className={`flex items-center ${isSidebarCollapsed ? "flex-col gap-2" : "justify-between"}`}
-          >
-            <div className="flex items-center gap-3">
-              <img src={appIcon} alt="De-Droid" className="w-9 h-9 object-contain" />
-              <div className={isSidebarCollapsed ? "hidden" : "block"}>
-                <h1 className="text-2xl font-bold text-primary-400">De-Droid</h1>
-                <p className="text-sm text-gray-400 mt-1">Android Debloater</p>
+        <div className={`border-b border-gray-700 ${isSidebarCollapsed ? "p-3" : "p-5"}`}>
+          <div className={`flex ${isSidebarCollapsed ? "flex-col items-center gap-3" : "flex-col gap-4"}`}>
+            <div className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-4"}`}>
+              <img
+                src={appIcon}
+                alt="De-Droid"
+                className={`${isSidebarCollapsed ? "w-11 h-11" : "w-14 h-14"} object-contain shrink-0`}
+              />
+              <div className={isSidebarCollapsed ? "hidden" : "block min-w-0"}>
+                <h1 className="text-[1.95rem] font-bold leading-none tracking-tight text-primary-400">
+                  De-Droid
+                </h1>
+                <p className="mt-2 text-sm font-medium tracking-wide text-gray-400">Android Debloater</p>
               </div>
             </div>
-            <ThemeToggle />
-            <button
-              onClick={() => setShowSidebarHelp(true)}
-              className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-              title="Sidebar help"
-              aria-label="Sidebar help"
+            <div
+              className={`flex ${
+                isSidebarCollapsed ? "flex-col items-center gap-2" : "items-center justify-between"
+              }`}
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+               
+              </div>
+              <button
+                onClick={toggleSidebar}
+                className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
+                title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.228 9c.549-1.654 2.093-3 3.772-3 2.39 0 4.328 1.79 4.328 4 0 1.904-1.44 3.497-3.375 3.89M12 17h.01M12 13v-1"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={toggleSidebar}
-              className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-              title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                {isSidebarCollapsed ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 5l7 7-7 7M4 5l7 7-7 7"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 19l-7-7 7-7m9 14l-7-7 7-7"
-                  />
-                )}
-              </svg>
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {isSidebarCollapsed ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 5l7 7-7 7M4 5l7 7-7 7"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 19l-7-7 7-7m9 14l-7-7 7-7"
+                    />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 

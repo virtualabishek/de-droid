@@ -18,7 +18,7 @@ function getDatabasePath(): string {
 }
 
 /**
- * Initialize the database with schema
+ * initialize the database with schema
  */
 export function initDatabase(): Database.Database {
   if (db) return db;
@@ -34,12 +34,9 @@ export function initDatabase(): Database.Database {
 
   db = new Database(dbPath);
 
-  // Enable WAL mode for better performance
+  // Enable WAL for better performance
   db.pragma("journal_mode = WAL");
-
-  // Run migrations
   runMigrations(db);
-
   console.log("[DB] Database initialized successfully");
   return db;
 }
@@ -251,7 +248,6 @@ function runMigrations(database: Database.Database): void {
   }
 }
 
-// Export types
 export interface ActionHistoryRecord {
   id: string;
   device_id: string;

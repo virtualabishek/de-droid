@@ -156,8 +156,6 @@ export const DANGEROUS_PERMISSIONS: Record<
 };
 
 // Mapping from Android permissions to AppOps operation names
-// AppOps uses UPPER_CASE names without android: prefix
-// Used as fallback when pm grant/revoke fails due to SecurityException
 export const PERMISSION_TO_APPOP: Record<string, string> = {
   // Location
   "android.permission.ACCESS_FINE_LOCATION": "FINE_LOCATION",
@@ -211,7 +209,7 @@ export const PERMISSION_TO_APPOP: Record<string, string> = {
   "android.permission.POST_NOTIFICATIONS": "POST_NOTIFICATION",
 };
 
-// Category icons for UI
+// icons for category
 export const PERMISSION_CATEGORIES: Record<
   string,
   { icon: string; color: string }
@@ -376,7 +374,6 @@ function decideAppOpMode(modes: string[]): {
 
   const normalized = modes.map((mode) => mode.toLowerCase());
 
-  // Most restrictive mode wins if multiple entries are present (uid + package rows).
   const blocking = normalized.find((mode) => isAppOpsBlocking(mode));
   if (blocking) {
     return { decision: "block", representativeMode: blocking };
@@ -508,8 +505,7 @@ export async function getPackagePermissions(
 }
 
 /**
- * Grant a runtime permission to a package
- * Uses pm grant first, falls back to appops if that fails (common on non-rooted devices)
+ * Grant a runtime permission to a package (uses appos as fallback as it is not available in non rooted devices)
  */
 export async function grantPermission(
   deviceId: string,
@@ -586,7 +582,6 @@ export async function grantPermission(
 
 /**
  * Revoke a runtime permission from a package
- * Uses pm revoke first, falls back to appops if that fails (common on non-rooted devices)
  */
 export async function revokePermission(
   deviceId: string,
@@ -602,8 +597,6 @@ export async function revokePermission(
   );
 
   if (didCommandFail(result)) {
-    // If pm revoke failed (likely SecurityException), try appops as fallback
-    // appops blocks the app from using the permission at runtime
     const appOp = PERMISSION_TO_APPOP[permission];
     if (appOp) {
       usedAppOpsFallback = true;
@@ -711,7 +704,7 @@ async function getEffectivePermissionState(
       appOp,
       userId,
     );
-    appOpMode = appOpsDecision.mode;
+    appOpMode = appOpsDecision.mode;  
 
     if (appOpsDecision.decision === "block") {
       return { effectiveGranted: false, runtimeGranted, appOpMode };

@@ -257,8 +257,7 @@ function parseTopProcesses(output: string): TopProcess[] {
     let cpuPercent: number | undefined;
     let processName: string | undefined;
 
-    // Android top -b usually emits:
-    // PID USER PR NI VIRT RES SHR S CPU MEM TIME+ ARGS
+    // regex for the user performance evaluation
     if (parts.length >= 12 && /^\d+$/.test(parts[0])) {
       const cpuToken = parts[8]?.replace(/[\[\]%]/g, "");
       const parsedCpu = Number.parseFloat(cpuToken);
@@ -268,7 +267,7 @@ function parseTopProcesses(output: string): TopProcess[] {
       }
     }
 
-    // Fallback for outputs that include percentages inline.
+    // Fallback for outputs that include percentages inline
     if (cpuPercent === undefined) {
       const cpuMatch = line.match(/(\d+(?:\.\d+)?)%/);
       if (cpuMatch) {
@@ -749,7 +748,7 @@ function buildRestrictionControls(status: {
 }
 
 /**
- * Execute an ADB command (public API)
+ * Execute an ADB command
  */
 export async function executeAdbCommand(
   command: string,
@@ -770,7 +769,7 @@ export async function getDevices(): Promise<AdbDevice[]> {
   }
 
   const devices: AdbDevice[] = [];
-  const lines = result.output.split("\n").slice(1); // Skip header line
+  const lines = result.output.split("\n").slice(1); 
 
   for (const line of lines) {
     if (!line.trim()) continue;
