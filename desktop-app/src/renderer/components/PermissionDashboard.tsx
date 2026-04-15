@@ -5,6 +5,7 @@
 import { useState, useMemo } from "react";
 import { useDeviceStore } from "../store/deviceStore";
 import { useToastStore } from "../store/toastStore";
+import { permissionAnalyticsService, permissionApiService } from "../services/permissionService";
 
 interface Permission {
   name: string;
@@ -26,38 +27,6 @@ interface AppPermissionSummary {
   isScanning?: boolean;
 }
 
-// Category config with icons and colors
-const CATEGORY_CONFIG: Record<string, { icon: string; color: string; bg: string; description: string }> = {
-  Location: { icon: "📍", color: "text-red-400", bg: "bg-red-500/20", description: "Track your physical location" },
-  Camera: { icon: "📷", color: "text-purple-400", bg: "bg-purple-500/20", description: "Access your camera" },
-  Microphone: { icon: "🎤", color: "text-orange-400", bg: "bg-orange-500/20", description: "Record audio" },
-  Contacts: { icon: "👥", color: "text-blue-400", bg: "bg-blue-500/20", description: "Read your contacts" },
-  Phone: { icon: "📞", color: "text-green-400", bg: "bg-green-500/20", description: "Access call logs and make calls" },
-  SMS: { icon: "💬", color: "text-cyan-400", bg: "bg-cyan-500/20", description: "Read and send messages" },
-  Storage: { icon: "📁", color: "text-yellow-400", bg: "bg-yellow-500/20", description: "Access your files" },
-  Calendar: { icon: "📅", color: "text-pink-400", bg: "bg-pink-500/20", description: "Read calendar events" },
-  Sensors: { icon: "⌚", color: "text-indigo-400", bg: "bg-indigo-500/20", description: "Access body sensors" },
-  Bluetooth: { icon: "📶", color: "text-blue-300", bg: "bg-blue-500/20", description: "Connect to Bluetooth devices" },
-  Notifications: { icon: "🔔", color: "text-amber-400", bg: "bg-amber-500/20", description: "Post notifications" },
-  Other: { icon: "⚙️", color: "text-gray-400", bg: "bg-gray-500/20", description: "Other system permissions" },
-};
-
-// Privacy weight for each category (higher = more privacy invasive)
-const PRIVACY_WEIGHTS: Record<string, number> = {
-  Location: 10,
-  Camera: 9,
-  Microphone: 9,
-  Contacts: 7,
-  Phone: 8,
-  SMS: 8,
-  Storage: 6,
-  Calendar: 5,
-  Sensors: 7,
-  Bluetooth: 4,
-  Notifications: 2,
-  Other: 1,
-};
-
 interface PermissionDashboardProps {
   onOpenAppPermissions: (packageName: string) => void;
 }
@@ -77,22 +46,6 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
   const [selectedApps, setSelectedApps] = useState<Set<string>>(new Set());
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
-  // Calculate privacy score for an app
-  const calculatePrivacyScore = (permissions: Permission[]): number => {
-    const dangerousGranted = permissions.filter(p => p.isDangerous && p.granted);
-    if (dangerousGranted.length === 0) return 100;
-
-    let totalWeight = 0;
-    for (const perm of dangerousGranted) {
-      totalWeight += PRIVACY_WEIGHTS[perm.category] || 1;
-    }
-
-    // Max possible weight (if all categories were present)
-    const maxWeight = Object.values(PRIVACY_WEIGHTS).reduce((a, b) => a + b, 0);
-    const score = Math.max(0, Math.round(100 - (totalWeight / maxWeight) * 100));
-    return score;
-  };
-
   // Scan all apps for permissions
   const scanAllApps = async () => {
     if (!selectedDevice) return;
@@ -100,134 +53,56 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
     setIsScanning(true);
     setScanProgress(0);
     setAppPermissions([]);
+    let results: AppPermissionSummary[] = [];
+    let scanFailed = false;
 
-    // Only scan enabled packages
-    const enabledPackages = packages.filter(p => p.state === "enabled");
-    const total = enabledPackages.length;
-    const results: AppPermissionSummary[] = [];
+    try {
+      results = await permissionApiService.scanEnabledPackages(
+        selectedDevice.adb_id,
+        selectedUser,
+        packages,
+        ({ percent }) => {
+          setScanProgress(percent);
+        },
+      );
 
-    for (let i = 0; i < enabledPackages.length; i++) {
-      const pkg = enabledPackages[i];
-      
-      try {
-        const result = await window.electronAPI.adb.getPackagePermissions(
-          selectedDevice.adb_id,
-          pkg.name,
-          selectedUser,
-        );
-
-        if (result && result.permissions.length > 0) {
-          results.push({
-            packageName: pkg.name,
-            appName: pkg.description || pkg.name.split('.').pop() || pkg.name,
-            permissions: result.permissions,
-            dangerousCount: result.dangerousCount,
-            grantedDangerousCount: result.grantedDangerousCount,
-            totalCount: result.totalCount,
-            privacyScore: calculatePrivacyScore(result.permissions),
-          });
-        }
-      } catch (error) {
-        console.error(`Failed to scan ${pkg.name}:`, error);
-      }
-
-      setScanProgress(Math.round(((i + 1) / total) * 100));
-
-      // Update results periodically for UI feedback
-      if ((i + 1) % 5 === 0 || i === enabledPackages.length - 1) {
-        setAppPermissions([...results]);
-      }
+      setAppPermissions(results);
+    } catch (error) {
+      scanFailed = true;
+      console.error("Failed to scan permissions:", error);
+      toast.error(
+        "Failed to scan permissions",
+        error instanceof Error ? error.message : "Unknown error",
+      );
+    } finally {
+      setIsScanning(false);
     }
 
-    setIsScanning(false);
-    toast.success("Scan Complete", `Scanned ${results.length} apps with permissions`);
+    if (!scanFailed) {
+      toast.success("Scan Complete", `Scanned ${results.length} apps with permissions`);
+    }
   };
 
   // Aggregate stats
   const stats = useMemo(() => {
-    const totalApps = appPermissions.length;
-    const totalDangerous = appPermissions.reduce((acc, app) => acc + app.dangerousCount, 0);
-    const grantedDangerous = appPermissions.reduce((acc, app) => acc + app.grantedDangerousCount, 0);
-    const averagePrivacyScore = totalApps > 0 
-      ? Math.round(appPermissions.reduce((acc, app) => acc + app.privacyScore, 0) / totalApps)
-      : 100;
-
-    // Category breakdown
-    const categoryStats: Record<string, { apps: number; granted: number; total: number }> = {};
-    for (const app of appPermissions) {
-      for (const perm of app.permissions) {
-        if (perm.isDangerous) {
-          if (!categoryStats[perm.category]) {
-            categoryStats[perm.category] = { apps: 0, granted: 0, total: 0 };
-          }
-          categoryStats[perm.category].total++;
-          if (perm.granted) {
-            categoryStats[perm.category].granted++;
-          }
-        }
-      }
-    }
-    
-    // Count unique apps per category
-    for (const category of Object.keys(categoryStats)) {
-      const appsWithCategory = new Set(
-        appPermissions
-          .filter(app => app.permissions.some(p => p.category === category && p.isDangerous && p.granted))
-          .map(app => app.packageName)
-      );
-      categoryStats[category].apps = appsWithCategory.size;
-    }
-
-    return {
-      totalApps,
-      totalDangerous,
-      grantedDangerous,
-      averagePrivacyScore,
-      categoryStats,
-    };
+    return permissionAnalyticsService.buildStats(appPermissions);
   }, [appPermissions]);
 
   // Filtered and sorted apps
   const filteredApps = useMemo(() => {
-    let apps = [...appPermissions];
-
-    // Filter by search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      apps = apps.filter(app => 
-        app.packageName.toLowerCase().includes(query) ||
-        app.appName.toLowerCase().includes(query)
-      );
-    }
-
-    // Filter by category
-    if (selectedCategory) {
-      apps = apps.filter(app => 
-        app.permissions.some(p => p.category === selectedCategory && p.isDangerous && p.granted)
-      );
-    }
-
-    // Sort
-    switch (sortBy) {
-      case "privacy":
-        apps.sort((a, b) => a.privacyScore - b.privacyScore);
-        break;
-      case "dangerous":
-        apps.sort((a, b) => b.grantedDangerousCount - a.grantedDangerousCount);
-        break;
-      case "name":
-        apps.sort((a, b) => a.appName.localeCompare(b.appName));
-        break;
-    }
-
-    return apps;
+    return permissionAnalyticsService.filterAndSortApps(
+      appPermissions,
+      searchQuery,
+      selectedCategory,
+      sortBy,
+    );
   }, [appPermissions, searchQuery, selectedCategory, sortBy]);
 
   // Apps with permissions in selected category
   const appsInCategory = useMemo(() => {
-    if (!selectedCategory) return [];
-    return appPermissions.filter(app => 
-      app.permissions.some(p => p.category === selectedCategory && p.isDangerous && p.granted)
+    return permissionAnalyticsService.findAppsInCategory(
+      appPermissions,
+      selectedCategory,
     );
   }, [appPermissions, selectedCategory]);
 
@@ -258,39 +133,13 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
     if (!selectedDevice || selectedApps.size === 0) return;
 
     setBulkActionLoading(true);
-    let successCount = 0;
-    let failCount = 0;
-
-    for (const packageName of selectedApps) {
-      const app = appPermissions.find(a => a.packageName === packageName);
-      if (!app) continue;
-
-      const permissionsToRevoke = app.permissions.filter(p => 
-        p.isDangerous && 
-        p.granted && 
-        p.type === "runtime" &&
-        (!categoryFilter || p.category === categoryFilter)
-      );
-
-      for (const perm of permissionsToRevoke) {
-        try {
-          const result = await window.electronAPI.adb.togglePermission(
-            selectedDevice.adb_id,
-            packageName,
-            perm.name,
-            "revoke",
-            selectedUser
-          );
-          if (result.success) {
-            successCount++;
-          } else {
-            failCount++;
-          }
-        } catch (error) {
-          failCount++;
-        }
-      }
-    }
+    const { successCount, failCount } = await permissionApiService.bulkRevokeDangerousPermissions(
+      selectedDevice.adb_id,
+      selectedUser,
+      appPermissions,
+      selectedApps,
+      categoryFilter,
+    );
 
     setBulkActionLoading(false);
     toast.success(
@@ -305,17 +154,11 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
 
   // Get privacy score color
   const getPrivacyScoreColor = (score: number) => {
-    if (score >= 80) return "text-green-400";
-    if (score >= 60) return "text-yellow-400";
-    if (score >= 40) return "text-orange-400";
-    return "text-red-400";
+    return permissionAnalyticsService.getPrivacyScoreColor(score);
   };
 
   const getPrivacyScoreBg = (score: number) => {
-    if (score >= 80) return "bg-green-500";
-    if (score >= 60) return "bg-yellow-500";
-    if (score >= 40) return "bg-orange-500";
-    return "bg-red-500";
+    return permissionAnalyticsService.getPrivacyScoreBg(score);
   };
 
   return (
@@ -486,7 +329,7 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
                 {Object.entries(stats.categoryStats)
                   .sort((a, b) => b[1].granted - a[1].granted)
                   .map(([category, data]) => {
-                    const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.Other;
+                    const config = permissionAnalyticsService.getCategoryConfig(category);
                     return (
                       <button
                         key={category}
@@ -654,7 +497,7 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
                       {Array.from(new Set(app.permissions.filter(p => p.isDangerous && p.granted).map(p => p.category)))
                         .slice(0, 5)
                         .map((cat) => {
-                          const config = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.Other;
+                          const config = permissionAnalyticsService.getCategoryConfig(cat);
                           return (
                             <span key={cat} className={`${config.bg} p-1.5 rounded-lg`} title={cat}>
                               {config.icon}
@@ -696,7 +539,7 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
                         {app.permissions
                           .filter(p => p.isDangerous && p.granted)
                           .map((perm) => {
-                            const config = CATEGORY_CONFIG[perm.category] || CATEGORY_CONFIG.Other;
+                            const config = permissionAnalyticsService.getCategoryConfig(perm.category);
                             return (
                               <div
                                 key={perm.name}
@@ -740,7 +583,7 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
               {Object.entries(stats.categoryStats)
                 .sort((a, b) => b[1].granted - a[1].granted)
                 .map(([category, data]) => {
-                  const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.Other;
+                  const config = permissionAnalyticsService.getCategoryConfig(category);
                   return (
                     <button
                       key={category}
@@ -761,16 +604,16 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
 
             {/* Category Detail */}
             {selectedCategory && (
-              <div className={`p-5 rounded-xl ${CATEGORY_CONFIG[selectedCategory]?.bg || "bg-gray-700/50"} border border-gray-700`}>
+              <div className={`p-5 rounded-xl ${permissionAnalyticsService.getCategoryConfig(selectedCategory).bg || "bg-gray-700/50"} border border-gray-700`}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{CATEGORY_CONFIG[selectedCategory]?.icon}</span>
+                    <span className="text-3xl">{permissionAnalyticsService.getCategoryConfig(selectedCategory).icon}</span>
                     <div>
-                      <h3 className={`text-xl font-bold ${CATEGORY_CONFIG[selectedCategory]?.color}`}>
+                      <h3 className={`text-xl font-bold ${permissionAnalyticsService.getCategoryConfig(selectedCategory).color}`}>
                         {selectedCategory}
                       </h3>
                       <p className="text-sm text-gray-400">
-                        {CATEGORY_CONFIG[selectedCategory]?.description}
+                        {permissionAnalyticsService.getCategoryConfig(selectedCategory).description}
                       </p>
                     </div>
                   </div>

@@ -4,42 +4,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDeviceStore } from "../store/deviceStore";
 import { useToastStore } from "../store/toastStore";
-
-interface Permission {
-  name: string;
-  granted: boolean;
-  category: string;
-  description: string;
-  isDangerous: boolean;
-  type: "runtime" | "install";
-}
-
-interface PermissionResult {
-  packageName: string;
-  permissions: Permission[];
-  dangerousCount: number;
-  grantedDangerousCount: number;
-  totalCount: number;
-}
-
-// Category config
-const CATEGORY_CONFIG: Record<
-  string,
-  { icon: string; color: string; bg: string }
-> = {
-  Location: { icon: "📍", color: "text-red-400", bg: "bg-red-500/20" },
-  Camera: { icon: "📷", color: "text-purple-400", bg: "bg-purple-500/20" },
-  Microphone: { icon: "🎤", color: "text-orange-400", bg: "bg-orange-500/20" },
-  Contacts: { icon: "👥", color: "text-blue-400", bg: "bg-blue-500/20" },
-  Phone: { icon: "📞", color: "text-green-400", bg: "bg-green-500/20" },
-  SMS: { icon: "💬", color: "text-cyan-400", bg: "bg-cyan-500/20" },
-  Storage: { icon: "📁", color: "text-yellow-400", bg: "bg-yellow-500/20" },
-  Calendar: { icon: "📅", color: "text-pink-400", bg: "bg-pink-500/20" },
-  Sensors: { icon: "⌚", color: "text-indigo-400", bg: "bg-indigo-500/20" },
-  Bluetooth: { icon: "📶", color: "text-blue-300", bg: "bg-blue-500/20" },
-  Notifications: { icon: "🔔", color: "text-amber-400", bg: "bg-amber-500/20" },
-  Other: { icon: "⚙️", color: "text-gray-400", bg: "bg-gray-500/20" },
-};
+import {
+  Permission,
+  PermissionResult,
+  permissionAnalyticsService,
+  permissionApiService,
+} from "../services/permissionService";
 
 interface PermissionManagerProps {
   packageName: string;
@@ -82,7 +52,7 @@ export function PermissionManager({
 
     setIsLoading(true);
     try {
-      const result = await window.electronAPI.adb.getPackagePermissions(
+      const result = await permissionApiService.getPackagePermissions(
         selectedDevice.adb_id,
         packageName,
         selectedUser,
@@ -103,7 +73,7 @@ export function PermissionManager({
     setActionLoading(permission.name);
     try {
       const action = permission.granted ? "revoke" : "grant";
-      const result = await window.electronAPI.adb.togglePermission(
+      const result = await permissionApiService.togglePermission(
         selectedDevice.adb_id,
         packageName,
         permission.name,
@@ -135,41 +105,18 @@ export function PermissionManager({
   const filteredPermissions = useMemo(() => {
     if (!permissions) return [];
 
-    let filtered = permissions.permissions;
-
-    // Apply filter
-    if (filter === "dangerous") {
-      filtered = filtered.filter((p) => p.isDangerous);
-    } else if (filter === "granted") {
-      filtered = filtered.filter((p) => p.granted);
-    }
-
-    // Apply search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query) ||
-          p.category.toLowerCase().includes(query),
-      );
-    }
-
-    return filtered;
+    return permissionAnalyticsService.filterPermissions(
+      permissions.permissions,
+      filter,
+      searchQuery,
+    );
   }, [permissions, filter, searchQuery]);
 
   // Group permissions by category
   const groupedPermissions = useMemo(() => {
-    const groups: Record<string, Permission[]> = {};
-
-    for (const perm of filteredPermissions) {
-      if (!groups[perm.category]) {
-        groups[perm.category] = [];
-      }
-      groups[perm.category].push(perm);
-    }
-
-    return groups;
+    return permissionAnalyticsService.groupPermissionsByCategory(
+      filteredPermissions,
+    );
   }, [filteredPermissions]);
 
   return (
@@ -313,8 +260,7 @@ export function PermissionManager({
           ) : (
             <div className="space-y-6">
               {Object.entries(groupedPermissions).map(([category, perms]) => {
-                const config =
-                  CATEGORY_CONFIG[category] || CATEGORY_CONFIG["Other"];
+                  const config = permissionAnalyticsService.getCategoryConfig(category);
 
                 return (
                   <div key={category}>

@@ -15,6 +15,7 @@ import * as modelFeedbackService from "../services/modelFeedbackService";
 // Cache for device information to use in logging
 const deviceInfoCache: Map<string, { model: string; brand: string }> =
   new Map();
+let adbHandlersRegistered = false;
 
 const DEFAULT_MODEL_API_URL = "http://127.0.0.1:8000";
 const VALID_REMOVAL_TYPES = new Set([
@@ -24,6 +25,53 @@ const VALID_REMOVAL_TYPES = new Set([
   "UNSAFE",
 ]);
 type RemovalType = "RECOMMENDED" | "ADVANCED" | "EXPERT" | "UNSAFE";
+
+const ADB_IPC_CHANNELS = [
+  "adb:get-devices",
+  "adb:get-packages",
+  "adb:get-enriched-packages",
+  "adb:check-safety",
+  "adb:uninstall",
+  "adb:restore",
+  "adb:disable",
+  "adb:enable",
+  "adb:bulk-uninstall",
+  "adb:health",
+  "adb:run-connection-diagnostics",
+  "adb:wireless:enable-tcpip",
+  "adb:wireless:connect",
+  "adb:wireless:disconnect",
+  "adb:wireless:pair",
+  "adb:get-package-permissions",
+  "adb:toggle-permission",
+  "adb:get-package-details",
+  "adb:get-package-sizes",
+  "adb:get-device-health-snapshot",
+  "adb:get-background-restriction-status",
+  "adb:optimize-background-restriction",
+  "debloat:get-packages",
+  "debloat:get-package-info",
+  "debloat:get-alternatives",
+  "debloat:get-alternative",
+  "debloat:get-alternatives-for-package",
+  "debloat:get-categories",
+  "debloat:get-packages-by-category",
+  "debloat:get-removal-types",
+  "debloat:get-lists",
+  "backup:create",
+  "backup:compare",
+  "alternatives:get-all",
+  "alternatives:search",
+  "fdroid:install",
+  "fdroid:get-download-info",
+  "fdroid:open-external",
+] as const;
+
+function clearAdbHandlers(): void {
+  for (const channel of ADB_IPC_CHANNELS) {
+    ipcMain.removeHandler(channel);
+  }
+}
 
 function resolveModelApiBaseUrl(): string {
   const raw = process.env.DEDROID_MODEL_API_URL?.trim();
@@ -226,6 +274,12 @@ function mapPermissionsForDetails(permissionResult: Permissions.PermissionResult
 }
 
 export function registerAdbHandlers() {
+  if (adbHandlersRegistered) {
+    return;
+  }
+
+  clearAdbHandlers();
+
   // ============ DEVICE HANDLERS (LOCAL ADB) ============
 
   // Get connected devices
@@ -233,6 +287,9 @@ export function registerAdbHandlers() {
     try {
       console.log("[ADB LOCAL] Getting devices");
       const devices = await LocalAdb.getDevices();
+
+      // Refresh cache from current device snapshot to avoid stale growth.
+      deviceInfoCache.clear();
 
       // Cache device info for logging purposes
       devices.forEach((d) => {
@@ -1540,4 +1597,35 @@ export function registerAdbHandlers() {
       return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
     }
   });
+
+  adbHandlersRegistered = true;
+}
+
+export class AdbIpcRegistrar {
+  private static _instance: AdbIpcRegistrar | null = null;
+  private _registered = false;
+
+  private constructor() {}
+
+  static getInstance(): AdbIpcRegistrar {
+    if (!AdbIpcRegistrar._instance) {
+      AdbIpcRegistrar._instance = new AdbIpcRegistrar();
+    }
+    return AdbIpcRegistrar._instance;
+  }
+
+  registerHandlers(): void {
+    if (this._registered) {
+      return;
+    }
+
+    registerAdbHandlers();
+    this._registered = true;
+  }
+
+  unregisterHandlers(): void {
+    clearAdbHandlers();
+    adbHandlersRegistered = false;
+    this._registered = false;
+  }
 }

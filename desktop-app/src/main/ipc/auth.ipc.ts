@@ -5,7 +5,46 @@
 import { ipcMain } from "electron";
 import * as authService from "../services/authService";
 
-export function registerAuthHandlers(): void {
+const AUTH_IPC_CHANNELS = [
+  "auth:register",
+  "auth:login",
+  "auth:get-user",
+  "auth:update-profile",
+  "auth:get-devices",
+  "auth:save-device",
+  "auth:remove-device",
+  "auth:update-device-nickname",
+  "auth:get-setting",
+  "auth:get-all-settings",
+  "auth:set-setting",
+] as const;
+
+function clearAuthHandlers(): void {
+  for (const channel of AUTH_IPC_CHANNELS) {
+    ipcMain.removeHandler(channel);
+  }
+}
+
+export class AuthIpcRegistrar {
+  private static _instance: AuthIpcRegistrar | null = null;
+  private _registered = false;
+
+  private constructor() {}
+
+  static getInstance(): AuthIpcRegistrar {
+    if (!AuthIpcRegistrar._instance) {
+      AuthIpcRegistrar._instance = new AuthIpcRegistrar();
+    }
+    return AuthIpcRegistrar._instance;
+  }
+
+  registerHandlers(): void {
+    if (this._registered) {
+      return;
+    }
+
+    clearAuthHandlers();
+
   // Register user
   ipcMain.handle(
     "auth:register",
@@ -165,4 +204,15 @@ export function registerAuthHandlers(): void {
   );
 
   console.log("[AUTH IPC] Auth handlers registered");
+    this._registered = true;
+  }
+
+  unregisterHandlers(): void {
+    clearAuthHandlers();
+    this._registered = false;
+  }
+}
+
+export function registerAuthHandlers(): void {
+  AuthIpcRegistrar.getInstance().registerHandlers();
 }

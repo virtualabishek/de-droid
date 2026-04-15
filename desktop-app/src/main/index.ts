@@ -2,9 +2,11 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as dotenv from "dotenv";
 import { initDatabase, closeDatabase } from "./database";
-import { registerAdbHandlers } from "./ipc/adb.ipc";
-import { registerAuthHandlers } from "./ipc/auth.ipc";
-import { registerHistoryHandlers } from "./ipc/history.ipc";
+import {
+  AdbIpcRegistrar,
+  AuthIpcRegistrar,
+  HistoryIpcRegistrar,
+} from "./ipc";
 
 dotenv.config();
 let mainWindow: BrowserWindow | null = null;
@@ -60,10 +62,11 @@ async function setupApp() {
   initDatabase();
 
   console.log("[APP] Registering IPC handlers...");
-  registerAdbHandlers();
-  registerAuthHandlers();
-  registerHistoryHandlers();
+  AdbIpcRegistrar.getInstance().registerHandlers();
+  AuthIpcRegistrar.getInstance().registerHandlers();
+  HistoryIpcRegistrar.getInstance().registerHandlers();
 
+  ipcMain.removeHandler("app:health");
   ipcMain.handle("app:health", async () => {
     return {
       status: "healthy",
@@ -94,5 +97,9 @@ app.on("window-all-closed", () => {
 
 app.on("before-quit", () => {
   console.log("[APP] Closing database...");
+  AdbIpcRegistrar.getInstance().unregisterHandlers();
+  AuthIpcRegistrar.getInstance().unregisterHandlers();
+  HistoryIpcRegistrar.getInstance().unregisterHandlers();
+  ipcMain.removeHandler("app:health");
   closeDatabase();
 });

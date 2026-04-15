@@ -8,7 +8,56 @@ import * as settingsService from "../services/settingsService";
 import * as telemetryService from "../services/telemetryService";
 import * as modelFeedbackService from "../services/modelFeedbackService";
 
-export function registerHistoryHandlers() {
+const HISTORY_IPC_CHANNELS = [
+  "history:get-all",
+  "history:clear",
+  "history:delete-selected",
+  "history:get-stats",
+  "history:get-device",
+  "history:get-undoable",
+  "history:create",
+  "history:mark-undone",
+  "telemetry:get-summary",
+  "telemetry:get-retraining-signals",
+  "backups:get-all",
+  "backups:clear",
+  "backups:get",
+  "backups:get-device",
+  "backups:create",
+  "backups:update-name",
+  "backups:delete",
+  "settings:get-all",
+  "settings:get",
+  "settings:set",
+  "settings:reset",
+] as const;
+
+function clearHistoryHandlers(): void {
+  for (const channel of HISTORY_IPC_CHANNELS) {
+    ipcMain.removeHandler(channel);
+  }
+}
+
+export class HistoryIpcRegistrar {
+  private static _instance: HistoryIpcRegistrar | null = null;
+  private _registered = false;
+
+  private constructor() {}
+
+  static getInstance(): HistoryIpcRegistrar {
+    if (!HistoryIpcRegistrar._instance) {
+      HistoryIpcRegistrar._instance = new HistoryIpcRegistrar();
+    }
+    return HistoryIpcRegistrar._instance;
+  }
+
+  registerHandlers(): void {
+    if (this._registered) {
+      return;
+    }
+
+    clearHistoryHandlers();
+
   // Get action history
   ipcMain.handle("history:get-all", async (_, limit?: number) => {
     try {
@@ -295,4 +344,15 @@ export function registerHistoryHandlers() {
       throw error;
     }
   });
+    this._registered = true;
+  }
+
+  unregisterHandlers(): void {
+    clearHistoryHandlers();
+    this._registered = false;
+  }
+}
+
+export function registerHistoryHandlers() {
+  HistoryIpcRegistrar.getInstance().registerHandlers();
 }
