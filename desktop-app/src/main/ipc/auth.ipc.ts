@@ -3,7 +3,7 @@
  * Handle authentication-related IPC calls
  */
 import { ipcMain } from "electron";
-import * as authService from "../services/authService";
+import { ServiceContainer } from "../services/ServiceContainer";
 
 const AUTH_IPC_CHANNELS = [
   "auth:register",
@@ -44,13 +44,14 @@ export class AuthIpcRegistrar {
     }
 
     clearAuthHandlers();
+    const services = ServiceContainer.getInstance();
 
   // Register user
   ipcMain.handle(
     "auth:register",
     async (_event, email: string, password: string, name?: string) => {
       try {
-        return authService.registerUser(email, password, name);
+        return services.auth.register(email, password, name);
       } catch (error) {
         console.error("[AUTH IPC] Register error:", error);
         return {
@@ -67,7 +68,7 @@ export class AuthIpcRegistrar {
     "auth:login",
     async (_event, email: string, password: string) => {
       try {
-        return authService.loginUser(email, password);
+        return services.auth.login(email, password);
       } catch (error) {
         console.error("[AUTH IPC] Login error:", error);
         return {
@@ -81,7 +82,7 @@ export class AuthIpcRegistrar {
   // Get user by ID
   ipcMain.handle("auth:get-user", async (_event, userId: string) => {
     try {
-      return authService.getUserById(userId);
+      return services.auth.getUserById(userId);
     } catch (error) {
       console.error("[AUTH IPC] Get user error:", error);
       return null;
@@ -93,7 +94,7 @@ export class AuthIpcRegistrar {
     "auth:update-profile",
     async (_event, userId: string, data: { name?: string }) => {
       try {
-        return authService.updateUserProfile(userId, data);
+        return services.auth.updateProfile(userId, data);
       } catch (error) {
         console.error("[AUTH IPC] Update profile error:", error);
         return {
@@ -107,7 +108,7 @@ export class AuthIpcRegistrar {
   // Get user devices
   ipcMain.handle("auth:get-devices", async (_event, userId: string) => {
     try {
-      return authService.getUserDevices(userId);
+      return services.auth.getDevices(userId);
     } catch (error) {
       console.error("[AUTH IPC] Get devices error:", error);
       return [];
@@ -126,7 +127,7 @@ export class AuthIpcRegistrar {
       nickname?: string,
     ) => {
       try {
-        return authService.saveUserDevice(
+        return services.auth.saveDevice(
           userId,
           deviceId,
           deviceModel,
@@ -145,7 +146,7 @@ export class AuthIpcRegistrar {
     "auth:remove-device",
     async (_event, userId: string, deviceId: string) => {
       try {
-        return authService.removeUserDevice(userId, deviceId);
+        return services.auth.removeDevice(userId, deviceId);
       } catch (error) {
         console.error("[AUTH IPC] Remove device error:", error);
         return false;
@@ -158,7 +159,7 @@ export class AuthIpcRegistrar {
     "auth:update-device-nickname",
     async (_event, userId: string, deviceId: string, nickname: string) => {
       try {
-        return authService.updateDeviceNickname(userId, deviceId, nickname);
+        return services.auth.updateDeviceNickname(userId, deviceId, nickname);
       } catch (error) {
         console.error("[AUTH IPC] Update nickname error:", error);
         return false;
@@ -171,7 +172,7 @@ export class AuthIpcRegistrar {
     "auth:get-setting",
     async (_event, userId: string, key: string) => {
       try {
-        return authService.getUserSetting(userId, key);
+        return services.auth.getUserSetting(userId, key);
       } catch (error) {
         console.error("[AUTH IPC] Get setting error:", error);
         return null;
@@ -182,7 +183,7 @@ export class AuthIpcRegistrar {
   // Get all user settings
   ipcMain.handle("auth:get-all-settings", async (_event, userId: string) => {
     try {
-      return authService.getAllUserSettings(userId);
+      return services.auth.getAllUserSettings(userId);
     } catch (error) {
       console.error("[AUTH IPC] Get all settings error:", error);
       return {};
@@ -194,7 +195,7 @@ export class AuthIpcRegistrar {
     "auth:set-setting",
     async (_event, userId: string, key: string, value: string) => {
       try {
-        authService.setUserSetting(userId, key, value);
+        services.auth.setUserSetting(userId, key, value);
         return true;
       } catch (error) {
         console.error("[AUTH IPC] Set setting error:", error);

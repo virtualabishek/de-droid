@@ -2,11 +2,7 @@
  * History IPC Handlers - Fully Local SQLite Implementation
  */
 import { ipcMain } from "electron";
-import * as historyService from "../services/historyService";
-import * as backupService from "../services/backupService";
-import * as settingsService from "../services/settingsService";
-import * as telemetryService from "../services/telemetryService";
-import * as modelFeedbackService from "../services/modelFeedbackService";
+import { ServiceContainer } from "../services/ServiceContainer";
 
 const HISTORY_IPC_CHANNELS = [
   "history:get-all",
@@ -57,11 +53,12 @@ export class HistoryIpcRegistrar {
     }
 
     clearHistoryHandlers();
+    const services = ServiceContainer.getInstance();
 
   // Get action history
   ipcMain.handle("history:get-all", async (_, limit?: number) => {
     try {
-      return historyService.getAllHistory(limit || 100);
+      return services.history.getAll(limit || 100);
     } catch (error) {
       console.error("Failed to get history:", error);
       throw error;
@@ -70,7 +67,7 @@ export class HistoryIpcRegistrar {
 
   ipcMain.handle("history:clear", async (_, deviceId?: string) => {
     try {
-      const deleted = historyService.clearHistory(deviceId);
+      const deleted = services.history.clear(deviceId);
       return { success: true, deleted };
     } catch (error) {
       console.error("Failed to clear history:", error);
@@ -83,7 +80,7 @@ export class HistoryIpcRegistrar {
       const safeIds = Array.isArray(ids)
         ? ids.filter((id) => typeof id === "string" && id.trim().length > 0)
         : [];
-      const deleted = historyService.deleteHistoryByIds(safeIds);
+      const deleted = services.history.deleteByIds(safeIds);
       return { success: true, deleted };
     } catch (error) {
       console.error("Failed to delete selected history rows:", error);
@@ -94,7 +91,7 @@ export class HistoryIpcRegistrar {
   // Get action stats
   ipcMain.handle("history:get-stats", async () => {
     try {
-      return historyService.getHistoryStats();
+      return services.history.getStats();
     } catch (error) {
       console.error("Failed to get history stats:", error);
       throw error;
@@ -106,7 +103,7 @@ export class HistoryIpcRegistrar {
     "history:get-device",
     async (_, deviceId: string, limit?: number) => {
       try {
-        return historyService.getDeviceHistory(deviceId, limit || 100);
+        return services.history.getForDevice(deviceId, limit || 100);
       } catch (error) {
         console.error("Failed to get device history:", error);
         throw error;
@@ -117,7 +114,7 @@ export class HistoryIpcRegistrar {
   // Get undoable actions for a device
   ipcMain.handle("history:get-undoable", async (_, deviceId: string) => {
     try {
-      return historyService.getUndoableActions(deviceId);
+      return services.history.getUndoable(deviceId);
     } catch (error) {
       console.error("Failed to get undoable actions:", error);
       throw error;
@@ -141,7 +138,7 @@ export class HistoryIpcRegistrar {
       },
     ) => {
       try {
-        return historyService.createHistoryRecord({
+        return services.history.createRecord({
           deviceId: action.deviceId,
           deviceModel: action.deviceModel,
           deviceBrand: action.deviceBrand,
@@ -161,12 +158,12 @@ export class HistoryIpcRegistrar {
   // Mark action as undone
   ipcMain.handle("history:mark-undone", async (_, actionId: string) => {
     try {
-      const success = historyService.markActionUndone(actionId);
+      const success = services.history.markUndone(actionId);
 
       if (success) {
-        const action = historyService.getHistoryById(actionId);
+        const action = services.history.getById(actionId);
         if (action) {
-          telemetryService.recordActionOutcome({
+          services.telemetry.recordActionOutcome({
             deviceId: action.device_id,
             deviceBrand: action.device_brand || undefined,
             deviceModel: action.device_model || undefined,
@@ -175,7 +172,7 @@ export class HistoryIpcRegistrar {
             success: true,
           });
 
-          modelFeedbackService.uploadActionFeedback({
+          services.modelFeedback.uploadActionFeedback({
             packageName: action.package_name,
             action: "UNDO",
             success: true,
@@ -195,7 +192,7 @@ export class HistoryIpcRegistrar {
 
   ipcMain.handle("telemetry:get-summary", async (_, days?: number) => {
     try {
-      return telemetryService.getTelemetrySummary(days || 30);
+      return services.telemetry.getSummary(days || 30);
     } catch (error) {
       console.error("Failed to get telemetry summary:", error);
       throw error;
@@ -204,7 +201,7 @@ export class HistoryIpcRegistrar {
 
   ipcMain.handle("telemetry:get-retraining-signals", async (_, days?: number) => {
     try {
-      return telemetryService.getRetrainingSignals(days || 30);
+      return services.telemetry.getRetrainingSignals(days || 30);
     } catch (error) {
       console.error("Failed to get telemetry retraining signals:", error);
       throw error;
@@ -216,7 +213,7 @@ export class HistoryIpcRegistrar {
   // Get all saved backups
   ipcMain.handle("backups:get-all", async () => {
     try {
-      return backupService.getAllBackups();
+      return services.backup.getAll();
     } catch (error) {
       console.error("Failed to get backups:", error);
       throw error;
@@ -225,7 +222,7 @@ export class HistoryIpcRegistrar {
 
   ipcMain.handle("backups:clear", async (_, deviceId?: string) => {
     try {
-      const deleted = backupService.clearBackups(deviceId);
+      const deleted = services.backup.clear(deviceId);
       return { success: true, deleted };
     } catch (error) {
       console.error("Failed to clear backups:", error);
@@ -236,7 +233,7 @@ export class HistoryIpcRegistrar {
   // Get a specific backup
   ipcMain.handle("backups:get", async (_, id: string) => {
     try {
-      return backupService.getBackupById(id);
+      return services.backup.getById(id);
     } catch (error) {
       console.error("Failed to get backup:", error);
       throw error;
@@ -246,7 +243,7 @@ export class HistoryIpcRegistrar {
   // Get device backups
   ipcMain.handle("backups:get-device", async (_, deviceId: string) => {
     try {
-      return backupService.getDeviceBackups(deviceId);
+      return services.backup.getForDevice(deviceId);
     } catch (error) {
       console.error("Failed to get device backups:", error);
       throw error;
@@ -267,7 +264,7 @@ export class HistoryIpcRegistrar {
       },
     ) => {
       try {
-        return backupService.createBackup({
+        return services.backup.create({
           deviceId: backup.deviceId,
           deviceModel: backup.deviceModel,
           deviceBrand: backup.deviceBrand,
@@ -284,7 +281,7 @@ export class HistoryIpcRegistrar {
   // Update backup name
   ipcMain.handle("backups:update-name", async (_, id: string, name: string) => {
     try {
-      return backupService.updateBackupName(id, name);
+      return services.backup.updateName(id, name);
     } catch (error) {
       console.error("Failed to update backup name:", error);
       throw error;
@@ -294,7 +291,7 @@ export class HistoryIpcRegistrar {
   // Delete a backup
   ipcMain.handle("backups:delete", async (_, id: string) => {
     try {
-      return backupService.deleteBackup(id);
+      return services.backup.delete(id);
     } catch (error) {
       console.error("Failed to delete backup:", error);
       throw error;
@@ -306,7 +303,7 @@ export class HistoryIpcRegistrar {
   // Get all settings
   ipcMain.handle("settings:get-all", async () => {
     try {
-      return settingsService.getAllSettings();
+      return services.settings.getAll();
     } catch (error) {
       console.error("Failed to get settings:", error);
       throw error;
@@ -316,7 +313,7 @@ export class HistoryIpcRegistrar {
   // Get a specific setting
   ipcMain.handle("settings:get", async (_, key: string) => {
     try {
-      return settingsService.getSetting(key as any);
+      return services.settings.get(key as any);
     } catch (error) {
       console.error("Failed to get setting:", error);
       throw error;
@@ -326,7 +323,7 @@ export class HistoryIpcRegistrar {
   // Set a setting
   ipcMain.handle("settings:set", async (_, key: string, value: string) => {
     try {
-      settingsService.setSetting(key as any, value);
+      services.settings.set(key as any, value);
       return { success: true };
     } catch (error) {
       console.error("Failed to set setting:", error);
@@ -337,7 +334,7 @@ export class HistoryIpcRegistrar {
   // Reset all settings
   ipcMain.handle("settings:reset", async () => {
     try {
-      settingsService.resetSettings();
+      services.settings.reset();
       return { success: true };
     } catch (error) {
       console.error("Failed to reset settings:", error);
