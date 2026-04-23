@@ -1,10 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "simple",
+  "pull-request-title-pattern": "chore${scope}: release${component} ${version}",
   "include-v-in-tag": true,
   "packages": {
     ".": {
       "release-type": "simple",
+      "component": "de-droid",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
     }
