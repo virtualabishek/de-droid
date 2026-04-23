@@ -6,6 +6,7 @@ import { PermissionDashboard } from "../components/PermissionDashboard";
 import { PermissionManager } from "../components/PermissionManager";
 import { useDeviceStore } from "../store/deviceStore";
 import { DeviceSelector } from "../components/DeviceSelector";
+import { permissionAnalyticsService } from "../services/permissionService";
 
 export default function Permissions() {
   const { selectedDevice } = useDeviceStore();
@@ -93,38 +94,16 @@ export default function Permissions() {
                 Privacy Categories
               </h3>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span>📍</span>
-                  <span className="text-gray-400">Location</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>📷</span>
-                  <span className="text-gray-400">Camera</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>🎤</span>
-                  <span className="text-gray-400">Microphone</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>👥</span>
-                  <span className="text-gray-400">Contacts</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>📞</span>
-                  <span className="text-gray-400">Phone</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>💬</span>
-                  <span className="text-gray-400">SMS</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>📁</span>
-                  <span className="text-gray-400">Storage</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span>📅</span>
-                  <span className="text-gray-400">Calendar</span>
-                </div>
+                {(["Location", "Camera", "Microphone", "Contacts", "Phone", "SMS", "Storage", "Calendar"] as const).map((category) => {
+                  const config = permissionAnalyticsService.getCategoryConfig(category);
+
+                  return (
+                    <div key={category} className="flex items-center gap-1.5">
+                      <span>{config.icon}</span>
+                      <span className="text-gray-400">{category}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

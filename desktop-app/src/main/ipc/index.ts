@@ -1,3 +1,3 @@
-export { registerAdbHandlers } from "./adb.ipc";
-export { registerAuthHandlers } from "./auth.ipc";
-export { registerHistoryHandlers } from "./history.ipc";
+export { registerAdbHandlers, AdbIpcRegistrar } from "./adb.ipc";
+export { registerAuthHandlers, AuthIpcRegistrar } from "./auth.ipc";
+export { registerHistoryHandlers, HistoryIpcRegistrar } from "./history.ipc";
