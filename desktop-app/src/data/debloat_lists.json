@@ -467,6 +467,26 @@
       "sourceUrl": "https://f-droid.org/packages/ws.xsoh.etar/",
       "githubUrl": "https://github.com/Etar-Group/Etar-Calendar",
       "icon": "etar"
+    },
+    {
+      "id": "litube",
+      "name": "Litube",
+      "description": "Advanced webview wrapper for YouTube with background playback and PiP",
+      "packageId": "com.hhst.litube",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.hhst.litube/",
+      "githubUrl": "https://github.com/HydeYYHH/litube",
+      "icon": "litube"
+    },
+    {
+      "id": "outertune",
+      "name": "OuterTune",
+      "description": "Material 3 music player and YouTube Music client with offline playback",
+      "packageId": "com.dd3boh.outertune",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.dd3boh.outertune/",
+      "githubUrl": "https://github.com/OuterTune/OuterTune",
+      "icon": "outertune"
     }
   ]
 }
