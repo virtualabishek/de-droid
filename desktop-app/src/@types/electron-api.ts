@@ -203,6 +203,7 @@ export interface AlternativeApp {
   sourceUrl: string;
   githubUrl: string;
   icon: string;
+  iconUrl?: string;
 }
 
 export interface Category {

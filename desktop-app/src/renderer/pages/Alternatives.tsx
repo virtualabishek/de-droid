@@ -10,6 +10,7 @@ interface Alternative {
   sourceUrl: string;
   githubUrl: string;
   icon: string;
+  iconUrl?: string;
 }
 
 interface InstallProgress {
@@ -37,19 +38,18 @@ function getAlternativeIconUrls(packageId: string): string[] {
 /**
  * App Icon component with fallback
  */
-function AppIcon({ packageId, appName }: { packageId: string; appName: string }) {
-  const [iconUrl, setIconUrl] = useState<string | null>(null);
+function AppIcon({ packageId, appName, iconUrl: customUrl }: { packageId: string; appName: string; iconUrl?: string }) {
+  const [iconUrl, setIconUrl] = useState<string | null>(customUrl || null);
   const [iconError, setIconError] = useState(false);
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
   
-  const iconUrls = getAlternativeIconUrls(packageId);
+  const iconUrls = customUrl ? [customUrl, ...getAlternativeIconUrls(packageId)] : getAlternativeIconUrls(packageId);
   
   useEffect(() => {
-    // Reset state when packageId changes
     setIconUrl(iconUrls[0]);
     setIconError(false);
     setCurrentUrlIndex(0);
-  }, [packageId]);
+  }, [packageId, customUrl]);
   
   const handleImageError = useCallback(() => {
     const nextIndex = currentUrlIndex + 1;
@@ -425,7 +425,7 @@ export default function Alternatives() {
               >
                 {/* App header */}
                 <div className="flex items-start gap-4 mb-4">
-                  <AppIcon packageId={app.packageId} appName={app.name} />
+                  <AppIcon packageId={app.packageId} appName={app.name} iconUrl={app.iconUrl} />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg truncate">{app.name}</h3>
                     <p className="text-xs text-gray-400 font-mono truncate">{app.packageId}</p>

@@ -34,8 +34,8 @@
   --bg-tertiary: #e2e8f0;
   --text-primary: #1e293b;
   --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border-color: #e2e8f0;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
   --accent-color: #2563eb;
 
   color-scheme: light;
@@ -65,6 +65,77 @@
 .light-theme .text-gray-500 {
   color: var(--text-muted) !important;
 }
+.light-theme .text-gray-200,
+.light-theme .text-gray-100 {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .bg-gray-800\/70,
+.light-theme .bg-gray-800\/80 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.light-theme .bg-gray-900\/40,
+.light-theme .bg-gray-900\/60,
+.light-theme .bg-gray-900\/70 {
+  background-color: var(--bg-primary) !important;
+}
+
+.light-theme .bg-gray-700\/30,
+.light-theme .bg-gray-700\/40,
+.light-theme .bg-gray-700\/50,
+.light-theme .bg-gray-700\/60,
+.light-theme .bg-gray-700\/80,
+.light-theme .bg-gray-700\/90 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.light-theme .bg-gray-600,
+.light-theme .bg-gray-600\/50,
+.light-theme .bg-gray-600\/70 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:bg-gray-700:hover,
+.light-theme .hover\:bg-gray-700\/50:hover,
+.light-theme .hover\:bg-gray-700\/60:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:bg-gray-600:hover,
+.light-theme .hover\:bg-gray-600\/70:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:text-white:hover {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .group:hover .group-hover\:text-white {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .group:hover .group-hover\:text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+/* Light theme gradient overrides for page header backgrounds */
+.light-theme .from-gray-800 {
+  --tw-gradient-from: var(--bg-secondary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .via-gray-800 {
+  --tw-gradient-stops: var(--tw-gradient-from), var(--bg-secondary) var(--tw-gradient-via-position), var(--tw-gradient-to, rgb(255 255 255 / 0)) !important;
+}
+
+/* Light theme gradient overrides for page header title text */
+.light-theme .from-white {
+  --tw-gradient-from: var(--text-primary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .via-gray-100,
+.light-theme .via-cyan-100 {
+  --tw-gradient-stops: var(--tw-gradient-from), var(--text-primary) var(--tw-gradient-via-position), var(--tw-gradient-to, rgb(255 255 255 / 0)) !important;
+}
+
 .light-theme .border-gray-700 {
   border-color: var(--border-color) !important;
 }
