@@ -172,12 +172,14 @@
   color: #ca8a04 !important;
 }
 
+.light-theme .bg-gray-800\/50,
 .light-theme .bg-gray-800\/70,
 .light-theme .bg-gray-800\/80 {
   background-color: var(--bg-tertiary) !important;
 }
 
 .light-theme .bg-gray-900\/40,
+.light-theme .bg-gray-900\/50,
 .light-theme .bg-gray-900\/60,
 .light-theme .bg-gray-900\/70 {
   background-color: var(--bg-primary) !important;
@@ -198,6 +200,7 @@
   background-color: var(--bg-secondary) !important;
 }
 
+.light-theme .hover\:bg-gray-800:hover,
 .light-theme .hover\:bg-gray-700:hover,
 .light-theme .hover\:bg-gray-700\/50:hover,
 .light-theme .hover\:bg-gray-700\/60:hover {
@@ -234,7 +237,10 @@
   --tw-gradient-to: var(--bg-secondary) var(--tw-gradient-to-position) !important;
 }
 .light-theme .to-indigo-900\/20,
-.light-theme .to-indigo-900\/30 {
+.light-theme .to-indigo-900\/30,
+.light-theme .to-primary-900\/10,
+.light-theme .to-primary-900\/20,
+.light-theme .to-primary-900\/30 {
   --tw-gradient-to: var(--bg-primary) var(--tw-gradient-to-position) !important;
 }
 
@@ -244,7 +250,8 @@
 }
 .light-theme .via-gray-100,
 .light-theme .via-cyan-100,
-.light-theme .to-indigo-300 {
+.light-theme .to-indigo-300,
+.light-theme .to-primary-300 {
   --tw-gradient-to: var(--text-primary) var(--tw-gradient-to-position) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--text-primary) var(--tw-gradient-via-position), var(--tw-gradient-to, var(--text-primary)) !important;
 }
