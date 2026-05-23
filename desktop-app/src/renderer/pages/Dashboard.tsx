@@ -530,7 +530,7 @@ export default function Dashboard() {
                   </div>
                   <Link
                     to="/ai-insights"
-                    className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 transition-colors text-sm font-medium"
+                    className="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-500 transition-colors text-sm font-medium text-white"
                   >
                     Open AI Insights
                   </Link>
