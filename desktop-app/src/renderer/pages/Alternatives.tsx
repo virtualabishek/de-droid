@@ -10,6 +10,7 @@ interface Alternative {
   sourceUrl: string;
   githubUrl: string;
   icon: string;
+  iconUrl?: string;
 }
 
 interface InstallProgress {
@@ -37,25 +38,29 @@ function getAlternativeIconUrls(packageId: string): string[] {
 /**
  * App Icon component with fallback
  */
-function AppIcon({ packageId, appName }: { packageId: string; appName: string }) {
-  const [iconUrl, setIconUrl] = useState<string | null>(null);
-  const [iconError, setIconError] = useState(false);
+function AppIcon({ packageId, appName, iconUrl: customUrl }: { packageId: string; appName: string; iconUrl?: string }) {
+  const iconUrls = useMemo(() => 
+    customUrl ? [customUrl, ...getAlternativeIconUrls(packageId)] : getAlternativeIconUrls(packageId),
+    [packageId, customUrl]
+  );
+  
   const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [iconError, setIconError] = useState(false);
   
-  const iconUrls = getAlternativeIconUrls(packageId);
-  
-  useEffect(() => {
-    // Reset state when packageId changes
-    setIconUrl(iconUrls[0]);
-    setIconError(false);
+  // Reset state when iconUrls change
+  const [prevIconUrls, setPrevIconUrls] = useState(iconUrls);
+  if (iconUrls !== prevIconUrls) {
+    setPrevIconUrls(iconUrls);
     setCurrentUrlIndex(0);
-  }, [packageId]);
+    setIconError(false);
+  }
+  
+  const iconUrl = iconUrls[currentUrlIndex];
   
   const handleImageError = useCallback(() => {
     const nextIndex = currentUrlIndex + 1;
     if (nextIndex < iconUrls.length) {
       setCurrentUrlIndex(nextIndex);
-      setIconUrl(iconUrls[nextIndex]);
     } else {
       setIconError(true);
     }
@@ -101,38 +106,7 @@ export default function Alternatives() {
     { id: 'store', name: 'App Stores', icon: '🏪' },
   ];
 
-  useEffect(() => {
-    loadAlternatives();
-  }, []);
-
-  useEffect(() => {
-    filterAlternatives();
-  }, [alternatives, searchQuery, categoryFilter]);
-
-  // Subscribe to F-Droid download progress events
-  useEffect(() => {
-    const fdroidApi = window?.electronAPI?.fdroid;
-    if (!fdroidApi?.onProgress) return;
-
-    const cleanup = fdroidApi.onProgress((progress) => {
-      setInstallProgress((prev) => ({
-        ...prev,
-        [progress.packageId]: {
-          packageId: progress.packageId,
-          status: progress.stage,
-          progress: progress.progress,
-          downloadedMB: progress.downloadedMB,
-          totalMB: progress.totalMB,
-          speed: progress.speed,
-          message: progress.message,
-        },
-      }));
-    });
-
-    return cleanup;
-  }, []);
-
-  const loadAlternatives = async () => {
+  const loadAlternatives = useCallback(async () => {
     setIsLoading(true);
     try {
       const api = window?.electronAPI?.alternatives;
@@ -146,9 +120,9 @@ export default function Alternatives() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const filterAlternatives = () => {
+  const filterAlternatives = useCallback(() => {
     let filtered = [...alternatives];
 
     if (searchQuery) {
@@ -179,7 +153,15 @@ export default function Alternatives() {
     }
 
     setFilteredAlternatives(filtered);
-  };
+  }, [alternatives, searchQuery, categoryFilter]);
+
+  useEffect(() => {
+    void loadAlternatives();
+  }, [loadAlternatives]);
+
+  useEffect(() => {
+    filterAlternatives();
+  }, [filterAlternatives]);
 
   const handleInstall = async (app: Alternative) => {
     if (!selectedDevice) {
@@ -253,7 +235,7 @@ export default function Alternatives() {
     if (!progress) return null;
 
     const statusColors = {
-      fetching: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+      fetching: 'bg-primary-500/20 text-primary-400 border-primary-500/30',
       downloading: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       installing: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
       success: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -425,7 +407,7 @@ export default function Alternatives() {
               >
                 {/* App header */}
                 <div className="flex items-start gap-4 mb-4">
-                  <AppIcon packageId={app.packageId} appName={app.name} />
+                  <AppIcon packageId={app.packageId} appName={app.name} iconUrl={app.iconUrl} />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-lg truncate">{app.name}</h3>
                     <p className="text-xs text-gray-400 font-mono truncate">{app.packageId}</p>

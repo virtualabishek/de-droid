@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface Permission {
   name: string;
@@ -86,32 +86,7 @@ export function PackageDetailsModal({
   const [isUpdatingBackground, setIsUpdatingBackground] = useState(false);
   const [backgroundMessage, setBackgroundMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && packageName && deviceId) {
-      loadPackageDetails();
-    }
-  }, [isOpen, packageName, deviceId]);
-
-  const loadPackageDetails = async () => {
-    setIsLoading(true);
-    setError(null);
-    setBackgroundMessage(null);
-    try {
-      const api = window?.electronAPI?.adb;
-      if (!api) {
-        throw new Error('ADB API unavailable');
-      }
-      const data = await api.getPackageDetails(deviceId, packageName);
-      setDetails(data);
-      await loadBackgroundStatus();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load package details');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadBackgroundStatus = async () => {
+  const loadBackgroundStatus = useCallback(async () => {
     setIsLoadingBackground(true);
     try {
       const api = window?.electronAPI?.adb;
@@ -128,7 +103,42 @@ export function PackageDetailsModal({
     } finally {
       setIsLoadingBackground(false);
     }
-  };
+  }, [deviceId, packageName]);
+
+  const loadPackageDetails = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setBackgroundMessage(null);
+    try {
+      const api = window?.electronAPI?.adb;
+      if (!api) {
+        throw new Error('ADB API unavailable');
+      }
+      const data = await api.getPackageDetails(deviceId, packageName);
+      setDetails(data);
+      await loadBackgroundStatus();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load package details');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [deviceId, packageName, loadBackgroundStatus]);
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const init = async () => {
+      if (isOpen && packageName && deviceId && mounted) {
+        await loadPackageDetails();
+      }
+    };
+
+    init();
+    
+    return () => {
+      mounted = false;
+    };
+  }, [isOpen, packageName, deviceId, loadPackageDetails]);
 
   const applyBackgroundMode = async (mode: 'restrict' | 'relax') => {
     setIsUpdatingBackground(true);
@@ -587,7 +597,7 @@ export function PackageDetailsModal({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <p className="text-green-400">No dangerous permissions requested</p>
-                      <p className="text-sm">This app doesn't require sensitive permissions</p>
+                      <p className="text-sm">This app doesn&apos;t require sensitive permissions</p>
                     </div>
                   )}
 

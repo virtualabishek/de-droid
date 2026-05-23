@@ -468,13 +468,15 @@ export async function getPackagePermissions(
 ): Promise<PermissionResult> {
   const result = await executeAdbCommand(
     `-s ${deviceId} shell dumpsys package ${packageName}`,
+    30000,
+    1024 * 1024 * 10, // 10MB buffer for large package dumps (e.g. GMS)
   );
 
   if (!result.success) {
     throw new Error(result.error || "Failed to get package permissions");
   }
 
-  const permissions = parsePermissions(result.output, packageName);
+  const permissions = parsePermissions(result.output);
   const appOpsModes = await getAppOpsModes(deviceId, packageName, userId);
   const effectivePermissions = permissions.map((permission) => {
     if (permission.type !== "runtime") {
@@ -688,6 +690,8 @@ async function getEffectivePermissionState(
 ): Promise<EffectivePermissionState> {
   const dumpsysResult = await executeAdbCommand(
     `-s ${deviceId} shell dumpsys package ${packageName}`,
+    20000,
+    1024 * 1024 * 10, // 10MB buffer
   );
 
   const runtimeGranted = dumpsysResult.success
@@ -793,7 +797,6 @@ async function getAppOpsModes(
  */
 function parsePermissions(
   dumpsysOutput: string,
-  packageName: string,
 ): Permission[] {
   const permissions: Permission[] = [];
   const seen = new Set<string>();

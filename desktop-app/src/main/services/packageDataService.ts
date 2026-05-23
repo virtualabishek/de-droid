@@ -63,6 +63,7 @@ export interface AlternativeApp {
   sourceUrl: string;
   githubUrl: string;
   icon: string;
+  iconUrl?: string;
 }
 
 export interface DebloatList {
@@ -311,6 +312,7 @@ export class PackageDataService {
       sourceUrl: this.toStringValue(alt.sourceUrl),
       githubUrl: this.toStringValue(alt.githubUrl),
       icon: this.toStringValue(alt.icon),
+      iconUrl: this.toStringValue(alt.iconUrl) || undefined,
     };
   }
 

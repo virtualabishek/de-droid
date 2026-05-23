@@ -53,14 +53,13 @@ function ThemeToggle() {
 export function Layout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === "true";
+  });
   const [showSidebarHelp, setShowSidebarHelp] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
-    if (saved === "true") {
-      setIsSidebarCollapsed(true);
-    }
+    // Synchronize if another tab changes it, or just for clarity
   }, []);
 
   const toggleSidebar = () => {
@@ -214,7 +213,7 @@ export function Layout() {
                     isSidebarCollapsed ? "justify-center px-2" : "gap-3 px-4"
                   } ${
                     isActive
-                      ? "bg-indigo-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "text-gray-300 hover:bg-gray-700"
                   }`
                 }
@@ -304,7 +303,7 @@ export function Layout() {
                     isSidebarCollapsed ? "justify-center px-2" : "gap-3 px-4"
                   } ${
                     isActive
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "text-gray-300 hover:bg-gray-700"
                   }`
                 }

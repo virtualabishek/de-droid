@@ -205,7 +205,7 @@ export default function DeviceHealth() {
                       ? `${snapshot.storage.usedPercent}% used`
                       : undefined
                   }
-                  accent="bg-gradient-to-br from-purple-500 to-indigo-600"
+                  accent="bg-gradient-to-br from-blue-500 to-primary-600"
                 />
               </div>
 

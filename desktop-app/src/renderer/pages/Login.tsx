@@ -30,7 +30,7 @@ export default function Login() {
       } else {
         setError(result.message);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);

@@ -6,6 +6,17 @@ import { DatabaseManager, SavedBackup } from "../database";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface BackupRow {
+  id: string;
+  device_id: string;
+  device_model: string | null;
+  device_brand: string | null;
+  name: string;
+  packages: string;
+  total_packages: number;
+  created_at: string;
+}
+
 export interface CreateBackupInput {
   deviceId: string;
   deviceModel?: string;
@@ -51,7 +62,7 @@ export class BackupService {
     const db = this.db.get();
     const row = db
       .prepare("SELECT * FROM saved_backups WHERE id = ?")
-      .get(id) as any;
+      .get(id) as BackupRow | undefined;
 
     if (!row) return null;
 
@@ -68,7 +79,7 @@ export class BackupService {
     const db = this.db.get();
     const rows = db
       .prepare("SELECT * FROM saved_backups ORDER BY created_at DESC")
-      .all() as any[];
+      .all() as BackupRow[];
 
     return rows.map((row) => ({
       ...row,
@@ -85,7 +96,7 @@ export class BackupService {
       .prepare(
         "SELECT * FROM saved_backups WHERE device_id = ? ORDER BY created_at DESC",
       )
-      .all(deviceId) as any[];
+      .all(deviceId) as BackupRow[];
 
     return rows.map((row) => ({
       ...row,

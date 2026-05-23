@@ -2,7 +2,7 @@
  * Authentication Service
  * Handles local user authentication with SQLite
  */
-import { DatabaseManager, User, UserDevice, UserSetting } from "../database";
+import { DatabaseManager, User, UserDevice } from "../database";
 import { v4 as uuidv4 } from "uuid";
 import * as crypto from "crypto";
 
@@ -145,7 +145,7 @@ export class AuthService {
     const db = this.db.get();
     const user = db
       .prepare("SELECT id, email, name, is_verified FROM users WHERE id = ?")
-      .get(userId) as any;
+      .get(userId) as { id: string; email: string; name: string | null; is_verified: number } | undefined;
 
     if (!user) return null;
 

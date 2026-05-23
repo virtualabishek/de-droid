@@ -297,14 +297,20 @@ export function registerAdbHandlers() {
       });
 
       // Transform to expected format
-      return devices.map((d) => ({
-        adb_id: d.id,
-        model: d.model,
-        brand: d.brand,
-        android_sdk: d.androidSdk,
-        android_version: d.androidVersion,
-        users: [{ id: 0, index: 0 }], // Default user
-      }));
+      const results = await Promise.all(
+        devices.map(async (d) => {
+          const users = await LocalAdb.getUsers(d.id);
+          return {
+            adb_id: d.id,
+            model: d.model,
+            brand: d.brand,
+            android_sdk: d.androidSdk,
+            android_version: d.androidVersion,
+            users,
+          };
+        }),
+      );
+      return results;
     } catch (error) {
       console.error("[ADB LOCAL] Failed to get devices:", error);
       return [];
@@ -521,7 +527,7 @@ export function registerAdbHandlers() {
               `[MODEL API] /api/check-packages returned ${response.status}; using local fallback`,
             );
           }
-        } catch (error) {
+    } catch (error) {
           console.warn("[MODEL API] Safety check failed; using local fallback:", error);
         }
       }
@@ -967,7 +973,7 @@ export function registerAdbHandlers() {
         adb_available: adbAvailable,
         mode: "local",
       };
-    } catch (error) {
+    } catch {
       return {
         status: "unavailable",
         adb_available: false,
