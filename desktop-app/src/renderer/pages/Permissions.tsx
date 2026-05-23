@@ -15,10 +15,10 @@ export default function Permissions() {
   return (
     <div className="h-full flex flex-col bg-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-purple-900/30 border-b border-gray-700/50 p-6">
+      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-900/30 border-b border-gray-700/50 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-purple-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-primary-300 bg-clip-text text-transparent">
               Permissions
             </h1>
             <p className="text-gray-400 mt-1 flex items-center gap-2">
@@ -38,7 +38,7 @@ export default function Permissions() {
                 <p className="font-semibold">{selectedDevice.model}</p>
                 <p className="text-sm text-gray-400">{selectedDevice.brand}</p>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-primary-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
@@ -58,7 +58,7 @@ export default function Permissions() {
           {selectedDevice && (
             <div className="mt-4 bg-gray-800 rounded-xl border border-gray-700 p-4">
               <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Quick Tips
@@ -77,7 +77,7 @@ export default function Permissions() {
                   <span>Revoking permissions may affect app functionality</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-purple-400">•</span>
+                  <span className="text-primary-400">•</span>
                   <span>Lower privacy scores indicate more invasive apps</span>
                 </li>
               </ul>
@@ -88,7 +88,7 @@ export default function Permissions() {
           {selectedDevice && (
             <div className="mt-4 bg-gray-800 rounded-xl border border-gray-700 p-4">
               <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                 </svg>
                 Privacy Categories
@@ -118,8 +118,8 @@ export default function Permissions() {
           ) : (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-xl border border-gray-700">
               <div className="text-center max-w-md">
-                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-500/20 to-primary-500/20 rounded-3xl flex items-center justify-center border border-purple-500/30">
-                  <svg className="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-24 h-24 mx-auto mb-6 bg-primary-600/10 rounded-3xl flex items-center justify-center border border-primary-500/30">
+                  <svg className="w-12 h-12 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
@@ -131,7 +131,7 @@ export default function Permissions() {
                   Identify privacy-invasive apps and revoke unnecessary permissions.
                 </p>
                 <div className="flex flex-wrap gap-2 justify-center text-sm">
-                  <span className="px-3 py-1.5 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">
+                  <span className="px-3 py-1.5 bg-primary-500/20 text-primary-300 rounded-full border border-primary-500/30">
                     Privacy Analysis
                   </span>
                   <span className="px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30">

@@ -5,6 +5,7 @@ interface Device {
   model: string;
   brand: string;
   android_sdk: number;
+  android_version: string;
   users: Array<{ id: number; index: number }>;
 }
 

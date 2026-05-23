@@ -43,7 +43,7 @@ export default function Register() {
       } else {
         setError(result.message);
       }
-    } catch (err) {
+    } catch {
       setError("Registration failed");
     } finally {
       setIsLoading(false);

@@ -316,7 +316,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/org.schabi.newpipe/",
       "githubUrl": "https://github.com/TeamNewPipe/NewPipe",
-      "icon": "newpipe"
+      "icon": "newpipe",
+      "iconUrl": "https://newpipe.net/img/logo.svg"
     },
     {
       "id": "pipepipe",
@@ -326,7 +327,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/InfinityLoop1309.NewPipeEnhanced/",
       "githubUrl": "https://github.com/InfinityLoop1308/PipePipe",
-      "icon": "pipepipe"
+      "icon": "pipepipe",
+      "iconUrl": "https://raw.githubusercontent.com/InfinityLoop1308/PipePipe/main/assets/logo.png"
     },
     {
       "id": "libretube",
@@ -336,7 +338,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/com.github.libretube/",
       "githubUrl": "https://github.com/libre-tube/LibreTube",
-      "icon": "libretube"
+      "icon": "libretube",
+      "iconUrl": "https://raw.githubusercontent.com/libre-tube/LibreTube/master/assets/icons/LibreTube.png"
     },
     {
       "id": "osmand",
@@ -346,7 +349,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/net.osmand.plus/",
       "githubUrl": "https://github.com/osmandapp/OsmAnd",
-      "icon": "osmand"
+      "icon": "osmand",
+      "iconUrl": "https://osmand.net/img/logo.svg"
     },
     {
       "id": "organic-maps",
@@ -356,7 +360,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/app.organicmaps/",
       "githubUrl": "https://github.com/organicmaps/organicmaps",
-      "icon": "organic-maps"
+      "icon": "organic-maps",
+      "iconUrl": "https://raw.githubusercontent.com/organicmaps/organicmaps.github.io/master/static/logos/green-on-transparent.svg"
     },
     {
       "id": "fossify-gallery",
@@ -366,7 +371,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/org.fossify.gallery/",
       "githubUrl": "https://github.com/FossifyOrg/Gallery",
-      "icon": "fossify-gallery"
+      "icon": "fossify-gallery",
+      "iconUrl": "https://raw.githubusercontent.com/FossifyOrg/Gallery/main/fastlane/metadata/android/en-US/images/icon.png"
     },
     {
       "id": "nextcloud",
@@ -376,7 +382,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/com.nextcloud.client/",
       "githubUrl": "https://github.com/nextcloud/android",
-      "icon": "nextcloud"
+      "icon": "nextcloud",
+      "iconUrl": "https://raw.githubusercontent.com/nextcloud/android/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
       "id": "k9-mail",
@@ -386,7 +393,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/com.fsck.k9/",
       "githubUrl": "https://github.com/thundernest/k-9",
-      "icon": "k9-mail"
+      "icon": "k9-mail",
+      "iconUrl": "https://raw.githubusercontent.com/thunderbird/thunderbird-android/main/images/K-9_Mail_512x512.png"
     },
     {
       "id": "fairemail",
@@ -396,7 +404,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/eu.faircode.email/",
       "githubUrl": "https://github.com/M66B/FairEmail",
-      "icon": "fairemail"
+      "icon": "fairemail",
+      "iconUrl": "https://raw.githubusercontent.com/M66B/FairEmail/master/metadata/en-US/images/icon.png"
     },
     {
       "id": "frost-for-facebook",
@@ -406,7 +415,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/com.pitchedapps.frost/",
       "githubUrl": "https://github.com/AllanWang/Frost-for-Facebook",
-      "icon": "frost"
+      "icon": "frost",
+      "iconUrl": "https://raw.githubusercontent.com/AllanWang/Frost-for-Facebook/dev/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
       "id": "f-droid",
@@ -416,7 +426,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/",
       "githubUrl": "https://gitlab.com/fdroid/fdroidclient",
-      "icon": "fdroid"
+      "icon": "fdroid",
+      "iconUrl": "https://f-droid.org/repo/org.fdroid.fdroid/en-US/icon.png"
     },
     {
       "id": "aurora-store",
@@ -426,7 +437,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/com.aurora.store/",
       "githubUrl": "https://gitlab.com/AuroraOSS/AuroraStore",
-      "icon": "aurora"
+      "icon": "aurora",
+      "iconUrl": "https://gitlab.com/AuroraOSS/AuroraStore/-/raw/master/fastlane/metadata/android/en-US/images/icon.png"
     },
     {
       "id": "fennec-fdroid",
@@ -436,7 +448,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/org.mozilla.fennec_fdroid/",
       "githubUrl": "https://hg.mozilla.org/mozilla-central/",
-      "icon": "fennec"
+      "icon": "fennec",
+      "iconUrl": "https://f-droid.org/repo/org.mozilla.fennec_fdroid/en-US/icon.png"
     },
     {
       "id": "mull",
@@ -446,7 +459,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/us.spotco.fennec_dos/",
       "githubUrl": "https://gitlab.com/nicholaschum/nicholaschum.gitlab.io",
-      "icon": "mull"
+      "icon": "mull",
+      "iconUrl": "https://raw.githubusercontent.com/Divested-Mobile/Mull-Fenix/master/fastlane/metadata/android/en-US/images/icon.png"
     },
     {
       "id": "fossify-calendar",
@@ -456,7 +470,8 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/org.fossify.calendar/",
       "githubUrl": "https://github.com/FossifyOrg/Calendar",
-      "icon": "fossify-calendar"
+      "icon": "fossify-calendar",
+      "iconUrl": "https://raw.githubusercontent.com/FossifyOrg/Calendar/main/fastlane/metadata/android/en-US/images/icon.png"
     },
     {
       "id": "etar",
@@ -466,7 +481,30 @@
       "source": "F-Droid",
       "sourceUrl": "https://f-droid.org/packages/ws.xsoh.etar/",
       "githubUrl": "https://github.com/Etar-Group/Etar-Calendar",
-      "icon": "etar"
+      "icon": "etar",
+      "iconUrl": "https://raw.githubusercontent.com/Etar-Group/Etar-Calendar/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+      "id": "litube",
+      "name": "Litube",
+      "description": "Advanced webview wrapper for YouTube with background playback and PiP",
+      "packageId": "com.hhst.litube",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.hhst.litube/",
+      "githubUrl": "https://github.com/HydeYYHH/litube",
+      "icon": "litube",
+      "iconUrl": "https://raw.githubusercontent.com/HydeYYHH/litube/master/fastlane/metadata/android/en-US/images/icon.png"
+    },
+    {
+      "id": "outertune",
+      "name": "OuterTune",
+      "description": "Material 3 music player and YouTube Music client with offline playback",
+      "packageId": "com.dd3boh.outertune",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.dd3boh.outertune/",
+      "githubUrl": "https://github.com/OuterTune/OuterTune",
+      "icon": "outertune",
+      "iconUrl": "https://raw.githubusercontent.com/OuterTune/OuterTune/lite/fastlane/metadata/android/en-US/images/icon.png"
     }
   ]
 }

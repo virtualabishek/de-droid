@@ -152,10 +152,10 @@ export default function AIInsights() {
 
   return (
     <div className="h-full flex flex-col bg-gray-900">
-      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-indigo-900/30 border-b border-gray-700/50 p-6">
+      <header className="bg-gradient-to-r from-gray-800 via-gray-800 to-primary-600/20 border-b border-gray-700/50 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-indigo-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-gray-100 to-primary-400 bg-clip-text text-transparent">
               AI / ML Model Insights
             </h1>
             <p className="text-gray-400 mt-1">
@@ -213,7 +213,7 @@ export default function AIInsights() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-800 to-indigo-900/20 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
+                <div className="bg-gradient-to-br from-gray-800 to-primary-600/10 rounded-xl border border-gray-700/70 p-4 shadow-lg shadow-black/20">
                   <h3 className="text-sm font-medium text-gray-200 mb-2">How to Read This</h3>
                   <ul className="space-y-2 text-xs text-gray-300 list-disc pl-4">
                     <li>Higher confidence means the model is more certain about that package score.</li>
@@ -302,7 +302,7 @@ export default function AIInsights() {
                       topFactors.map(([factor, count]) => (
                         <div key={factor} className="flex items-center justify-between gap-4 p-2 rounded-lg bg-gray-800/70 border border-gray-700/70">
                           <span className="text-sm text-gray-200 truncate">{factor}</span>
-                          <span className="text-xs text-indigo-300 flex-shrink-0">{count} packages</span>
+                          <span className="text-xs text-primary-400 flex-shrink-0">{count} packages</span>
                         </div>
                       ))
                     ) : (
@@ -341,7 +341,7 @@ export default function AIInsights() {
                         >
                           {pkg.modelLabel || "UNKNOWN"}
                         </span>
-                        <span className="text-sm text-indigo-300 min-w-[56px] text-right">
+                        <span className="text-sm text-primary-400 min-w-[56px] text-right">
                           {typeof pkg.modelConfidence === "number"
                             ? `${Math.round(pkg.modelConfidence * 100)}%`
                             : "-"}

@@ -199,7 +199,7 @@ export class TelemetryService {
           AND event_type = 'ACTION_OUTCOME'
       `,
       )
-      .get(interval) as any;
+      .get(interval) as { total_events: number; success_rate: number | null; avg_model_confidence: number | null } | undefined;
 
     const actionRows = db
       .prepare(
@@ -224,7 +224,7 @@ export class TelemetryService {
           AND event_type = 'ACTION_OUTCOME'
       `,
       )
-      .get(interval) as any;
+      .get(interval) as { undo_success: number | null; destructive_success: number | null } | undefined;
 
     const byAction: Record<string, number> = {};
     for (const row of actionRows) {
@@ -241,7 +241,7 @@ export class TelemetryService {
       rollback_rate:
         destructiveSuccess > 0 ? undoSuccess / destructiveSuccess : null,
       avg_model_confidence:
-        aggregate?.avg_model_confidence === null
+        aggregate?.avg_model_confidence === undefined || aggregate?.avg_model_confidence === null
           ? null
           : Number(aggregate.avg_model_confidence),
       by_action: byAction,
@@ -283,16 +283,16 @@ export class TelemetryService {
           AND action IN ('UNINSTALL', 'DISABLE')
       `,
       )
-      .get(interval) as any;
+      .get(interval) as { sample_size: number; low_confidence_rate: number | null; unsafe_false_safe_proxy: number | null } | undefined;
 
     return {
       enabled,
       low_confidence_rate:
-        stats?.low_confidence_rate === null
+        stats?.low_confidence_rate === undefined || stats?.low_confidence_rate === null
           ? null
           : Number(stats.low_confidence_rate),
       unsafe_false_safe_proxy:
-        stats?.unsafe_false_safe_proxy === null
+        stats?.unsafe_false_safe_proxy === undefined || stats?.unsafe_false_safe_proxy === null
           ? null
           : Number(stats.unsafe_false_safe_proxy),
       sample_size: Number(stats?.sample_size || 0),

@@ -56,7 +56,7 @@ const brandColors: Record<
     accent: "bg-green-200",
   },
   vivo: {
-    bg: "from-blue-400 to-purple-500",
+    bg: "from-blue-400 to-primary-500",
     text: "text-white",
     accent: "bg-blue-200",
   },
@@ -76,7 +76,7 @@ const brandColors: Record<
     accent: "bg-blue-300",
   },
   motorola: {
-    bg: "from-blue-600 to-indigo-700",
+    bg: "from-blue-600 to-primary-700",
     text: "text-white",
     accent: "bg-blue-300",
   },

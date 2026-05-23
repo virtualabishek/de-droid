@@ -51,13 +51,7 @@ export default function Settings() {
     success: null,
   });
 
-  useEffect(() => {
-    if (user?.id) {
-      loadSettings();
-    }
-  }, [user?.id]);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!user?.id) return;
 
     try {
@@ -78,7 +72,13 @@ export default function Settings() {
     } catch (error) {
       console.error("Failed to load settings:", error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.id) {
+      void loadSettings();
+    }
+  }, [user, loadSettings]);
 
   const saveSettings = async () => {
     if (!user?.id) return;

@@ -1,7 +1,7 @@
 /**
  * Permission Manager Component - View and manage app permissions
  */
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDeviceStore } from "../store/deviceStore";
 import { useToastStore } from "../store/toastStore";
 import {
@@ -29,28 +29,9 @@ export function PermissionManager({
   const [filter, setFilter] = useState<"all" | "dangerous" | "granted">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch permissions
-  useEffect(() => {
-    if (selectedDevice && packageName) {
-      loadPermissions();
-    }
-  }, [selectedDevice, packageName]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
-  const loadPermissions = async () => {
+  const loadPermissions = useCallback(async () => {
     if (!selectedDevice) return;
 
-    setIsLoading(true);
     try {
       const result = await permissionApiService.getPackagePermissions(
         selectedDevice.adb_id,
@@ -64,7 +45,24 @@ export function PermissionManager({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedDevice, packageName, selectedUser, toast]);
+
+  // Fetch permissions
+  useEffect(() => {
+    let mounted = true;
+    
+    const init = async () => {
+      if (selectedDevice && packageName && mounted) {
+        await loadPermissions();
+      }
+    };
+
+    init();
+    
+    return () => {
+      mounted = false;
+    };
+  }, [selectedDevice, packageName, loadPermissions]);
 
   // Toggle permission (grant/revoke)
   const togglePermission = async (permission: Permission) => {

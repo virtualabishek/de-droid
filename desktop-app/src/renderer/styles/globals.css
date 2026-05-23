@@ -34,8 +34,8 @@
   --bg-tertiary: #e2e8f0;
   --text-primary: #1e293b;
   --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border-color: #e2e8f0;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
   --accent-color: #2563eb;
 
   color-scheme: light;
@@ -65,10 +65,212 @@
 .light-theme .text-gray-500 {
   color: var(--text-muted) !important;
 }
-.light-theme .border-gray-700 {
+.light-theme .text-gray-200,
+.light-theme .text-gray-100 {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .text-red-200,
+.light-theme .text-red-300 {
+  color: #dc2626 !important;
+}
+
+.light-theme .text-orange-200,
+.light-theme .text-orange-300 {
+  color: #ea580c !important;
+}
+
+.light-theme .text-amber-300 {
+  color: #d97706 !important;
+}
+
+.light-theme .text-emerald-200,
+.light-theme .text-emerald-300 {
+  color: #059669 !important;
+}
+
+.light-theme .text-purple-300 {
+  color: #9333ea !important;
+}
+
+.light-theme .text-blue-300 {
+  color: #2563eb !important;
+}
+
+.light-theme .text-blue-200,
+.light-theme .text-blue-100,
+.light-theme .text-blue-400 {
+  color: #2563eb !important;
+}
+
+.light-theme .text-green-200,
+.light-theme .text-green-300,
+.light-theme .text-green-400 {
+  color: #16a34a !important;
+}
+
+.light-theme .text-red-400 {
+  color: #dc2626 !important;
+}
+
+.light-theme .text-yellow-300,
+.light-theme .text-yellow-400,
+.light-theme .text-yellow-500 {
+  color: #ca8a04 !important;
+}
+
+.light-theme .text-orange-400 {
+  color: #ea580c !important;
+}
+
+.light-theme .text-purple-400 {
+  color: #9333ea !important;
+}
+
+.light-theme .text-indigo-300 {
+  color: #4f46e5 !important;
+}
+
+.light-theme .text-cyan-200,
+.light-theme .text-cyan-300 {
+  color: #0891b2 !important;
+}
+
+.light-theme .text-emerald-100 {
+  color: #059669 !important;
+}
+
+.light-theme .text-emerald-100\/80,
+.light-theme .text-emerald-100\/90 {
+  color: #059669 !important;
+}
+
+.light-theme .text-amber-200 {
+  color: #d97706 !important;
+}
+
+.light-theme .text-primary-300,
+.light-theme .text-primary-400 {
+  color: #2563eb !important;
+}
+
+.light-theme .bg-primary-600.text-white,
+.light-theme .bg-primary-500.text-white {
+  color: #ffffff !important;
+}
+
+.light-theme .text-yellow-400\/90,
+.light-theme .text-yellow-300\/90 {
+  color: #ca8a04 !important;
+}
+
+.light-theme .text-blue-300\/90 {
+  color: #2563eb !important;
+}
+
+.light-theme .text-yellow-500\/80 {
+  color: #ca8a04 !important;
+}
+
+.light-theme .bg-gray-800\/50,
+.light-theme .bg-gray-800\/70,
+.light-theme .bg-gray-800\/80 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .bg-gray-900\/40,
+.light-theme .bg-gray-900\/50,
+.light-theme .bg-gray-900\/60,
+.light-theme .bg-gray-900\/70 {
+  background-color: var(--bg-primary) !important;
+}
+
+.light-theme .bg-gray-700\/30,
+.light-theme .bg-gray-700\/40,
+.light-theme .bg-gray-700\/50,
+.light-theme .bg-gray-700\/60,
+.light-theme .bg-gray-700\/80,
+.light-theme .bg-gray-700\/90 {
+  background-color: var(--bg-primary) !important;
+}
+
+/* Specific overrides for PermissionDashboard stats cards */
+.light-theme .from-gray-700\/50 {
+  --tw-gradient-from: var(--bg-secondary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .to-gray-800\/50 {
+  --tw-gradient-to: var(--bg-secondary) var(--tw-gradient-to-position) !important;
+}
+
+.light-theme .bg-gray-600,
+.light-theme .bg-gray-600\/50,
+.light-theme .bg-gray-600\/70 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:bg-gray-800:hover,
+.light-theme .hover\:bg-gray-700:hover,
+.light-theme .hover\:bg-gray-700\/50:hover,
+.light-theme .hover\:bg-gray-700\/60:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:bg-gray-600:hover,
+.light-theme .hover\:bg-gray-600\/70:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light-theme .hover\:text-white:hover {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .group:hover .group-hover\:text-white {
+  color: var(--text-primary) !important;
+}
+
+.light-theme .group:hover .group-hover\:text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+
+/* Light theme gradient overrides for page header backgrounds */
+.light-theme .from-gray-800 {
+  --tw-gradient-from: var(--bg-secondary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .via-gray-800 {
+  --tw-gradient-stops: var(--tw-gradient-from), var(--bg-secondary) var(--tw-gradient-via-position), var(--tw-gradient-to, rgb(255 255 255 / 0)) !important;
+}
+.light-theme .to-gray-900,
+.light-theme .to-gray-800,
+.light-theme .to-gray-800\/80 {
+  --tw-gradient-to: var(--bg-secondary) var(--tw-gradient-to-position) !important;
+}
+.light-theme .to-indigo-900\/20,
+.light-theme .to-indigo-900\/30,
+.light-theme .to-primary-900\/10,
+.light-theme .to-primary-900\/20,
+.light-theme .to-primary-900\/30 {
+  --tw-gradient-to: var(--bg-primary) var(--tw-gradient-to-position) !important;
+}
+
+/* Light theme gradient overrides for page header title text */
+.light-theme .from-white {
+  --tw-gradient-from: var(--text-primary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .via-gray-100,
+.light-theme .via-cyan-100,
+.light-theme .to-indigo-300,
+.light-theme .to-primary-300 {
+  --tw-gradient-to: var(--text-primary) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--text-primary) var(--tw-gradient-via-position), var(--tw-gradient-to, var(--text-primary)) !important;
+}
+
+.light-theme .border-gray-700,
+.light-theme .border-gray-700\/70,
+.light-theme .border-gray-700\/50 {
   border-color: var(--border-color) !important;
 }
-.light-theme .border-gray-600 {
+.light-theme .border-gray-600,
+.light-theme .border-gray-600\/50 {
   border-color: var(--border-color) !important;
 }
 
@@ -364,7 +566,7 @@ body {
 
 /* ============ GRADIENT TEXT ============ */
 .text-gradient-primary {
-  @apply bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-primary-400 to-blue-600 bg-clip-text text-transparent;
 }
 
 .text-gradient-success {

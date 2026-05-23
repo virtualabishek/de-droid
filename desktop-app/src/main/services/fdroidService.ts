@@ -13,34 +13,10 @@ import * as fs from "fs";
 import * as path from "path";
 import * as https from "https";
 import * as http from "http";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import * as LocalAdb from "../adb";
 import * as packageDataService from "./packageDataService";
 import type { AlternativeApp } from "./packageDataService";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Known F-Droid repositories and their API / repo URLs. */
-const FDROID_REPOS = [
-  {
-    name: "F-Droid Main",
-    apiUrl: "https://f-droid.org/api/v1/packages",
-    repoUrl: "https://f-droid.org/repo",
-  },
-  {
-    name: "DivestOS",
-    apiUrl: "https://divestos.org/apks/official/fdroid/repo",
-    repoUrl: "https://divestos.org/apks/official/fdroid/repo",
-    indexFile: "index-v1.json",
-  },
-  {
-    name: "IzzyOnDroid",
-    apiUrl: "https://apt.izzysoft.de/fdroid/api/v1/packages",
-    repoUrl: "https://apt.izzysoft.de/fdroid/repo",
-  },
-];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Interfaces (kept identical for backward-compat)
@@ -641,8 +617,6 @@ export class FdroidService {
    * @param url  Fully-qualified URL to open.
    */
   openInBrowser(url: string): void {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { shell } = require("electron");
     shell.openExternal(url);
   }
 
