@@ -274,10 +274,12 @@ export function PackageList({
 
   const { selectedDevice } = useDeviceStore();
 
-  const scopedStorageKey = (baseKey: string) =>
-    `${baseKey}:${userId || "anonymous"}`;
+  const scopedStorageKey = useCallback(
+    (baseKey: string) => `${baseKey}:${userId || "anonymous"}`,
+    [userId],
+  );
 
-  const applyPersistedState = (state: PersistedFilterState) => {
+  const applyPersistedState = useCallback((state: PersistedFilterState) => {
     setFilterStates(state.states?.length ? state.states : DEFAULT_STATES);
     setFilterCategories(state.categories?.length ? state.categories : DEFAULT_CATEGORIES);
     setPackageTypeFilter(state.packageTypes?.length ? state.packageTypes : DEFAULT_PACKAGE_TYPES);
@@ -285,7 +287,7 @@ export function PackageList({
     setFilterModelConfidence(state.modelConfidence || "all");
     setSearchQuery(state.searchQuery || "");
     setActivePreset("all");
-  };
+  }, []);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -348,14 +350,14 @@ export function PackageList({
         // ignore invalid persisted state
       }
     }
-  }, [userId]);
+  }, [userId, scopedStorageKey, applyPersistedState]);
 
   useEffect(() => {
     localStorage.setItem(
       scopedStorageKey("packageCustomFilterPresets"),
       JSON.stringify(customPresets),
     );
-  }, [customPresets, userId]);
+  }, [customPresets, userId, scopedStorageKey]);
 
   useEffect(() => {
     const payload: PersistedFilterState = {
@@ -368,7 +370,16 @@ export function PackageList({
     };
 
     localStorage.setItem(scopedStorageKey("packageLastFilters"), JSON.stringify(payload));
-  }, [filterStates, filterCategories, packageTypeFilter, filterRemovals, filterModelConfidence, searchQuery, userId]);
+  }, [
+    filterStates,
+    filterCategories,
+    packageTypeFilter,
+    filterRemovals,
+    filterModelConfidence,
+    searchQuery,
+    userId,
+    scopedStorageKey,
+  ]);
 
   useEffect(() => {
     fetchCategories();
@@ -460,17 +471,20 @@ export function PackageList({
           return a.name.localeCompare(b.name);
         case "name-desc":
           return b.name.localeCompare(a.name);
-        case "state":
+        case "state": {
           const stateOrder = { enabled: 0, disabled: 1, uninstalled: 2 };
           return (stateOrder[a.state] || 0) - (stateOrder[b.state] || 0);
-        case "category":
+        }
+        case "category": {
           const catOrder = { ESSENTIAL: 0, OPTIONAL: 1, BLOATWARE: 2, undefined: 3 };
           return (catOrder[a.category?.toUpperCase() as keyof typeof catOrder] ?? 3) -
                  (catOrder[b.category?.toUpperCase() as keyof typeof catOrder] ?? 3);
-        case "removal":
+        }
+        case "removal": {
           const removalOrder = { RECOMMENDED: 0, ADVANCED: 1, EXPERT: 2, UNSAFE: 3, undefined: 4 };
           return (removalOrder[a.removal as keyof typeof removalOrder] ?? 4) -
                  (removalOrder[b.removal as keyof typeof removalOrder] ?? 4);
+        }
         case "vendor":
           return getVendor(a.name).localeCompare(getVendor(b.name));
         case "confidence":
@@ -730,13 +744,13 @@ export function PackageList({
     setActivePreset("all");
   };
 
-  const handleSelectFiltered = () => {
+  const handleSelectFiltered = useCallback(() => {
     filteredAndSortedPackages.forEach((pkg) => {
       if (!pkg.selected) {
         togglePackageSelection(pkg.name);
       }
     });
-  };
+  }, [filteredAndSortedPackages, togglePackageSelection]);
 
   const toggleGroupCollapse = (group: string) => {
     const newCollapsed = new Set(collapsedGroups);
@@ -819,7 +833,7 @@ export function PackageList({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [clearSelection, filteredAndSortedPackages]);
+  }, [clearSelection, handleSelectFiltered]);
 
   // Color helpers
   const getStateColor = (state: string) => {
@@ -1128,7 +1142,7 @@ export function PackageList({
                 onClick={() => applyCustomPreset(preset)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-l-xl text-sm font-medium whitespace-nowrap transition-all ${
                   activePreset === preset.id
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
+                    ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30"
                     : "bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
               >
@@ -1146,7 +1160,7 @@ export function PackageList({
           ))}
           <button
             onClick={saveCurrentPreset}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-primary-500/20 text-primary-400 hover:bg-primary-500/30"
           >
             <span>+</span>
             <span>Save Preset</span>
@@ -1161,7 +1175,7 @@ export function PackageList({
               <>
                 {searchQuery && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
-                    Search: "{searchQuery}"
+                    Search: &quot;{searchQuery}&quot;
                     <button onClick={() => setSearchQuery("")} className="ml-1 hover:text-white">×</button>
                   </span>
                 )}
@@ -1172,7 +1186,7 @@ export function PackageList({
                   </span>
                 )}
                 {filterCategories.length !== DEFAULT_CATEGORIES.length && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-500/20 text-primary-400 rounded-full text-sm">
                     Category: {filterCategories.join(", ")}
                     <button onClick={() => setFilterCategories(DEFAULT_CATEGORIES)} className="ml-1 hover:text-white">×</button>
                   </span>
@@ -1184,7 +1198,7 @@ export function PackageList({
                   </span>
                 )}
                 {deepLinkModelLabels && deepLinkModelLabels.length > 0 && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-500/20 text-primary-400 rounded-full text-sm">
                     AI Label: {deepLinkModelLabels.join(", ")}
                     <button onClick={() => setDeepLinkModelLabels(null)} className="ml-1 hover:text-white">×</button>
                   </span>

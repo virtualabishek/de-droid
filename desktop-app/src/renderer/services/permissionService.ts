@@ -52,14 +52,14 @@ export type PermissionFilterMode = "all" | "dangerous" | "granted";
 
 const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   Location: { icon: "📍", color: "text-red-400", bg: "bg-red-500/20", description: "Track your physical location" },
-  Camera: { icon: "📷", color: "text-purple-400", bg: "bg-purple-500/20", description: "Access your camera" },
+  Camera: { icon: "📷", color: "text-blue-400", bg: "bg-blue-500/20", description: "Access your camera" },
   Microphone: { icon: "🎤", color: "text-orange-400", bg: "bg-orange-500/20", description: "Record audio" },
   Contacts: { icon: "👥", color: "text-blue-400", bg: "bg-blue-500/20", description: "Read your contacts" },
   Phone: { icon: "📞", color: "text-green-400", bg: "bg-green-500/20", description: "Access call logs and make calls" },
   SMS: { icon: "💬", color: "text-cyan-400", bg: "bg-cyan-500/20", description: "Read and send messages" },
   Storage: { icon: "📁", color: "text-yellow-400", bg: "bg-yellow-500/20", description: "Access your files" },
   Calendar: { icon: "📅", color: "text-pink-400", bg: "bg-pink-500/20", description: "Read calendar events" },
-  Sensors: { icon: "⌚", color: "text-indigo-400", bg: "bg-indigo-500/20", description: "Access body sensors" },
+  Sensors: { icon: "⌚", color: "text-blue-400", bg: "bg-blue-500/20", description: "Access body sensors" },
   Bluetooth: { icon: "📶", color: "text-blue-300", bg: "bg-blue-500/20", description: "Connect to Bluetooth devices" },
   Notifications: { icon: "🔔", color: "text-amber-400", bg: "bg-amber-500/20", description: "Post notifications" },
   Other: { icon: "⚙️", color: "text-gray-400", bg: "bg-gray-500/20", description: "Other system permissions" },

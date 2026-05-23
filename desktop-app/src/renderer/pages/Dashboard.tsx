@@ -4,6 +4,7 @@ import { DeviceSelector } from "../components/DeviceSelector";
 import { DeviceIcon } from "../components/DeviceIcon";
 import { useDeviceStore } from "../store/deviceStore";
 import { useHistoryStore } from "../store/historyStore";
+import { usePermissionStore } from "../store/permissionStore";
 
 const DASHBOARD_CONNECTION_GUIDE_SEEN_KEY = "de-droid.dashboard.connection-guide.seen";
 
@@ -86,25 +87,29 @@ export default function Dashboard() {
     isLoadingPackages,
   } = useDeviceStore();
   const { stats, fetchStats } = useHistoryStore();
+  const { 
+    stats: permissionStats, 
+    isScanning: isScanningPermissions, 
+    scanAllApps,
+    lastScannedDeviceId 
+  } = usePermissionStore();
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [liveHealth, setLiveHealth] = useState<LiveHealth | null>(null);
   const [isHealthLoading, setIsHealthLoading] = useState(false);
   const [healthError, setHealthError] = useState<string | null>(null);
-  const [connectionGuideSeen, setConnectionGuideSeen] = useState(false);
-  const [guideTab, setGuideTab] = useState<"usb" | "wireless" | "advanced">("usb");
+  const [connectionGuideSeen, setConnectionGuideSeen] = useState(() =>
+    localStorage.getItem(DASHBOARD_CONNECTION_GUIDE_SEEN_KEY) === "true",
+  );
+  const [guideTab, setGuideTab] = useState<"usb" | "wireless" | "advanced">(
+    "usb",
+  );
   const [isRunningConnectionDiagnostics, setIsRunningConnectionDiagnostics] =
     useState(false);
   const [connectionDiagnostics, setConnectionDiagnostics] =
     useState<ConnectionDiagnostics | null>(null);
-  const [connectionGuideError, setConnectionGuideError] = useState<string | null>(
-    null,
-  );
-
-  useEffect(() => {
-    setConnectionGuideSeen(
-      localStorage.getItem(DASHBOARD_CONNECTION_GUIDE_SEEN_KEY) === "true",
-    );
-  }, []);
+  const [connectionGuideError, setConnectionGuideError] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     fetchStats();
@@ -260,6 +265,13 @@ export default function Dashboard() {
       highConfidence,
     };
   }, [packages]);
+
+  const averagePrivacyScore = useMemo(() => {
+    if (permissionStats && lastScannedDeviceId === selectedDevice?.adb_id) {
+      return permissionStats.averagePrivacyScore;
+    }
+    return null;
+  }, [permissionStats, lastScannedDeviceId, selectedDevice]);
 
   const memoryUsagePercent = useMemo(() => {
     if (!liveHealth?.memory.totalMb || !liveHealth?.memory.usedMb) return undefined;
@@ -437,7 +449,7 @@ export default function Dashboard() {
                   {(liveHealth?.performance.topApps || []).slice(0, 3).map((app) => (
                     <div key={app.name} className="flex justify-between gap-3 text-xs">
                       <span className="text-gray-300 truncate">{app.name}</span>
-                      <span className="text-purple-300">{app.cpuPercent.toFixed(1)}%</span>
+                      <span className="text-primary-400">{app.cpuPercent.toFixed(1)}%</span>
                     </div>
                   ))}
                   {(!liveHealth || liveHealth.performance.topApps.length === 0) && (
@@ -506,7 +518,7 @@ export default function Dashboard() {
                   }
                 />
                 <div className="relative overflow-hidden rounded-2xl border border-primary-500/30 bg-gray-800 p-5 shadow-lg shadow-black/20">
-                  <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-primary-500 to-purple-500" />
+                  <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-primary-500 to-blue-600" />
                   <div className="relative h-full flex items-center justify-between">
                     <div>
                       <p className="text-sm text-gray-300">Debloat Score</p>
@@ -566,19 +578,44 @@ export default function Dashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   }
-                  gradient="bg-gradient-to-br from-purple-500 to-primary-600"
+                  gradient="bg-gradient-to-br from-blue-500 to-primary-600"
                 />
-                <InfoCard
-                  title="Total Packages"
-                  value={isLoadingPackages ? "..." : packageSummary.total}
-                  subtitle="System + user apps"
-                  icon={
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
-                    </svg>
-                  }
-                  gradient="bg-gradient-to-br from-blue-500 to-cyan-500"
-                />
+                <div className="relative overflow-hidden rounded-2xl border border-gray-700/70 bg-gray-800 p-5 shadow-lg shadow-black/20">
+                  <div className={`absolute inset-0 opacity-15 bg-gradient-to-br from-emerald-500 to-primary-600`} />
+                  <div className="relative">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-300">Privacy Score</p>
+                      <div className="p-2 rounded-lg bg-gray-900/50">
+                        <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <p className="text-3xl font-bold tracking-tight">
+                        {averagePrivacyScore !== null ? `${averagePrivacyScore}%` : "--"}
+                      </p>
+                      {isScanningPermissions && (
+                        <span className="text-xs text-primary-400 animate-pulse">Scanning...</span>
+                      )}
+                    </div>
+                    {averagePrivacyScore === null && !isScanningPermissions ? (
+                      <button 
+                        onClick={() => scanAllApps(selectedDevice.adb_id, selectedUser, packages)}
+                        className="text-xs text-primary-400 hover:text-primary-300 mt-2 font-medium flex items-center gap-1"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        Scan Permissions
+                      </button>
+                    ) : (
+                      <Link to="/permissions" className="text-xs text-gray-400 hover:text-white mt-2 block">
+                        View Details →
+                      </Link>
+                    )}
+                  </div>
+                </div>
                 <InfoCard
                   title="Recommended To Remove"
                   value={isLoadingPackages ? "..." : packageSummary.recommended}

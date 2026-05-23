@@ -235,10 +235,8 @@ export class DatabaseManager {
     ];
 
     const applied = new Set(
-      db
-        .prepare("SELECT name FROM migrations")
-        .all()
-        .map((row: any) => row.name),
+      (db.prepare("SELECT name FROM migrations").all() as Array<{ name: string }>)
+        .map((row) => row.name),
     );
 
     for (const migration of migrations) {

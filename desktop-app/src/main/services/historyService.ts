@@ -107,7 +107,7 @@ export class HistoryService {
     const db = this.db.get();
     const row = db
       .prepare("SELECT * FROM action_history WHERE id = ?")
-      .get(id) as any;
+      .get(id) as ActionHistoryRecord | undefined;
 
     if (!row) return null;
 
@@ -125,7 +125,7 @@ export class HistoryService {
     const db = this.db.get();
     const rows = db
       .prepare("SELECT * FROM action_history ORDER BY created_at DESC LIMIT ?")
-      .all(limit) as any[];
+      .all(limit) as ActionHistoryRecord[];
 
     return rows.map((row) => ({
       ...row,
@@ -143,7 +143,7 @@ export class HistoryService {
       .prepare(
         "SELECT * FROM action_history WHERE device_id = ? ORDER BY created_at DESC LIMIT ?",
       )
-      .all(deviceId, limit) as any[];
+      .all(deviceId, limit) as ActionHistoryRecord[];
 
     return rows.map((row) => ({
       ...row,
@@ -168,7 +168,7 @@ export class HistoryService {
         ORDER BY created_at DESC
       `,
       )
-      .all(deviceId) as any[];
+      .all(deviceId) as ActionHistoryRecord[];
 
     return rows.map((row) => ({
       ...row,
@@ -210,7 +210,21 @@ export class HistoryService {
         FROM action_history
       `,
       )
-      .get() as any;
+      .get() as HistoryStats | undefined;
+
+    if (!stats) {
+      return {
+        total_actions: 0,
+        successful_actions: 0,
+        failed_actions: 0,
+        uninstall_count: 0,
+        restore_count: 0,
+        disable_count: 0,
+        enable_count: 0,
+        devices_count: 0,
+        packages_count: 0,
+      };
+    }
 
     return {
       total_actions: stats.total_actions || 0,

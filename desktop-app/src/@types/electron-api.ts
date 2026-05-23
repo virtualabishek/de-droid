@@ -327,6 +327,58 @@ export interface RetrainingSignals {
   sample_size: number;
 }
 
+export interface PackageDetails {
+  package: string;
+  size_bytes?: number | null;
+  version_name?: string;
+  version_code?: number;
+  target_sdk?: number;
+  min_sdk?: number;
+  install_time?: string;
+  update_time?: string;
+  data_dir?: string;
+  apk_path?: string;
+  is_system_path?: boolean;
+  is_system?: boolean;
+  is_updated_system_app?: boolean;
+  permissions?: {
+    dangerous_permissions: Permission[];
+    special_permissions: Permission[];
+    normal_permissions: Permission[];
+    total_count: number;
+    dangerous_count: number;
+    granted_dangerous: number;
+  };
+  debloat_info?: {
+    id: string;
+    list: string;
+    description: string;
+    removal: string;
+    category: string;
+    dependencies: string[];
+    neededBy: string[];
+    labels: string[];
+    alternatives: string[];
+    modelLabel?: string;
+    modelConfidence?: number;
+    modelVersion?: string;
+    modelTopFactors?: string[];
+    oemOverrideApplied?: boolean;
+    oemOverrideReason?: string;
+  };
+}
+
+export interface BackupCompareResult {
+  missing_packages: string[];
+  new_packages: string[];
+  state_changes: Array<{
+    name: string;
+    backup_state: string;
+    current_state: string;
+  }>;
+  unchanged: number;
+}
+
 export interface ElectronAPI {
   adb: {
     getDevices: () => Promise<Device[]>;
@@ -401,7 +453,7 @@ export interface ElectronAPI {
       action: "grant" | "revoke",
       userId?: number,
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
-    getPackageDetails: (deviceId: string, packageName: string) => Promise<any>;
+    getPackageDetails: (deviceId: string, packageName: string) => Promise<PackageDetails | null>;
     getPackageSizes: (
       deviceId: string,
       packageNames: string[],
@@ -457,7 +509,7 @@ export interface ElectronAPI {
       backupId: string,
       userId?: number,
       systemOnly?: boolean,
-    ) => Promise<any>;
+    ) => Promise<BackupCompareResult>;
   };
   history: {
     getAll: (limit?: number) => Promise<ActionHistoryRecord[]>;

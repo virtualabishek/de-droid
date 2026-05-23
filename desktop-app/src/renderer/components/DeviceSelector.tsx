@@ -504,7 +504,7 @@ export function DeviceSelector({ showInlineConnectionHelp = false }: DeviceSelec
           {wirelessMode === 'connect' ? (
             <>
               <p className="text-xs text-gray-400 mb-3">
-                Connect to a device that's already paired or has TCP/IP enabled
+                Connect to a device that&apos;s already paired or has TCP/IP enabled
               </p>
               <div className="space-y-2">
                 <input

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { PackageList } from "../components/PackageList";
 import { BackupPanel } from "../components/BackupPanel";
 import { DeviceIcon } from "../components/DeviceIcon";
@@ -196,7 +196,7 @@ export default function Packages() {
     packages,
     clearSelection,
   } = useDeviceStore();
-  const { recordAction, stats, fetchStats } = useHistoryStore();
+  const { recordAction, fetchStats } = useHistoryStore();
   const { user } = useAuthStore();
   const toast = useToastStore();
 
@@ -222,53 +222,10 @@ export default function Packages() {
   );
   const [isFocusMode, setIsFocusMode] = useState(false);
 
-  // Fetch stats on mount
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+  const enterFocusMode = () => setIsFocusMode(true);
+  const exitFocusMode = () => setIsFocusMode(false);
 
-  useEffect(() => {
-    if (selectedDevice) {
-      fetchPackages(true);
-      loadDeviceNickname();
-    }
-  }, [selectedDevice, fetchPackages]);
-
-  useEffect(() => {
-    const onFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        setIsFocusMode(false);
-      }
-    };
-
-    document.addEventListener("fullscreenchange", onFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", onFullscreenChange);
-  }, []);
-
-  const enterFocusMode = async () => {
-    setIsFocusMode(true);
-    try {
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      }
-    } catch {
-      // Fallback keeps in-app focus overlay even if fullscreen API fails
-    }
-  };
-
-  const exitFocusMode = async () => {
-    setIsFocusMode(false);
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch {
-      // Ignore fullscreen API failures
-    }
-  };
-
-
-  const loadDeviceNickname = async () => {
+  const loadDeviceNickname = useCallback(async () => {
     if (!user?.id || !selectedDevice) return;
     try {
       const devices = await window.electronAPI.auth.getDevices(user.id);
@@ -277,7 +234,7 @@ export default function Packages() {
     } catch (e) {
       console.error("Failed to load device nickname:", e);
     }
-  };
+  }, [user, selectedDevice]);
 
   const saveDeviceNickname = async (nickname: string) => {
     if (!user?.id || !selectedDevice) return;
@@ -295,6 +252,18 @@ export default function Packages() {
       console.error("Failed to save nickname:", e);
     }
   };
+
+  // Fetch stats on mount
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  useEffect(() => {
+    if (selectedDevice) {
+      fetchPackages(true);
+      loadDeviceNickname();
+    }
+  }, [selectedDevice, fetchPackages, loadDeviceNickname]);
 
   // Calculate storage stats
   const storageStats = useMemo(() => {
@@ -949,7 +918,7 @@ export default function Packages() {
           ) : (
             <div className="h-full flex items-center justify-center bg-gray-800 rounded-lg border border-gray-700">
               <div className="text-center max-w-md">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-blue-600 rounded-2xl flex items-center justify-center">
                   <svg
                     className="w-10 h-10 text-white"
                     fill="none"

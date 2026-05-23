@@ -5,27 +5,8 @@
 import { useState, useMemo } from "react";
 import { useDeviceStore } from "../store/deviceStore";
 import { useToastStore } from "../store/toastStore";
-import { permissionAnalyticsService, permissionApiService } from "../services/permissionService";
-
-interface Permission {
-  name: string;
-  granted: boolean;
-  category: string;
-  description: string;
-  isDangerous: boolean;
-  type: "runtime" | "install";
-}
-
-interface AppPermissionSummary {
-  packageName: string;
-  appName: string;
-  permissions: Permission[];
-  dangerousCount: number;
-  grantedDangerousCount: number;
-  totalCount: number;
-  privacyScore: number; // 0-100, higher is better (less invasive)
-  isScanning?: boolean;
-}
+import { usePermissionStore } from "../store/permissionStore";
+import { permissionAnalyticsService } from "../services/permissionService";
 
 interface PermissionDashboardProps {
   onOpenAppPermissions: (packageName: string) => void;
@@ -34,10 +15,15 @@ interface PermissionDashboardProps {
 export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboardProps) {
   const { selectedDevice, selectedUser, packages } = useDeviceStore();
   const toast = useToastStore();
+  const { 
+    appPermissions, 
+    stats: storeStats, 
+    isScanning, 
+    scanProgress, 
+    scanAllApps: storeScanAllApps,
+    bulkRevokePermissions: storeBulkRevokePermissions
+  } = usePermissionStore();
 
-  const [appPermissions, setAppPermissions] = useState<AppPermissionSummary[]>([]);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanProgress, setScanProgress] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"privacy" | "dangerous" | "name">("privacy");
@@ -50,43 +36,52 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
   const scanAllApps = async () => {
     if (!selectedDevice) return;
 
-    setIsScanning(true);
-    setScanProgress(0);
-    setAppPermissions([]);
-    let results: AppPermissionSummary[] = [];
-    let scanFailed = false;
-
     try {
-      results = await permissionApiService.scanEnabledPackages(
-        selectedDevice.adb_id,
-        selectedUser,
-        packages,
-        ({ percent }) => {
-          setScanProgress(percent);
-        },
-      );
-
-      setAppPermissions(results);
+      await storeScanAllApps(selectedDevice.adb_id, selectedUser, packages);
+      toast.success("Scan Complete", `Scanned apps with permissions`);
     } catch (error) {
-      scanFailed = true;
       console.error("Failed to scan permissions:", error);
       toast.error(
         "Failed to scan permissions",
         error instanceof Error ? error.message : "Unknown error",
       );
-    } finally {
-      setIsScanning(false);
-    }
-
-    if (!scanFailed) {
-      toast.success("Scan Complete", `Scanned ${results.length} apps with permissions`);
     }
   };
 
   // Aggregate stats
   const stats = useMemo(() => {
+    if (storeStats) return storeStats;
     return permissionAnalyticsService.buildStats(appPermissions);
-  }, [appPermissions]);
+  }, [appPermissions, storeStats]);
+
+  // Bulk revoke all dangerous permissions for selected apps
+  const bulkRevokePermissions = async (categoryFilter?: string) => {
+    if (!selectedDevice || selectedApps.size === 0) return;
+
+    setBulkActionLoading(true);
+    try {
+      const { successCount, failCount } = await storeBulkRevokePermissions(
+        selectedDevice.adb_id,
+        selectedUser,
+        selectedApps,
+        categoryFilter
+      );
+
+      toast.success(
+        "Bulk Revoke Complete",
+        `Revoked ${successCount} permissions${failCount > 0 ? `, ${failCount} failed` : ""}`
+      );
+
+      // Rescan to update
+      await scanAllApps();
+      setSelectedApps(new Set());
+    } catch (error) {
+      toast.error("Bulk Revoke Failed", error instanceof Error ? error.message : "Unknown error");
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
 
   // Filtered and sorted apps
   const filteredApps = useMemo(() => {
@@ -128,30 +123,6 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
     setSelectedApps(new Set());
   };
 
-  // Bulk revoke all dangerous permissions for selected apps
-  const bulkRevokePermissions = async (categoryFilter?: string) => {
-    if (!selectedDevice || selectedApps.size === 0) return;
-
-    setBulkActionLoading(true);
-    const { successCount, failCount } = await permissionApiService.bulkRevokeDangerousPermissions(
-      selectedDevice.adb_id,
-      selectedUser,
-      appPermissions,
-      selectedApps,
-      categoryFilter,
-    );
-
-    setBulkActionLoading(false);
-    toast.success(
-      "Bulk Revoke Complete",
-      `Revoked ${successCount} permissions${failCount > 0 ? `, ${failCount} failed` : ""}`
-    );
-
-    // Rescan to update
-    await scanAllApps();
-    setSelectedApps(new Set());
-  };
-
   // Get privacy score color
   const getPrivacyScoreColor = (score: number) => {
     return permissionAnalyticsService.getPrivacyScoreColor(score);
@@ -164,7 +135,7 @@ export function PermissionDashboard({ onOpenAppPermissions }: PermissionDashboar
   return (
     <div className="h-full flex flex-col bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-primary-900/10">
+      <div className="p-5 border-b border-gray-700 bg-gradient-to-r from-gray-800 to-primary-600/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-primary-600 rounded-xl shadow-lg shadow-primary-500/30">

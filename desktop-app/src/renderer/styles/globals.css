@@ -175,7 +175,7 @@
 .light-theme .bg-gray-800\/50,
 .light-theme .bg-gray-800\/70,
 .light-theme .bg-gray-800\/80 {
-  background-color: var(--bg-tertiary) !important;
+  background-color: var(--bg-secondary) !important;
 }
 
 .light-theme .bg-gray-900\/40,
@@ -191,7 +191,15 @@
 .light-theme .bg-gray-700\/60,
 .light-theme .bg-gray-700\/80,
 .light-theme .bg-gray-700\/90 {
-  background-color: var(--bg-tertiary) !important;
+  background-color: var(--bg-primary) !important;
+}
+
+/* Specific overrides for PermissionDashboard stats cards */
+.light-theme .from-gray-700\/50 {
+  --tw-gradient-from: var(--bg-secondary) var(--tw-gradient-from-position) !important;
+}
+.light-theme .to-gray-800\/50 {
+  --tw-gradient-to: var(--bg-secondary) var(--tw-gradient-to-position) !important;
 }
 
 .light-theme .bg-gray-600,
@@ -558,7 +566,7 @@ body {
 
 /* ============ GRADIENT TEXT ============ */
 .text-gradient-primary {
-  @apply bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-primary-400 to-blue-600 bg-clip-text text-transparent;
 }
 
 .text-gradient-success {

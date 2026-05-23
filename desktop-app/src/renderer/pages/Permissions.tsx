@@ -58,7 +58,7 @@ export default function Permissions() {
           {selectedDevice && (
             <div className="mt-4 bg-gray-800 rounded-xl border border-gray-700 p-4">
               <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Quick Tips
@@ -77,7 +77,7 @@ export default function Permissions() {
                   <span>Revoking permissions may affect app functionality</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-purple-400">•</span>
+                  <span className="text-primary-400">•</span>
                   <span>Lower privacy scores indicate more invasive apps</span>
                 </li>
               </ul>
@@ -88,7 +88,7 @@ export default function Permissions() {
           {selectedDevice && (
             <div className="mt-4 bg-gray-800 rounded-xl border border-gray-700 p-4">
               <h3 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                 </svg>
                 Privacy Categories

@@ -186,23 +186,28 @@ export class AdbClient {
 
   // ── Low-level execution ───────────────────────────────────────────────
 
-  async execute(command: string, timeout = 30000): Promise<AdbCommandResult> {
+  async execute(
+    command: string,
+    timeout = 30000,
+    maxBuffer = 1024 * 1024 * 10, // 10MB default
+  ): Promise<AdbCommandResult> {
     try {
       const adbExecutablePath = await this.resolveExecutable();
       const { stdout, stderr } = await execAsync(
         `${this.shellEscape(adbExecutablePath)} ${command}`,
-        { timeout },
+        { timeout, maxBuffer },
       );
       return {
         success: true,
         output: stdout.trim(),
         error: stderr.trim() || undefined,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const e = error as { stdout?: string; stderr?: string; message?: string };
       return {
         success: false,
-        output: error.stdout?.trim() || "",
-        error: error.stderr?.trim() || error.message || "Unknown error",
+        output: e.stdout?.trim() || "",
+        error: e.stderr?.trim() || e.message || "Unknown error",
       };
     }
   }
@@ -211,8 +216,13 @@ export class AdbClient {
     deviceId: string,
     shellCommand: string,
     timeout = 30000,
+    maxBuffer?: number,
   ): Promise<AdbCommandResult> {
-    return this.execute(`-s ${deviceId} shell ${shellCommand}`, timeout);
+    return this.execute(
+      `-s ${deviceId} shell ${shellCommand}`,
+      timeout,
+      maxBuffer,
+    );
   }
 
   // ── Device management ─────────────────────────────────────────────────
@@ -220,6 +230,30 @@ export class AdbClient {
   async checkAvailable(): Promise<boolean> {
     const result = await this.execute("version");
     return result.success;
+  }
+
+  async getUsers(deviceId: string): Promise<Array<{ id: number; index: number }>> {
+    const result = await this.execute(`-s ${deviceId} shell pm list users`);
+    if (!result.success) {
+      return [{ id: 0, index: 0 }];
+    }
+
+    const users: Array<{ id: number; index: number }> = [];
+    const lines = result.output.split("\n");
+    let index = 0;
+
+    for (const line of lines) {
+      // Format: UserInfo{0:Owner:13} or UserInfo{10:Work profile:30}
+      const match = line.match(/UserInfo\{(\d+):/);
+      if (match) {
+        users.push({
+          id: parseInt(match[1], 10),
+          index: index++,
+        });
+      }
+    }
+
+    return users.length > 0 ? users : [{ id: 0, index: 0 }];
   }
 
   async getDevices(): Promise<AdbDevice[]> {
@@ -381,19 +415,6 @@ export class AdbClient {
       .split("\n")
       .filter((line) => line.startsWith("package:"))
       .map((line) => line.replace("package:", "").trim());
-
-    // Get enabled packages
-    const enabledResult = await this.execute(
-      `-s ${deviceId} shell pm list packages ${flags} -e --user ${userId}`,
-    );
-    const enabledPackages = new Set(
-      enabledResult.success
-        ? enabledResult.output
-            .split("\n")
-            .filter((line) => line.startsWith("package:"))
-            .map((line) => line.replace("package:", "").trim())
-        : [],
-    );
 
     // Get disabled packages
     const disabledResult = await this.execute(
@@ -622,6 +643,7 @@ export class AdbClient {
         deviceId,
         `dumpsys package ${packageName}`,
         15000,
+        1024 * 1024 * 10, // 10MB buffer
       );
 
       if (dumpsys.success && dumpsys.output) {
@@ -1119,7 +1141,7 @@ export class AdbClient {
     const escapedPath = this.escapeShellArg(absolutePath);
     const result = await this.runShell(
       deviceId,
-      `du -sk \"${escapedPath}\"`,
+      `du -sk "${escapedPath}"`,
       15000,
     );
     if (!result.success) return null;
@@ -1135,7 +1157,7 @@ export class AdbClient {
 
     const statResult = await this.runShell(
       deviceId,
-      `stat -c %s \"${escapedPath}\"`,
+      `stat -c %s "${escapedPath}"`,
       10000,
     );
     if (statResult.success) {
@@ -1147,7 +1169,7 @@ export class AdbClient {
 
     const result = await this.runShell(
       deviceId,
-      `ls -ln \"${escapedPath}\"`,
+      `ls -ln "${escapedPath}"`,
       10000,
     );
     if (!result.success) return null;
@@ -1315,6 +1337,7 @@ export class AdbClient {
       deviceId,
       `dumpsys package ${packageName}`,
       20000,
+      1024 * 1024 * 10, // 10MB buffer
     );
 
     if (dumpsysResult.success) {
@@ -1569,7 +1592,7 @@ export class AdbClient {
 
       // regex for the user performance evaluation
       if (parts.length >= 12 && /^\d+$/.test(parts[0])) {
-        const cpuToken = parts[8]?.replace(/[\[\]%]/g, "");
+        const cpuToken = parts[8]?.replace(/[[\]%]/g, "");
         const parsedCpu = Number.parseFloat(cpuToken);
         if (Number.isFinite(parsedCpu)) {
           cpuPercent = parsedCpu;
@@ -1632,8 +1655,18 @@ export class AdbClient {
 export async function executeAdbCommand(
   command: string,
   timeout = 30000,
+  maxBuffer?: number,
 ): Promise<AdbCommandResult> {
-  return AdbClient.getInstance().execute(command, timeout);
+  return AdbClient.getInstance().execute(command, timeout, maxBuffer);
+}
+
+/**
+ * Get users for a device
+ */
+export async function getUsers(
+  deviceId: string,
+): Promise<Array<{ id: number; index: number }>> {
+  return AdbClient.getInstance().getUsers(deviceId);
 }
 
 /**
