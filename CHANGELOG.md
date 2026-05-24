@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.6](https://github.com/virtualabishek/de-droid/compare/de-droid-v0.0.5...de-droid-v0.0.6) (2026-05-24)
+
+
+### Bug Fixes
+
+* import issue ([2fd0a36](https://github.com/virtualabishek/de-droid/commit/2fd0a36b5aa6f8f84bfe1d65a5329f581af20fd3))
+
 ## [0.0.5](https://github.com/virtualabishek/de-droid/compare/de-droid-v0.0.4...de-droid-v0.0.5) (2026-05-23)
 
 
