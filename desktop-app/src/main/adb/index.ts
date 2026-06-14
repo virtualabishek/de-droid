@@ -87,6 +87,8 @@ export interface DeviceHealthSnapshot {
 }
 
 export type BackgroundRestrictionMode = "restrict" | "relax";
+export type BackgroundAppOp = "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND";
+export type BackgroundAppOpMode = "allow" | "ignore";
 
 export interface BackgroundRestrictionStatus {
   packageName: string;
@@ -109,6 +111,18 @@ export interface BackgroundOptimizationResult {
   message: string;
   appliedSteps: string[];
   failedSteps: string[];
+  warnings: string[];
+  status: BackgroundRestrictionStatus;
+}
+
+export interface BackgroundAppOpResult {
+  success: boolean;
+  packageName: string;
+  userId: number;
+  opName: BackgroundAppOp;
+  mode: BackgroundAppOpMode;
+  message: string;
+  error?: string;
   warnings: string[];
   status: BackgroundRestrictionStatus;
 }
@@ -145,7 +159,10 @@ export class AdbClient {
       return this._resolvedExecutablePath;
     }
 
-    const envCandidates = [process.env.ANDROID_SDK_ROOT, process.env.ANDROID_HOME]
+    const envCandidates = [
+      process.env.ANDROID_SDK_ROOT,
+      process.env.ANDROID_HOME,
+    ]
       .filter((value): value is string => Boolean(value))
       .map((sdkRoot) => path.join(sdkRoot, "platform-tools", ADB_EXECUTABLE));
 
@@ -232,7 +249,9 @@ export class AdbClient {
     return result.success;
   }
 
-  async getUsers(deviceId: string): Promise<Array<{ id: number; index: number }>> {
+  async getUsers(
+    deviceId: string,
+  ): Promise<Array<{ id: number; index: number }>> {
     const result = await this.execute(`-s ${deviceId} shell pm list users`);
     if (!result.success) {
       return [{ id: 0, index: 0 }];
@@ -371,9 +390,10 @@ export class AdbClient {
     const userFlag = Number.isFinite(userId) ? `--user ${userId}` : "";
     const uninstalledFlag = options.includeUninstalled ? "-u" : "";
 
-    const command = `-s ${deviceId} shell pm list packages -f ${userFlag} ${uninstalledFlag}`
-      .replace(/\s+/g, " ")
-      .trim();
+    const command =
+      `-s ${deviceId} shell pm list packages -f ${userFlag} ${uninstalledFlag}`
+        .replace(/\s+/g, " ")
+        .trim();
 
     const result = await this.execute(command);
     if (!result.success) {
@@ -697,12 +717,7 @@ export class AdbClient {
     ] = await Promise.all([
       this.getStandbyBucket(deviceId, packageName, userId),
       this.getAppOpMode(deviceId, packageName, userId, "RUN_IN_BACKGROUND"),
-      this.getAppOpMode(
-        deviceId,
-        packageName,
-        userId,
-        "RUN_ANY_IN_BACKGROUND",
-      ),
+      this.getAppOpMode(deviceId, packageName, userId, "RUN_ANY_IN_BACKGROUND"),
       this.getAppOpMode(deviceId, packageName, userId, "WAKE_LOCK"),
       this.resolvePackageUid(deviceId, packageName),
     ]);
@@ -738,6 +753,49 @@ export class AdbClient {
       networkRestricted,
       controlsActive,
       warnings,
+    };
+  }
+
+  /**
+   * Set one background app-op for a package.
+   */
+  async setBackgroundAppOpMode(
+    deviceId: string,
+    packageName: string,
+    opName: BackgroundAppOp,
+    mode: BackgroundAppOpMode,
+    options: { user?: number } = {},
+  ): Promise<BackgroundAppOpResult> {
+    const userId = options.user ?? 0;
+    const result = await this.setAppOpMode(
+      deviceId,
+      packageName,
+      userId,
+      opName,
+      mode,
+    );
+    const status = await this.getBackgroundRestrictionStatus(
+      deviceId,
+      packageName,
+      {
+        user: userId,
+      },
+    );
+    const success = result.success;
+    const error = result.error || result.output || undefined;
+
+    return {
+      success,
+      packageName,
+      userId,
+      opName,
+      mode,
+      message: success
+        ? `${opName} set to ${mode} for ${packageName}`
+        : `Failed to set ${opName} to ${mode} for ${packageName}`,
+      error: success ? undefined : error,
+      warnings: status.warnings,
+      status,
     };
   }
 
@@ -791,9 +849,8 @@ export class AdbClient {
       failedSteps.push(label);
     };
 
-    await applyStep(
-      "Force stop app",
-      () => this.runShell(deviceId, `am force-stop ${packageName}`, 10000),
+    await applyStep("Force stop app", () =>
+      this.runShell(deviceId, `am force-stop ${packageName}`, 10000),
     );
 
     await applyStep(
@@ -893,19 +950,14 @@ export class AdbClient {
   ): Promise<DeviceHealthSnapshot> {
     const errors: string[] = [];
 
-    const [
-      batteryResult,
-      memResult,
-      procMemResult,
-      dfResult,
-      thermalResult,
-    ] = await Promise.all([
-      this.execute(`-s ${deviceId} shell dumpsys battery`, 10000),
-      this.execute(`-s ${deviceId} shell dumpsys meminfo`, 15000),
-      this.execute(`-s ${deviceId} shell cat /proc/meminfo`, 10000),
-      this.execute(`-s ${deviceId} shell df /data`, 10000),
-      this.execute(`-s ${deviceId} shell dumpsys thermalservice`, 10000),
-    ]);
+    const [batteryResult, memResult, procMemResult, dfResult, thermalResult] =
+      await Promise.all([
+        this.execute(`-s ${deviceId} shell dumpsys battery`, 10000),
+        this.execute(`-s ${deviceId} shell dumpsys meminfo`, 15000),
+        this.execute(`-s ${deviceId} shell cat /proc/meminfo`, 10000),
+        this.execute(`-s ${deviceId} shell df /data`, 10000),
+        this.execute(`-s ${deviceId} shell dumpsys thermalservice`, 10000),
+      ]);
 
     let topResult = await this.execute(
       `-s ${deviceId} shell top -n 1 -b`,
@@ -948,18 +1000,12 @@ export class AdbClient {
     );
     const plugged =
       this.parseInteger(batteryText, /^\s*plugged:\s*(\d+)/m) || 0;
-    const levelPercent = this.parseInteger(
-      batteryText,
-      /^\s*level:\s*(\d+)/m,
-    );
+    const levelPercent = this.parseInteger(batteryText, /^\s*level:\s*(\d+)/m);
     const tempTenths = this.parseInteger(
       batteryText,
       /^\s*temperature:\s*(-?\d+)/m,
     );
-    const voltageMv = this.parseInteger(
-      batteryText,
-      /^\s*voltage:\s*(\d+)/m,
-    );
+    const voltageMv = this.parseInteger(batteryText, /^\s*voltage:\s*(\d+)/m);
 
     const totalRamKb =
       this.parseInteger(memText, /Total RAM:\s*([\d,]+)K/i) ||
@@ -967,10 +1013,7 @@ export class AdbClient {
       this.parseInteger(topText, /Mem:\s*([\d,]+)K\s+total/i);
     const usedRamKb =
       this.parseInteger(memText, /Used RAM:\s*([\d,]+)K/i) ||
-      this.parseInteger(
-        topText,
-        /Mem:\s*[\d,]+K\s+total,\s*([\d,]+)K\s+used/i,
-      );
+      this.parseInteger(topText, /Mem:\s*[\d,]+K\s+total,\s*([\d,]+)K\s+used/i);
     const freeRamKb =
       this.parseInteger(memText, /Free RAM:\s*([\d,]+)K/i) ||
       this.parseInteger(procMemText, /^MemAvailable:\s*(\d+)\s*kB$/im) ||
@@ -989,8 +1032,7 @@ export class AdbClient {
       dfText
         .split("\n")
         .find(
-          (line) =>
-            /\s\/data\s*$/.test(line) || line.trim().endsWith(" /data"),
+          (line) => /\s\/data\s*$/.test(line) || line.trim().endsWith(" /data"),
         ) ||
       dfText.split("\n")[1] ||
       "";
@@ -1026,9 +1068,7 @@ export class AdbClient {
         levelPercent,
         status: this.parseBatteryStatus(batteryStatusCode),
         charging:
-          plugged > 0 ||
-          batteryStatusCode === 2 ||
-          batteryStatusCode === 5,
+          plugged > 0 || batteryStatusCode === 2 || batteryStatusCode === 5,
         temperatureC:
           tempTenths !== undefined
             ? Math.round((tempTenths / 10) * 10) / 10
@@ -1288,8 +1328,7 @@ export class AdbClient {
     const value = (text || "").toLowerCase();
     if (!value) return false;
     return (
-      value.includes("permission denied") ||
-      value.includes("securityexception")
+      value.includes("permission denied") || value.includes("securityexception")
     );
   }
 
@@ -1410,7 +1449,7 @@ export class AdbClient {
     deviceId: string,
     packageName: string,
     userId: number,
-    opName: "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND" | "WAKE_LOCK",
+    opName: BackgroundAppOp | "WAKE_LOCK",
   ): Promise<string | null> {
     const withUser = await this.runShell(
       deviceId,
@@ -1435,8 +1474,8 @@ export class AdbClient {
     deviceId: string,
     packageName: string,
     userId: number,
-    opName: "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND" | "WAKE_LOCK",
-    mode: "allow" | "ignore",
+    opName: BackgroundAppOp | "WAKE_LOCK",
+    mode: BackgroundAppOpMode,
   ): Promise<AdbCommandResult> {
     const withUser = await this.runShell(
       deviceId,
@@ -1498,10 +1537,7 @@ export class AdbClient {
     ) {
       controls.push("run_any_in_background");
     }
-    if (
-      status.wakeLockMode === "ignore" ||
-      status.wakeLockMode === "deny"
-    ) {
+    if (status.wakeLockMode === "ignore" || status.wakeLockMode === "deny") {
       controls.push("wake_lock");
     }
     if (status.networkRestricted === true)
@@ -1858,6 +1894,25 @@ export async function optimizeBackgroundRestriction(
     deviceId,
     packageName,
     { mode, user: userId },
+  );
+}
+
+/**
+ * Set one background app-op for a package.
+ */
+export async function setBackgroundAppOpMode(
+  deviceId: string,
+  packageName: string,
+  opName: BackgroundAppOp,
+  mode: BackgroundAppOpMode,
+  userId = 0,
+): Promise<BackgroundAppOpResult> {
+  return AdbClient.getInstance().setBackgroundAppOpMode(
+    deviceId,
+    packageName,
+    opName,
+    mode,
+    { user: userId },
   );
 }
 

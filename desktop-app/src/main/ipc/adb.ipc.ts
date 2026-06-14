@@ -49,6 +49,7 @@ const ADB_IPC_CHANNELS = [
   "adb:get-device-health-snapshot",
   "adb:get-background-restriction-status",
   "adb:optimize-background-restriction",
+  "adb:set-background-app-op-mode",
   "debloat:get-packages",
   "debloat:get-package-info",
   "debloat:get-alternatives",
@@ -163,11 +164,11 @@ function extractNumber(text: string, pattern: RegExp): number | undefined {
 }
 
 function parsePackageDetailsFromDumpsys(dumpsysOutput: string) {
-  const versionName = extractMatch(dumpsysOutput, /^\s*versionName=([^\n\r]+)/m);
-  const versionCode = extractNumber(
+  const versionName = extractMatch(
     dumpsysOutput,
-    /^\s*versionCode=(\d+)/m,
+    /^\s*versionName=([^\n\r]+)/m,
   );
+  const versionCode = extractNumber(dumpsysOutput, /^\s*versionCode=(\d+)/m);
   const minSdk = extractNumber(dumpsysOutput, /\bminSdk=(\d+)\b/m);
   const targetSdk = extractNumber(dumpsysOutput, /\btargetSdk=(\d+)\b/m);
   const firstInstallTime = extractMatch(
@@ -203,7 +204,9 @@ function parsePackageDetailsFromDumpsys(dumpsysOutput: string) {
       apkPath.startsWith("/product/") ||
       apkPath.startsWith("/vendor/"));
   const isUpdatedSystemApp =
-    !!apkPath && apkPath.includes("/data/app/") && /\bSYSTEM\b/.test(dumpsysOutput);
+    !!apkPath &&
+    apkPath.includes("/data/app/") &&
+    /\bSYSTEM\b/.test(dumpsysOutput);
 
   const normalizedApkPath = (apkPath || "").toLowerCase();
   const isSystemPath =
@@ -243,7 +246,9 @@ function isSpecialPermission(permissionName: string): boolean {
   return specialPrefixes.some((name) => permissionName.startsWith(name));
 }
 
-function mapPermissionsForDetails(permissionResult: Permissions.PermissionResult) {
+function mapPermissionsForDetails(
+  permissionResult: Permissions.PermissionResult,
+) {
   const mapped = permissionResult.permissions.map((permission) => ({
     name: permission.name,
     granted: permission.granted,
@@ -253,9 +258,12 @@ function mapPermissionsForDetails(permissionResult: Permissions.PermissionResult
     type: permission.type,
   }));
 
-  const dangerousPermissions = mapped.filter((permission) => permission.is_dangerous);
+  const dangerousPermissions = mapped.filter(
+    (permission) => permission.is_dangerous,
+  );
   const specialPermissions = mapped.filter(
-    (permission) => !permission.is_dangerous && isSpecialPermission(permission.name),
+    (permission) =>
+      !permission.is_dangerous && isSpecialPermission(permission.name),
   );
   const normalPermissions = mapped.filter(
     (permission) =>
@@ -268,8 +276,9 @@ function mapPermissionsForDetails(permissionResult: Permissions.PermissionResult
     normal_permissions: normalPermissions,
     total_count: mapped.length,
     dangerous_count: dangerousPermissions.length,
-    granted_dangerous: dangerousPermissions.filter((permission) => permission.granted)
-      .length,
+    granted_dangerous: dangerousPermissions.filter(
+      (permission) => permission.granted,
+    ).length,
   };
 }
 
@@ -381,11 +390,15 @@ export function registerAdbHandlers() {
           bloatwarePackages.map(async (pkg) => {
             try {
               const pathEntry = packagePathMap.get(pkg.name);
-              const sizeBytes = await LocalAdb.getPackageSizeBytes(deviceId, pkg.name, {
-                codePathHint: pathEntry?.path,
-                includeDataDir: false,
-                resolveSplitApks: true,
-              });
+              const sizeBytes = await LocalAdb.getPackageSizeBytes(
+                deviceId,
+                pkg.name,
+                {
+                  codePathHint: pathEntry?.path,
+                  includeDataDir: false,
+                  resolveSplitApks: true,
+                },
+              );
               return [pkg.name, sizeBytes] as const;
             } catch {
               return [pkg.name, null] as const;
@@ -395,10 +408,13 @@ export function registerAdbHandlers() {
         const sizeMap = new Map(sizeEntries);
         const enrichedWithSizes = enriched.map((pkg) => ({
           ...pkg,
-          packageType: packagePathMap.get(pkg.name)?.isSystemPath === true ? "system" : "user",
+          packageType:
+            packagePathMap.get(pkg.name)?.isSystemPath === true
+              ? "system"
+              : "user",
           sizeBytes:
             pkg.category?.toUpperCase() === "BLOATWARE"
-              ? sizeMap.get(pkg.name) ?? undefined
+              ? (sizeMap.get(pkg.name) ?? undefined)
               : undefined,
         }));
         console.log(`[LOCAL DATA] Enriched ${enriched.length} packages`);
@@ -414,20 +430,25 @@ export function registerAdbHandlers() {
   // Check package safety (LOCAL DATA)
   ipcMain.handle("adb:check-safety", async (_, packageNames: string[]) => {
     try {
-      const dedupedPackageNames = [...new Set(packageNames.map((p) => p.trim()).filter(Boolean))];
+      const dedupedPackageNames = [
+        ...new Set(packageNames.map((p) => p.trim()).filter(Boolean)),
+      ];
       console.log(
         `[LOCAL DATA] Checking safety for ${dedupedPackageNames.length} packages`,
       );
 
       if (typeof fetch === "function" && dedupedPackageNames.length > 0) {
         try {
-          const response = await fetch(`${resolveModelApiBaseUrl()}/api/check-packages`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const response = await fetch(
+            `${resolveModelApiBaseUrl()}/api/check-packages`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ packages: dedupedPackageNames }),
             },
-            body: JSON.stringify({ packages: dedupedPackageNames }),
-          });
+          );
 
           if (response.ok) {
             const payload = (await response.json()) as {
@@ -444,54 +465,71 @@ export function registerAdbHandlers() {
               }>;
             };
 
-            if (Array.isArray(payload.packages) && payload.packages.length > 0) {
+            if (
+              Array.isArray(payload.packages) &&
+              payload.packages.length > 0
+            ) {
               const packages = payload.packages
                 .map((entry) => {
                   const packageName =
-                    typeof entry.package_id === "string" ? entry.package_id.trim() : "";
+                    typeof entry.package_id === "string"
+                      ? entry.package_id.trim()
+                      : "";
                   if (!packageName) return null;
 
                   const info = packageDataService.getPackageInfo(packageName);
                   const isCoreNamespace = isCoreNamespacePackage(packageName);
 
-                  const modelLabel = normalizeRemovalType(entry.label) ?? info?.modelLabel ?? null;
+                  const modelLabel =
+                    normalizeRemovalType(entry.label) ??
+                    info?.modelLabel ??
+                    null;
                   const finalRemovalType: RemovalType =
-                    modelLabel ?? info?.removal ?? (isCoreNamespace ? "UNSAFE" : "ADVANCED");
+                    modelLabel ??
+                    info?.removal ??
+                    (isCoreNamespace ? "UNSAFE" : "ADVANCED");
                   const modelConfidence =
                     typeof entry.confidence === "number"
                       ? Math.max(0, Math.min(1, entry.confidence))
-                      : info?.modelConfidence ?? null;
+                      : (info?.modelConfidence ?? null);
 
                   const graphRiskScore =
                     typeof entry.graph_risk_score === "number"
                       ? Math.max(0, Math.min(1, entry.graph_risk_score))
                       : null;
 
-                  const graphRiskReasons = Array.isArray(entry.graph_risk_reasons)
+                  const graphRiskReasons = Array.isArray(
+                    entry.graph_risk_reasons,
+                  )
                     ? entry.graph_risk_reasons.filter(
-                        (reason): reason is string => typeof reason === "string" && reason.length > 0,
+                        (reason): reason is string =>
+                          typeof reason === "string" && reason.length > 0,
                       )
                     : [];
 
                   const topFactors = Array.isArray(entry.top_factors)
                     ? entry.top_factors.filter(
-                        (factor): factor is string => typeof factor === "string" && factor.length > 0,
+                        (factor): factor is string =>
+                          typeof factor === "string" && factor.length > 0,
                       )
                     : [];
 
                   const safetyGate = Array.isArray(entry.safety_gate)
                     ? entry.safety_gate.filter(
-                        (gate): gate is string => typeof gate === "string" && gate.length > 0,
+                        (gate): gate is string =>
+                          typeof gate === "string" && gate.length > 0,
                       )
                     : [];
 
-                  const canUninstall = finalRemovalType !== "UNSAFE" && !isCoreNamespace;
+                  const canUninstall =
+                    finalRemovalType !== "UNSAFE" && !isCoreNamespace;
                   const fallbackDescription = isCoreNamespace
                     ? "Unknown core/OEM package - uninstall blocked for safety"
                     : "Unknown package - proceed with caution";
 
                   const safetyDescription =
-                    (typeof entry.description === "string" && entry.description.trim()) ||
+                    (typeof entry.description === "string" &&
+                      entry.description.trim()) ||
                     info?.description ||
                     graphRiskReasons[0] ||
                     fallbackDescription;
@@ -507,12 +545,16 @@ export function registerAdbHandlers() {
                     model_label: modelLabel,
                     model_confidence: modelConfidence,
                     model_version:
-                      typeof payload.model_version === "string" ? payload.model_version : info?.modelVersion ?? null,
+                      typeof payload.model_version === "string"
+                        ? payload.model_version
+                        : (info?.modelVersion ?? null),
                     model_gate_applied: safetyGate.length > 0,
                     dependencies: info?.dependencies ?? [],
                     alternatives: info?.alternatives ?? [],
                     graph_risk_score: graphRiskScore,
-                    graph_risk_reasons: graphRiskReasons.length ? graphRiskReasons : null,
+                    graph_risk_reasons: graphRiskReasons.length
+                      ? graphRiskReasons
+                      : null,
                     model_top_factors: topFactors.length ? topFactors : null,
                   };
                 })
@@ -527,8 +569,11 @@ export function registerAdbHandlers() {
               `[MODEL API] /api/check-packages returned ${response.status}; using local fallback`,
             );
           }
-    } catch (error) {
-          console.warn("[MODEL API] Safety check failed; using local fallback:", error);
+        } catch (error) {
+          console.warn(
+            "[MODEL API] Safety check failed; using local fallback:",
+            error,
+          );
         }
       }
 
@@ -543,16 +588,18 @@ export function registerAdbHandlers() {
             info.modelConfidence >= 0.8;
 
           const lowConfidenceGate =
-            typeof info.modelConfidence === "number" && info.modelConfidence < 0.55;
+            typeof info.modelConfidence === "number" &&
+            info.modelConfidence < 0.55;
 
           const finalRemovalType =
             info.removal === "UNSAFE" || modelUnsafeGate
               ? "UNSAFE"
               : lowConfidenceGate && info.removal === "RECOMMENDED"
                 ? "ADVANCED"
-              : info.removal;
+                : info.removal;
 
-          const canUninstall = finalRemovalType !== "UNSAFE" && !isCoreNamespace;
+          const canUninstall =
+            finalRemovalType !== "UNSAFE" && !isCoreNamespace;
 
           return {
             package_name: name,
@@ -859,6 +906,45 @@ export function registerAdbHandlers() {
   );
 
   ipcMain.handle(
+    "adb:set-background-app-op-mode",
+    async (
+      _,
+      deviceId: string,
+      packageName: string,
+      opName: LocalAdb.BackgroundAppOp,
+      mode: LocalAdb.BackgroundAppOpMode,
+      userId = 0,
+    ) => {
+      try {
+        if (!deviceId || !packageName) {
+          throw new Error("deviceId and packageName are required");
+        }
+
+        if (
+          opName !== "RUN_IN_BACKGROUND" &&
+          opName !== "RUN_ANY_IN_BACKGROUND"
+        ) {
+          throw new Error("Unsupported background app-op");
+        }
+
+        const normalizedMode: LocalAdb.BackgroundAppOpMode =
+          mode === "ignore" ? "ignore" : "allow";
+
+        return await LocalAdb.setBackgroundAppOpMode(
+          deviceId,
+          packageName,
+          opName,
+          normalizedMode,
+          userId,
+        );
+      } catch (error) {
+        console.error("[ADB LOCAL] Failed to set background app-op:", error);
+        throw error;
+      }
+    },
+  );
+
+  ipcMain.handle(
     "adb:optimize-background-restriction",
     async (
       _,
@@ -992,7 +1078,10 @@ export function registerAdbHandlers() {
         ? versionResult.output.split("\n")[0] || versionResult.output
         : null;
 
-      const devicesResult = await LocalAdb.executeAdbCommand("devices -l", 15000);
+      const devicesResult = await LocalAdb.executeAdbCommand(
+        "devices -l",
+        15000,
+      );
       const devicesOutput = devicesResult.output || devicesResult.error || "";
       const lines = devicesOutput
         .split("\n")
@@ -1001,7 +1090,9 @@ export function registerAdbHandlers() {
         .filter(Boolean);
 
       const connected = lines.filter((line) => /\sdevice\b/.test(line)).length;
-      const unauthorized = lines.filter((line) => /\sunauthorized\b/.test(line)).length;
+      const unauthorized = lines.filter((line) =>
+        /\sunauthorized\b/.test(line),
+      ).length;
       const offline = lines.filter((line) => /\soffline\b/.test(line)).length;
 
       const checks = [
@@ -1032,7 +1123,9 @@ export function registerAdbHandlers() {
       const suggestions: string[] = [];
 
       if (!adbAvailable) {
-        suggestions.push("Install Android Platform Tools and ensure `adb` is in PATH.");
+        suggestions.push(
+          "Install Android Platform Tools and ensure `adb` is in PATH.",
+        );
       }
 
       if (unauthorized > 0) {
@@ -1088,7 +1181,10 @@ export function registerAdbHandlers() {
           {
             name: "Diagnostics Runner",
             ok: false,
-            message: error instanceof Error ? error.message : "Unknown diagnostics error",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Unknown diagnostics error",
           },
         ],
         suggestions: [
@@ -1099,34 +1195,44 @@ export function registerAdbHandlers() {
     }
   });
 
-  ipcMain.handle("adb:get-device-health-snapshot", async (_, deviceId: string) => {
-    try {
-      if (!deviceId) {
-        throw new Error("Device ID is required");
-      }
+  ipcMain.handle(
+    "adb:get-device-health-snapshot",
+    async (_, deviceId: string) => {
+      try {
+        if (!deviceId) {
+          throw new Error("Device ID is required");
+        }
 
-      return await LocalAdb.getDeviceHealthSnapshot(deviceId);
-    } catch (error) {
-      console.error("[ADB LOCAL] Failed to get device health snapshot:", error);
-      return {
-        collectedAt: new Date().toISOString(),
-        battery: {
-          status: "Unknown",
-          charging: false,
-        },
-        memory: {},
-        storage: {
-          mountPoint: "/data",
-        },
-        performance: {
-          topApps: [],
-          thermalStatus: "Unknown",
-          thermalWarning: false,
-        },
-        errors: [error instanceof Error ? error.message : "Failed to fetch health data"],
-      };
-    }
-  });
+        return await LocalAdb.getDeviceHealthSnapshot(deviceId);
+      } catch (error) {
+        console.error(
+          "[ADB LOCAL] Failed to get device health snapshot:",
+          error,
+        );
+        return {
+          collectedAt: new Date().toISOString(),
+          battery: {
+            status: "Unknown",
+            charging: false,
+          },
+          memory: {},
+          storage: {
+            mountPoint: "/data",
+          },
+          performance: {
+            topApps: [],
+            thermalStatus: "Unknown",
+            thermalWarning: false,
+          },
+          errors: [
+            error instanceof Error
+              ? error.message
+              : "Failed to fetch health data",
+          ],
+        };
+      }
+    },
+  );
 
   // ============ DEBLOAT DATA HANDLERS (LOCAL JSON) ============
 
@@ -1473,7 +1579,8 @@ export function registerAdbHandlers() {
 
         const metadata = parsePackageDetailsFromDumpsys(result.output);
         const permissions = mapPermissionsForDetails(permissionResult);
-        const shouldFetchSize = localInfo?.category?.toUpperCase() === "BLOATWARE";
+        const shouldFetchSize =
+          localInfo?.category?.toUpperCase() === "BLOATWARE";
         const sizeBytes = shouldFetchSize
           ? await LocalAdb.getPackageSizeBytes(deviceId, packageName, {
               codePathHint: metadata.apk_path,
@@ -1507,10 +1614,14 @@ export function registerAdbHandlers() {
 
         for (const packageName of uniquePackages) {
           try {
-            const sizeBytes = await LocalAdb.getPackageSizeBytes(deviceId, packageName, {
-              includeDataDir: false,
-              resolveSplitApks: true,
-            });
+            const sizeBytes = await LocalAdb.getPackageSizeBytes(
+              deviceId,
+              packageName,
+              {
+                includeDataDir: false,
+                resolveSplitApks: true,
+              },
+            );
             if (typeof sizeBytes === "number") {
               sizes[packageName] = sizeBytes;
             } else {
@@ -1569,7 +1680,10 @@ export function registerAdbHandlers() {
     async (_, deviceId: string, packageId: string) => {
       try {
         console.log(`[F-Droid] Installing ${packageId} on device ${deviceId}`);
-        const result = await fdroidService.installFromFdroid(deviceId, packageId);
+        const result = await fdroidService.installFromFdroid(
+          deviceId,
+          packageId,
+        );
         return result;
       } catch (error) {
         console.error("[F-Droid] Failed to install:", error);
@@ -1580,18 +1694,21 @@ export function registerAdbHandlers() {
             error instanceof Error ? error.message : "Unknown error",
         };
       }
-    }
+    },
   );
 
   // Get download info for an alternative app
-  ipcMain.handle("fdroid:get-download-info", async (_, alternativeId: string) => {
-    try {
-      return fdroidService.getAppDownloadInfo(alternativeId);
-    } catch (error) {
-      console.error("[F-Droid] Failed to get download info:", error);
-      throw error;
-    }
-  });
+  ipcMain.handle(
+    "fdroid:get-download-info",
+    async (_, alternativeId: string) => {
+      try {
+        return fdroidService.getAppDownloadInfo(alternativeId);
+      } catch (error) {
+        console.error("[F-Droid] Failed to get download info:", error);
+        throw error;
+      }
+    },
+  );
 
   // Open URL in external browser
   ipcMain.handle("fdroid:open-external", async (_, url: string) => {
@@ -1600,7 +1717,10 @@ export function registerAdbHandlers() {
       return { success: true };
     } catch (error) {
       console.error("[F-Droid] Failed to open URL:", error);
-      return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      };
     }
   });
 
