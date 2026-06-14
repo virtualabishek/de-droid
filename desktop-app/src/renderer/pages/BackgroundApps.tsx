@@ -261,6 +261,13 @@ export default function BackgroundApps() {
     scanStatuses();
   }, [enabledPackages.length, isLoadingPackages, scanStatuses, selectedDevice]);
 
+  const isMissingHandlerError = (error: unknown) => {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.includes(
+      "No handler registered for 'adb:set-background-app-op-mode'",
+    );
+  };
+
   const setAppOp = async (
     packageName: string,
     opName: BackgroundAppOp,
@@ -309,8 +316,85 @@ export default function BackgroundApps() {
   };
 
   const turnOffBoth = async (packageName: string) => {
-    await setAppOp(packageName, "RUN_IN_BACKGROUND", "ignore");
-    await setAppOp(packageName, "RUN_ANY_IN_BACKGROUND", "ignore");
+    if (!selectedDevice) return;
+
+    const api = window.electronAPI?.adb;
+    setBusyKey(`${packageName}:RUN_IN_BACKGROUND`);
+
+    try {
+      if (api?.setBackgroundAppOpMode) {
+        const first = await api.setBackgroundAppOpMode(
+          selectedDevice.adb_id,
+          packageName,
+          "RUN_IN_BACKGROUND",
+          "ignore",
+          selectedUser,
+        );
+        setStatuses((current) => ({ ...current, [packageName]: first.status }));
+
+        const second = await api.setBackgroundAppOpMode(
+          selectedDevice.adb_id,
+          packageName,
+          "RUN_ANY_IN_BACKGROUND",
+          "ignore",
+          selectedUser,
+        );
+        setStatuses((current) => ({
+          ...current,
+          [packageName]: second.status,
+        }));
+
+        if (first.success && second.success) {
+          showSuccess(`Both background controls turned off for ${packageName}`);
+        } else {
+          showError(
+            first.error ||
+              second.error ||
+              "One background control could not be turned off",
+          );
+        }
+        return;
+      }
+
+      throw new Error("Background app-op toggle API is unavailable");
+    } catch (error) {
+      if (api?.optimizeBackgroundRestriction && isMissingHandlerError(error)) {
+        try {
+          const result = await api.optimizeBackgroundRestriction(
+            selectedDevice.adb_id,
+            packageName,
+            "restrict",
+            selectedUser,
+          );
+          setStatuses((current) => ({
+            ...current,
+            [packageName]: result.status,
+          }));
+
+          if (result.success) {
+            showSuccess(`Background restricted for ${packageName}`);
+          } else {
+            showError(result.message);
+          }
+          return;
+        } catch (fallbackError) {
+          showError(
+            fallbackError instanceof Error
+              ? fallbackError.message
+              : "Failed to turn off both background controls",
+          );
+          return;
+        }
+      }
+
+      showError(
+        error instanceof Error
+          ? error.message
+          : "Failed to turn off both background controls",
+      );
+    } finally {
+      setBusyKey(null);
+    }
   };
 
   const isBusy = (packageName: string, opName?: BackgroundAppOp) => {
