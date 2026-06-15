@@ -86,9 +86,15 @@ export function Layout() {
           isSidebarCollapsed ? "w-20" : "w-72"
         }`}
       >
-        <div className={`border-b border-gray-700 ${isSidebarCollapsed ? "p-3" : "p-5"}`}>
-          <div className={`flex ${isSidebarCollapsed ? "flex-col items-center gap-3" : "flex-col gap-4"}`}>
-            <div className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-4"}`}>
+        <div
+          className={`border-b border-gray-700 ${isSidebarCollapsed ? "p-3" : "p-5"}`}
+        >
+          <div
+            className={`flex ${isSidebarCollapsed ? "flex-col items-center gap-3" : "flex-col gap-4"}`}
+          >
+            <div
+              className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-4"}`}
+            >
               <img
                 src={appIcon}
                 alt="De-Droid"
@@ -98,23 +104,30 @@ export function Layout() {
                 <h1 className="text-[1.95rem] font-bold leading-none tracking-tight text-primary-400">
                   De-Droid
                 </h1>
-                <p className="mt-2 text-sm font-medium tracking-wide text-gray-400">Android Debloater</p>
+                <p className="mt-2 text-sm font-medium tracking-wide text-gray-400">
+                  Android Debloater
+                </p>
               </div>
             </div>
             <div
               className={`flex ${
-                isSidebarCollapsed ? "flex-col items-center gap-2" : "items-center justify-between"
+                isSidebarCollapsed
+                  ? "flex-col items-center gap-2"
+                  : "items-center justify-between"
               }`}
             >
               <div className="flex items-center gap-2">
                 <ThemeToggle />
-               
               </div>
               <button
                 onClick={toggleSidebar}
                 className="p-2 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                title={
+                  isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                }
+                aria-label={
+                  isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+                }
               >
                 <svg
                   className="w-5 h-5"
@@ -357,6 +370,36 @@ export function Layout() {
             </li>
             <li>
               <NavLink
+                to="/background-apps"
+                className={({ isActive }) =>
+                  `flex items-center py-3 rounded-lg transition-colors ${
+                    isSidebarCollapsed ? "justify-center px-2" : "gap-3 px-4"
+                  } ${
+                    isActive
+                      ? "bg-purple-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700"
+                  }`
+                }
+                title="Background Apps"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                {!isSidebarCollapsed && <span>Background Apps</span>}
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
                 to="/settings"
                 className={({ isActive }) =>
                   `flex items-center py-3 rounded-lg transition-colors ${
@@ -394,7 +437,9 @@ export function Layout() {
           </ul>
         </nav>
 
-        <div className={`border-t border-gray-700 ${isSidebarCollapsed ? "p-2" : "p-4"}`}>
+        <div
+          className={`border-t border-gray-700 ${isSidebarCollapsed ? "p-2" : "p-4"}`}
+        >
           <div
             className={`flex ${
               isSidebarCollapsed
@@ -448,16 +493,30 @@ export function Layout() {
           <div className="w-full max-w-2xl bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white">Help: Sidebar Sections</h2>
-                <p className="text-sm text-gray-400 mt-1">What each section does and when to use it.</p>
+                <h2 className="text-xl font-semibold text-white">
+                  Help: Sidebar Sections
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">
+                  What each section does and when to use it.
+                </p>
               </div>
               <button
                 onClick={() => setShowSidebarHelp(false)}
                 className="p-2 rounded-lg hover:bg-gray-700 text-gray-300 hover:text-white"
                 aria-label="Close help"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -465,35 +524,62 @@ export function Layout() {
             <div className="p-6 max-h-[70vh] overflow-y-auto space-y-3 text-sm">
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Dashboard</p>
-                <p className="text-gray-300">Device overview, storage impact, package summary, and first-time connection guide.</p>
+                <p className="text-gray-300">
+                  Device overview, storage impact, package summary, and
+                  first-time connection guide.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Packages</p>
-                <p className="text-gray-300">Search, filter, inspect, and batch uninstall/disable/restore packages.</p>
+                <p className="text-gray-300">
+                  Search, filter, inspect, and batch uninstall/disable/restore
+                  packages.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">AI / ML Insights</p>
-                <p className="text-gray-300">Model labels, confidence, risky app surfacing, and quick jump to Packages.</p>
+                <p className="text-gray-300">
+                  Model labels, confidence, risky app surfacing, and quick jump
+                  to Packages.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Device Health</p>
-                <p className="text-gray-300">Live battery, memory, storage, and performance snapshot.</p>
+                <p className="text-gray-300">
+                  Live battery, memory, storage, and performance snapshot.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">History</p>
-                <p className="text-gray-300">Track all actions and outcomes to audit changes.</p>
+                <p className="text-gray-300">
+                  Track all actions and outcomes to audit changes.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Permissions</p>
-                <p className="text-gray-300">Inspect app permissions and grant/revoke where supported by Android.</p>
+                <p className="text-gray-300">
+                  Inspect app permissions and grant/revoke where supported by
+                  Android.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Open Source Apps</p>
-                <p className="text-gray-300">Suggested open-source alternatives for replaceable apps.</p>
+                <p className="text-gray-300">
+                  Suggested open-source alternatives for replaceable apps.
+                </p>
+              </div>
+              <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
+                <p className="font-medium text-white">Background Apps</p>
+                <p className="text-gray-300">
+                  View apps allowed to work in the background and turn off
+                  RUN_IN_BACKGROUND or RUN_ANY_IN_BACKGROUND per app.
+                </p>
               </div>
               <div className="p-3 rounded-lg border border-gray-700 bg-gray-900/40">
                 <p className="font-medium text-white">Settings</p>
-                <p className="text-gray-300">Configure app behavior, preferences, and environment options.</p>
+                <p className="text-gray-300">
+                  Configure app behavior, preferences, and environment options.
+                </p>
               </div>
             </div>
           </div>

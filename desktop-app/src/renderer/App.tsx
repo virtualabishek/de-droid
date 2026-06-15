@@ -16,6 +16,7 @@ import DeviceHealth from "./pages/DeviceHealth";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
 import Alternatives from "./pages/Alternatives";
+import BackgroundApps from "./pages/BackgroundApps";
 import Permissions from "./pages/Permissions";
 import AIInsights from "./pages/AIInsights";
 import Login from "./pages/Login";
@@ -73,6 +74,7 @@ function App() {
           <Route path="/ai-insights" element={<AIInsights />} />
           <Route path="/permissions" element={<Permissions />} />
           <Route path="/alternatives" element={<Alternatives />} />
+          <Route path="/background-apps" element={<BackgroundApps />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/history" element={<History />} />
         </Route>
