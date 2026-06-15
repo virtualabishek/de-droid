@@ -106,6 +106,8 @@ export interface PackageSizesResult {
 }
 
 export type BackgroundRestrictionMode = "restrict" | "relax";
+export type BackgroundAppOp = "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND";
+export type BackgroundAppOpMode = "allow" | "ignore";
 
 export interface BackgroundRestrictionStatus {
   packageName: string;
@@ -128,6 +130,18 @@ export interface BackgroundOptimizationResult {
   message: string;
   appliedSteps: string[];
   failedSteps: string[];
+  warnings: string[];
+  status: BackgroundRestrictionStatus;
+}
+
+export interface BackgroundAppOpResult {
+  success: boolean;
+  packageName: string;
+  userId: number;
+  opName: BackgroundAppOp;
+  mode: BackgroundAppOpMode;
+  message: string;
+  error?: string;
   warnings: string[];
   status: BackgroundRestrictionStatus;
 }
@@ -453,12 +467,17 @@ export interface ElectronAPI {
       action: "grant" | "revoke",
       userId?: number,
     ) => Promise<{ success: boolean; error?: string; message?: string }>;
-    getPackageDetails: (deviceId: string, packageName: string) => Promise<PackageDetails | null>;
+    getPackageDetails: (
+      deviceId: string,
+      packageName: string,
+    ) => Promise<PackageDetails | null>;
     getPackageSizes: (
       deviceId: string,
       packageNames: string[],
     ) => Promise<PackageSizesResult>;
-    getDeviceHealthSnapshot: (deviceId: string) => Promise<DeviceHealthSnapshot>;
+    getDeviceHealthSnapshot: (
+      deviceId: string,
+    ) => Promise<DeviceHealthSnapshot>;
     getBackgroundRestrictionStatus: (
       deviceId: string,
       packageName: string,
@@ -470,6 +489,13 @@ export interface ElectronAPI {
       mode?: BackgroundRestrictionMode,
       userId?: number,
     ) => Promise<BackgroundOptimizationResult>;
+    setBackgroundAppOpMode: (
+      deviceId: string,
+      packageName: string,
+      opName: BackgroundAppOp,
+      mode: BackgroundAppOpMode,
+      userId?: number,
+    ) => Promise<BackgroundAppOpResult>;
   };
   debloat: {
     getPackages: () => Promise<DebloatPackage[]>;
@@ -492,7 +518,9 @@ export interface ElectronAPI {
       packageId: string,
     ) => Promise<FdroidInstallResult>;
     getDownloadInfo: (alternativeId: string) => Promise<FdroidDownloadInfo>;
-    openExternal: (url: string) => Promise<{ success: boolean; error?: string }>;
+    openExternal: (
+      url: string,
+    ) => Promise<{ success: boolean; error?: string }>;
     onProgress: (callback: (progress: DownloadProgress) => void) => () => void;
   };
   backup: {
@@ -513,7 +541,9 @@ export interface ElectronAPI {
   };
   history: {
     getAll: (limit?: number) => Promise<ActionHistoryRecord[]>;
-    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
+    clear: (
+      deviceId?: string,
+    ) => Promise<{ success: boolean; deleted: number }>;
     deleteSelected: (
       ids: string[],
     ) => Promise<{ success: boolean; deleted: number }>;
@@ -541,7 +571,9 @@ export interface ElectronAPI {
   };
   savedBackups: {
     getAll: () => Promise<SavedBackup[]>;
-    clear: (deviceId?: string) => Promise<{ success: boolean; deleted: number }>;
+    clear: (
+      deviceId?: string,
+    ) => Promise<{ success: boolean; deleted: number }>;
     get: (id: string) => Promise<SavedBackup | null>;
     getDevice: (deviceId: string) => Promise<SavedBackup[]>;
     create: (backup: {

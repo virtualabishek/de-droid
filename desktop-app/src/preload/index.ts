@@ -1,4 +1,3 @@
-
 import { contextBridge, ipcRenderer } from "electron";
 import type { DownloadProgress, ElectronAPI } from "../@types/electron-api";
 
@@ -133,6 +132,21 @@ const electronAPI: ElectronAPI = {
         mode,
         userId,
       ),
+    setBackgroundAppOpMode: (
+      deviceId: string,
+      packageName: string,
+      opName: "RUN_IN_BACKGROUND" | "RUN_ANY_IN_BACKGROUND",
+      mode: "allow" | "ignore",
+      userId?: number,
+    ) =>
+      ipcRenderer.invoke(
+        "adb:set-background-app-op-mode",
+        deviceId,
+        packageName,
+        opName,
+        mode,
+        userId,
+      ),
   },
 
   // ============ DEBLOAT DATA API (LOCAL JSON for now later we would have the real API) ============
@@ -167,7 +181,10 @@ const electronAPI: ElectronAPI = {
     openExternal: (url: string) =>
       ipcRenderer.invoke("fdroid:open-external", url),
     onProgress: (callback: (progress: DownloadProgress) => void) => {
-      const handler = (_event: Electron.IpcRendererEvent, progress: DownloadProgress) => {
+      const handler = (
+        _event: Electron.IpcRendererEvent,
+        progress: DownloadProgress,
+      ) => {
         callback(progress);
       };
       ipcRenderer.on("fdroid:progress", handler);
