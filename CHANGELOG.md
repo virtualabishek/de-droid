@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.7](https://github.com/virtualabishek/de-droid/compare/de-droid-v0.0.6...de-droid-v0.0.7) (2026-06-15)
+
+
+### Bug Fixes
+
+* fixed run in and run in background both not stoping app ([1038ec1](https://github.com/virtualabishek/de-droid/commit/1038ec1f2c8e2d72acad04ac183b1aac7ea8490a))
+* use mise for the local project node management for the new system setup in linux ([259d060](https://github.com/virtualabishek/de-droid/commit/259d06046ad38778aa1b6e3e40aaa855fa59a8af))
+
+
+### Chores
+
+* **main:** added the feature to stop background run the app ([6b76c86](https://github.com/virtualabishek/de-droid/commit/6b76c86dbb1deb97c0f4186547d7ac3b8b3a9044))
+
 ## [0.0.6](https://github.com/virtualabishek/de-droid/compare/de-droid-v0.0.5...de-droid-v0.0.6) (2026-05-24)
 
 
