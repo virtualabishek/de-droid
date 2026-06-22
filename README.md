@@ -18,6 +18,7 @@ De-Droid combines local ADB execution with safety intelligence to help you remov
 - Smart filtering for system/user, bloatware, state, and removal level.
 - Backup snapshots, history tracking, and before/after comparisons.
 - Permission and background control insights per package.
+- Download Opensource application from fdroid.
 - Optional ML-assisted package safety scoring via FastAPI.
 
 ## Architecture
