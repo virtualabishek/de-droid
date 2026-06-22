@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "../store/authStore";
+import { useThemeStore, type Theme } from "../store/themeStore";
 
 interface UserSettings {
-  theme: string;
+  theme: Theme;
   expertMode: boolean;
   multiUserMode: boolean;
   confirmActions: boolean;
@@ -22,8 +23,16 @@ function sanitizeNumericInput(value: string): string {
   return value.replace(/\D/g, "");
 }
 
+function normalizeTheme(value: string | undefined): Theme {
+  if (value === "dark" || value === "light" || value === "system") {
+    return value;
+  }
+  return "dark";
+}
+
 export default function Settings() {
   const { user } = useAuthStore();
+  const { setTheme } = useThemeStore();
 
   const [settings, setSettings] = useState<UserSettings>({
     theme: "dark",
@@ -60,19 +69,21 @@ export default function Settings() {
         window.electronAPI.auth.getAllSettings(user.id),
         window.electronAPI.settings.get("telemetry_opt_in"),
       ]);
+      const nextTheme = normalizeTheme(allSettings.theme);
 
       setSettings({
-        theme: allSettings.theme ?? "dark",
+        theme: nextTheme,
         expertMode: allSettings.expertMode === "true",
         multiUserMode: allSettings.multiUserMode !== "false",
         confirmActions: allSettings.confirmActions !== "false",
         autoBackup: allSettings.autoBackup !== "false",
         telemetryOptIn: telemetrySetting === "true",
       });
+      setTheme(nextTheme);
     } catch (error) {
       console.error("Failed to load settings:", error);
     }
-  }, [user]);
+  }, [user, setTheme]);
 
   useEffect(() => {
     if (user?.id) {
@@ -114,6 +125,7 @@ export default function Settings() {
           String(settings.telemetryOptIn),
         ),
       ]);
+      setTheme(settings.theme);
       setSaveStatus("success");
       setTimeout(() => setSaveStatus("idle"), 3000);
     } catch (error) {
@@ -128,6 +140,9 @@ export default function Settings() {
     key: K,
     value: UserSettings[K],
   ) => {
+    if (key === "theme") {
+      setTheme(value as Theme);
+    }
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -414,7 +429,9 @@ export default function Settings() {
               </div>
               <select
                 value={settings.theme}
-                onChange={(e) => updateSetting("theme", e.target.value)}
+                onChange={(e) =>
+                  updateSetting("theme", normalizeTheme(e.target.value))
+                }
                 className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
               >
                 <option value="dark">Dark</option>
@@ -436,17 +453,12 @@ export default function Settings() {
                   Show all packages including unsafe ones
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.expertMode}
-                  onChange={(e) =>
-                    updateSetting("expertMode", e.target.checked)
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-              </label>
+              <input
+                type="checkbox"
+                checked={settings.expertMode}
+                onChange={(e) => updateSetting("expertMode", e.target.checked)}
+                className="h-5 w-5 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-500 focus:ring-2"
+              />
             </div>
 
             <div className="p-4 flex items-center justify-between">
@@ -456,17 +468,14 @@ export default function Settings() {
                   Show user selector for devices with multiple users
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.multiUserMode}
-                  onChange={(e) =>
-                    updateSetting("multiUserMode", e.target.checked)
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-              </label>
+              <input
+                type="checkbox"
+                checked={settings.multiUserMode}
+                onChange={(e) =>
+                  updateSetting("multiUserMode", e.target.checked)
+                }
+                className="h-5 w-5 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-500 focus:ring-2"
+              />
             </div>
 
             <div className="p-4 flex items-center justify-between">
@@ -476,17 +485,14 @@ export default function Settings() {
                   Ask for confirmation before performing actions
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.confirmActions}
-                  onChange={(e) =>
-                    updateSetting("confirmActions", e.target.checked)
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-              </label>
+              <input
+                type="checkbox"
+                checked={settings.confirmActions}
+                onChange={(e) =>
+                  updateSetting("confirmActions", e.target.checked)
+                }
+                className="h-5 w-5 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-500 focus:ring-2"
+              />
             </div>
 
             <div className="p-4 flex items-center justify-between">
@@ -496,17 +502,12 @@ export default function Settings() {
                   Automatically backup package states before changes
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.autoBackup}
-                  onChange={(e) =>
-                    updateSetting("autoBackup", e.target.checked)
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-              </label>
+              <input
+                type="checkbox"
+                checked={settings.autoBackup}
+                onChange={(e) => updateSetting("autoBackup", e.target.checked)}
+                className="h-5 w-5 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-500 focus:ring-2"
+              />
             </div>
 
             <div className="p-4 flex items-center justify-between">
@@ -516,17 +517,14 @@ export default function Settings() {
                   Share anonymized action outcomes to improve safety model retraining
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.telemetryOptIn}
-                  onChange={(e) =>
-                    updateSetting("telemetryOptIn", e.target.checked)
-                  }
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-              </label>
+              <input
+                type="checkbox"
+                checked={settings.telemetryOptIn}
+                onChange={(e) =>
+                  updateSetting("telemetryOptIn", e.target.checked)
+                }
+                className="h-5 w-5 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-500 focus:ring-2"
+              />
             </div>
           </div>
         </section>

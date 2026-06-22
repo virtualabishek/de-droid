@@ -1,10 +1,10 @@
 /**
- * Theme Store - Manages dark/light theme with persistence
+ * Theme Store - Manages app theme with persistence
  */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Theme = "dark" | "light";
+export type Theme = "dark" | "light" | "system";
 
 interface ThemeState {
   theme: Theme;
@@ -23,7 +23,9 @@ export const useThemeStore = create<ThemeState>()(
       },
 
       toggleTheme: () => {
-        const newTheme = get().theme === "dark" ? "light" : "dark";
+        const currentTheme = get().theme;
+        const resolvedTheme = resolveTheme(currentTheme);
+        const newTheme = resolvedTheme === "dark" ? "light" : "dark";
         set({ theme: newTheme });
         applyTheme(newTheme);
       },
@@ -42,15 +44,32 @@ export const useThemeStore = create<ThemeState>()(
 
 // Apply theme to document
 function applyTheme(theme: Theme) {
+  const resolvedTheme = resolveTheme(theme);
   const root = document.documentElement;
 
-  if (theme === "light") {
+  if (resolvedTheme === "light") {
     root.classList.add("light-theme");
     root.classList.remove("dark-theme");
   } else {
     root.classList.add("dark-theme");
     root.classList.remove("light-theme");
   }
+}
+
+function resolveTheme(theme: Theme): "dark" | "light" {
+  if (theme !== "system") {
+    return theme;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  }
+
+  return "light";
 }
 
 // Initialize theme on load
