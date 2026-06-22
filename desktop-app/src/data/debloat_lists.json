@@ -505,6 +505,72 @@
       "githubUrl": "https://github.com/OuterTune/OuterTune",
       "icon": "outertune",
       "iconUrl": "https://raw.githubusercontent.com/OuterTune/OuterTune/lite/fastlane/metadata/android/en-US/images/icon.png"
+    },
+    {
+      "id": "protonvpn",
+      "name": "Proton VPN",
+      "description": "Privacy-focused and open-source VPN client",
+      "packageId": "ch.protonvpn.android",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/ch.protonvpn.android/",
+      "githubUrl": "https://github.com/ProtonVPN/android-app",
+      "icon": "protonvpn",
+      "iconUrl": "https://f-droid.org/repo/ch.protonvpn.android/en-US/icon.png"
+    },
+    {
+      "id": "forkclient-telegram",
+      "name": "ForkClient (Telegram)",
+      "description": "Open-source Telegram client fork",
+      "packageId": "org.telegram.messenger.fork",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.telegram.messenger.fork/",
+      "githubUrl": "https://github.com/Forkgram/Forkgram",
+      "icon": "forkclient-telegram",
+      "iconUrl": "https://f-droid.org/repo/org.telegram.messenger.fork/en-US/icon.png"
+    },
+    {
+      "id": "fossify-camera",
+      "name": "Fossify Camera",
+      "description": "Simple and privacy-friendly camera app",
+      "packageId": "app.fossify.camera",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/app.fossify.camera/",
+      "githubUrl": "https://github.com/FossifyOrg/Camera",
+      "icon": "fossify-camera",
+      "iconUrl": "https://f-droid.org/repo/app.fossify.camera/en-US/icon.png"
+    },
+    {
+      "id": "localsend",
+      "name": "LocalSend",
+      "description": "Cross-platform local file sharing without cloud servers",
+      "packageId": "org.localsend.localsend_app",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/org.localsend.localsend_app/",
+      "githubUrl": "https://github.com/localsend/localsend",
+      "icon": "localsend",
+      "iconUrl": "https://f-droid.org/repo/org.localsend.localsend_app/en-US/icon.png"
+    },
+    {
+      "id": "luna",
+      "name": "Luna",
+      "description": "Open-source productivity app for planning and tracking tasks",
+      "packageId": "com.kshitijsofatkar.luna",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/com.kshitijsofatkar.luna/",
+      "githubUrl": "https://github.com/ksk-it-lab/Luna",
+      "icon": "luna",
+      "iconUrl": "https://f-droid.org/repo/com.kshitijsofatkar.luna/en-US/icon.png"
+    },
+    {
+      "id": "sdmaid-se",
+      "name": "SD Maid SE",
+      "description": "System cleaner app for removing leftover files and clutter",
+      "packageId": "eu.thedarken.sdm",
+      "source": "F-Droid",
+      "sourceUrl": "https://f-droid.org/packages/eu.thedarken.sdm/",
+      "githubUrl": "https://github.com/d4rken-org/sdmaid-se",
+      "icon": "sdmaid-se",
+      "iconUrl": "https://f-droid.org/repo/eu.thedarken.sdm/en-US/icon.png"
     }
   ]
 }
